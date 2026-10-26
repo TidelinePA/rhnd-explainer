@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7th Cycle RHND: how 1,359,750 units are built (DRAFT)</title>
+<style>
+  :root{
+    --ink:#1c2433; --muted:#5d6678; --line:#d9dde5; --bg:#f6f7f9; --card:#ffffff;
+    --navy:#1f2a44; --low:#2f7d6d; --lowmod:#c58b1a; --contested:#b8382f; --helps:#5a6b8c; --accent:#2b5fa8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+  header{background:var(--navy);color:#fff;padding:14px 22px}
+  header h1{margin:0;font-size:20px;font-weight:650}
+  header .sub{font-size:12.5px;opacity:.85;margin-top:3px}
+  .draft{background:#fff4d6;color:#6b4e00;border-bottom:1px solid #ecd9a0;padding:7px 22px;font-size:12.5px}
+  .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 22px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  .tabs{display:flex;gap:4px;flex-wrap:wrap}
+  .tab{border:1px solid var(--line);background:#fff;padding:7px 12px;border-radius:7px;cursor:pointer;font-size:13.5px;color:var(--ink)}
+  .tab[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .search{margin-left:auto;position:relative}
+  .search input{width:240px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:14px}
+  .results{position:absolute;right:0;top:38px;width:400px;max-height:380px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:none}
+  .results button{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;border:0;background:#fff;padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0f2f5;font-size:13.5px}
+  .results button:hover{background:#f2f6fc}
+  .tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:var(--helps);padding:1px 6px;border-radius:4px;flex:none}
+  .tag.element{background:var(--accent)} .tag.law{background:#6d4aa8} .tag.date{background:#a8561f}
+  .tag.agenda{background:#2a7a8c} .tag.income{background:#7a5a1f} .tag.step{background:#3d6b3a} .tag.slide{background:#8c2a6b}
+  main{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,1fr);gap:18px;padding:18px 22px;align-items:start}
+  @media (max-width:980px){main{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .card h2{margin:0 0 4px;font-size:17px}
+  .hint{color:var(--muted);font-size:13px;margin:0 0 10px}
+  .glance{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+  .glance div{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fbfcfe}
+  .glance b{display:block;font-size:19px}
+  .glance span{font-size:12.5px;color:var(--muted)}
+  svg text{font-family:inherit}
+  .row{cursor:pointer;outline:none}
+  .row:hover .barrect,.row:focus .barrect{filter:brightness(1.08)}
+  .row.sel .rowbg{fill:#eaf1fb}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:8px 0 2px}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  aside .card{position:sticky;top:64px;max-height:calc(100vh - 80px);overflow:auto}
+  .pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;color:#fff;margin-right:6px}
+  .sec{margin:12px 0 0}
+  .sec h3{margin:0 0 3px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .sec p,.sec li{margin:0 0 4px}
+  .sec ul{margin:0;padding-left:18px}
+  .quote{border-left:3px solid #c9d3e6;background:#f6f8fc;padding:6px 10px;margin:5px 0;font-size:13.5px;color:#2a3550}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .chip{border:1px solid #c7d3ea;background:#f2f6fc;color:#1d4a8a;border-radius:99px;padding:3px 10px;font-size:12.5px;cursor:pointer}
+  .chip:hover{background:#e3edfb}
+  a.ext{display:inline-block;border:1px solid #b9c9e6;background:#fff;color:#1d4a8a;border-radius:6px;padding:3px 9px;font-size:12.5px;text-decoration:none;margin:2px 6px 2px 0;white-space:nowrap}
+  a.ext:hover{background:#eef4fd}
+  .src{font-size:12.5px;color:var(--muted)}
+  table{border-collapse:collapse;width:100%;font-size:13.5px}
+  th,td{padding:6px 8px;border-bottom:1px solid #edf0f4;text-align:left;vertical-align:top}
+  th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr.click{cursor:pointer} tr.click:hover{background:#f5f8fd} tr.sel{background:#eaf1fb}
+  .three{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:8px 0 12px}
+  .opt{border:2px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;background:#fff}
+  .opt.sel{border-color:var(--accent);background:#f2f7ff}
+  .opt b{font-size:22px;display:block}
+  .opt small{color:var(--muted)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:700px){.two{grid-template-columns:1fr}}
+  .for{border-top:3px solid var(--low);padding-top:6px} .against{border-top:3px solid var(--contested);padding-top:6px}
+  .tl{position:relative;margin-left:8px;border-left:3px solid #cfd6e3;padding-left:16px}
+  .ti{position:relative;margin:0 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}
+  .ti:before{content:"";position:absolute;left:-26px;top:14px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--navy)}
+  .ti.sel{border-color:var(--accent);background:#f2f7ff}
+  .ti .d{font-weight:650}
+  .st{font-size:11px;padding:1px 7px;border-radius:99px;margin-left:6px;color:#fff}
+  .st.confirmed{background:var(--low)} .st.tentative{background:var(--lowmod)} .st.unverified{background:var(--contested)} .st.derived{background:var(--helps)}
+  .lawitem,.ai{border:1px solid var(--line);border-radius:8px;background:#fff;padding:8px 11px;margin:0 0 8px;cursor:pointer}
+  .lawitem.sel,.ai.sel{border-color:var(--accent);background:#f2f7ff}
+  .lawitem b{color:#4b2f85}
+  .ai .pg{font-size:12px;color:var(--muted);margin-left:6px}
+  .ai .t{font-weight:650}
+  .ai .s{font-size:13.5px;color:#3b4558;margin-top:2px}
+  .grp{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:14px 0 6px}
+  .mix td:first-child{width:46%}
+  .meter{height:9px;border-radius:5px;background:#aab4c8}
+  footer{padding:14px 22px 30px;color:var(--muted);font-size:12.5px}
+  @media print{.bar{display:none} aside .card{position:static;max-height:none} main{display:block}}
+</style>
+</head>
+<body>
+<header>
+  <h1>7th Cycle Regional Housing Needs Determination: how 1,359,750 units are built</h1>
+  <div class="sub">SCAG region &middot; HCD final determination, October 15, 2026 &middot; Planning period June 30, 2029 to October 15, 2037 &middot; Click anything to see the law, the judgment call, the source page, and the questions to ask.</div>
+</header>
+<div class="draft"><b>DRAFT for internal review.</b> Not an OCCOG position and not legal advice. Facts are cited to the 62-page SCAG RHNA Subcommittee packet (Oct 26, 2026). The challenge ratings and questions are working analysis, for discussion. Information as of Oct 25, 2026.</div>
+
+<div class="bar">
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="search">
+    <input id="q" type="search" placeholder="Search everything&hellip;" aria-label="Search" autocomplete="off">
+    <div class="results" id="results"></div>
+  </div>
+</div>
+
+<main>
+  <section id="view"></section>
+  <aside><div class="card" id="panel"></div></aside>
+</main>
+<footer>
+  Source: SCAG RHNA Subcommittee special meeting packet, October 26, 2026 (agenda, minutes, topic outlook, staff report, slides, HCD final RHND letter and Table 2 workbook, Gov. Code &sect;65584.01); a copy is stored with this page at source/RHNA102626fullpacket.pdf and &ldquo;p.&rdquo; links open that PDF at the page. Income limits: HCD Revised 2026 State Income Limits (June 23, 2026). The nine RHND components sum to 1,359,750. Alternative totals (1,081,926 and 855,123) are derived from Table 2 and the staff report&rsquo;s 226,803 figure; the packet does not print them.
+</footer>
+
+<script id="data">
+const TOTAL = 1359750;
+const PDF = "source/RHNA102626fullpacket.pdf";
+const pk = p => PDF + "#page=" + p;
+const SCAG_MTG = "https://scag.ca.gov/meetings-subcommittees";
+const SCAG_VIDEO = "http://scag.iqm2.com/Citizens/";
+const HCD_IL = "https://www.hcd.ca.gov/sites/default/files/docs/grants-and-funding/income-limits-2026.pdf";
+
+const LEVELS = {
+  low:       {label:"Low", color:"#2f7d6d"},
+  lowmod:    {label:"Low to moderate", color:"#c58b1a"},
+  contested: {label:"Contested: the objection", color:"#b8382f"},
+  helps:     {label:"Helps SCAG (HCD choice)", color:"#5a6b8c"}
+};
+
+const ELEMENTS = [
+ {id:"e1", name:"Household growth", units:245801, level:"low",
+  cycles:"Share of total: 5th 97% / 6th 35% / 7th 18% (SCAG staff slides, p.38)",
+  what:"New households expected from population growth and the aging of the population, from DOF projections, net of the 6,643,462 occupied units HCD estimates will exist on June 30, 2029. Includes 708 households for apartment-style student housing. DOF projects population to grow only 94,705 over 2029 to 2037, but households grow 245,093 because growth is concentrated at older ages with higher household formation rates.",
+  law:["s_a","s_b1A"],
+  hcd:"Which projection series to use (DOF, not SCAG's own forecast), the headship rates by age, and the 8.3-year period (3.5 months added to reach Oct 15, 2037).",
+  why:"Staff find this reasonable. SCAG's own 2037 forecast is within 0.05% of DOF's, but SCAG staff themselves recommended DOF's series to avoid double counting, and HCD accepted. That makes objection ground (c)(2)(A) (wrong population basis) hard to argue now.",
+  qs:["DOF projects only 94,705 more people but 245,093 more households. How much of that rests on aging and headship-rate assumptions?",
+      "SCAG's forecast is within the 1.5% statutory band. What did SCAG give up by recommending DOF's series?",
+      "Is the 708 student-household adjustment counted again anywhere in local allocations?"],
+  rel:["s_a","s_b1A","t5","t7","sl9","e2","d_alloc"], src:"Staff report pp.28-30; slide p.38; HCD Table 2 pp.50-51; workbook p.56; statute p.59", page:38},
+
+ {id:"e2", name:"Vacancy adjustment", units:147864, level:"lowmod",
+  cycles:"Share of total: 5th 3% / 6th 13% / 7th 11% (p.40)",
+  what:"Extra units so the region reaches HCD's &ldquo;healthy market&rdquo; vacancy: 7% for rentals and 2% for owner housing. 131,589 units for existing households plus 16,275 for projected households. SCAG's current vacancy is about 4% for rentals and under 1% for owners.",
+  law:["s_b1E"],
+  hcd:"The 7% rental standard. The statute only sets a floor (&ldquo;no less than 5 percent&rdquo;). HCD's 7% comes from its own April 2024 report, <i>California's Housing Future 2040</i>. SCAG asked for 5%; HCD kept 7% with added citations.",
+  why:"SCAG staff say it would be &ldquo;very difficult to demonstrate&rdquo; 7% is unreasonable, since the long-run US rental vacancy average (2005-2024) is 6.64%. Real but small upside.",
+  qs:["What is the unit difference between a 5% and a 7% rental standard? (Not in the packet; ask SCAG staff.)",
+      "HCD's letter labels 16,275 as the existing-household adjustment and 131,589 as projected; the workbook and SCAG slides say the reverse. Can HCD confirm which is correct?",
+      "Do the target vacancy rates assume units sit empty that the market would actually fill?"],
+  rel:["s_b1E","t9a","t9b","sl10","sl13","sl14","e1","d_label"], src:"Staff report pp.28-29; slide p.40; HCD Table 2 p.50 and step 9 p.51; workbook pp.56,58; statute p.60", page:40},
+
+ {id:"e3", name:"Overcrowding adjustment", units:398400, level:"low",
+  cycles:"Share of total: 5th 0% / 6th 34% / 7th 29% (p.42)",
+  what:"Units to bring the share of households with more than one person per room down to the national level. Region 9.66% vs. nation 3.54% = 6.12 points, applied to about 6.5 million occupied households.",
+  law:["s_b1C"],
+  hcd:"Treating the whole gap to the national average as units to build. SCAG's own slide asks whether those households would really move into new units: &ldquo;Maybe; depends on many factors.&rdquo;",
+  why:"Staff find it reasonable: the target (national overcrowding level) is clear and the link to added supply is direct. Not a recommended point of objection.",
+  qs:["Does closing the gap assume every overcrowded household moves into a newly built unit?",
+      "How does this interact with the cost-burden overlap deduction of 259,849?",
+      "Is the national average the right benchmark for a region with a high share of multigenerational households?"],
+  rel:["s_b1C","t10","sl18","e5","e4"], src:"Slide p.42; HCD Table 2 p.50 and step 10 p.52; statute p.60", page:42},
+
+ {id:"e4", name:"Cost-burden adjustment (gross)", units:764476, level:"contested", shareNote:"gross; 37% of the total after the overlap deduction (net 504,627)",
+  cycles:"Net share of total: 5th 0% / 6th 9% / 7th 37% (p.43)",
+  what:"Households paying more than 30% of income on housing. Region 43.19% vs. nation 31.45% = 11.74 points, applied to about 6.5 million occupied households = 764,476 units gross. After the overlap deduction (next bar) the net is 504,627 units, 37% of the entire determination.",
+  law:["s_b1H","s_b3"],
+  hcd:"Everything about how the gap becomes a unit count. The statute names the factor but has no formula. HCD applies the gap to <i>all</i> households, including moderate and above-moderate (57% of the adjustment, per SCAG's analysis). SCAG's alternative applies it only to very low and low income households.",
+  why:"This is the staff-recommended objection. Strong: no statutory formula; HCD itself acknowledged it would take extensive economic modeling to link supply to cost burden; every other adjustment has a supply target; it jumped from 9% to 37% of the total. Weak: the statute lists all four income groups and lets HCD base adjustments on total households, and the legal bar is &ldquo;not a reasonable application.&rdquo;",
+  qs:["What amount of new housing reduces the cost-burden rate by one point? HCD says it has no model.",
+      "Why apply the adjustment to moderate and above-moderate households, who are 57% of it, when RHNA's lower-income tools do not reach them?",
+      "Why did cost burden go from 9% of the 6th cycle total to 37% of the 7th?",
+      "If HCD rejects a lower-income-only alternative because the statute names all four income groups, what is SCAG's fallback?"],
+  rel:["s_b1H","s_b3","s_c2","t11","t12","sl19","sl20","e5","d_obj","tab_cost"], src:"Staff report pp.30-33; slide p.43; HCD Table 2 step 11 p.52; workbook p.56; statute p.60-61", page:43},
+
+ {id:"e5", name:"Overlap deduction", units:-259849, level:"helps", shareNote:"reduces the cost-burden figure above to a net 504,627",
+  cycles:"Not broken out by cycle in the packet",
+  what:"A downward adjustment for households that are <i>both</i> overcrowded and cost-burdened, so they are not counted twice. Computed from a DOF analysis of 2024 census microdata and capped at the lesser of the two adjustments.",
+  law:[],
+  hcd:"Entirely HCD's own step; it is not in the statute. It lowers the total by 259,849 units.",
+  why:"It helps SCAG, so there is no reason to challenge it. But it matters for the math: if the cost-burden adjustment is removed entirely, this deduction goes away too, so the net reduction is 504,627, not 764,476.",
+  qs:["How is the 259,849 derived, and would it change under a lower-income-only alternative? (SCAG's alternative already removes overcrowded households.)",
+      "Is the cap at the lesser of the two adjustments binding here?"],
+  rel:["e3","t12","e4","tab_cost"], src:"HCD Table 2 step 12 p.52; staff report p.32 (footnote 11)", page:52},
+
+ {id:"e6", name:"Demolition replacement", units:6889, level:"low",
+  cycles:"Share of total: 5th 0.6% / 6th 2.5% / 7th 0.5% (p.39)",
+  what:"Units HCD expects will be lost to demolition and must be replaced, using DOF data from 2017 to 2026.",
+  law:["s_b1E"],
+  hcd:"HCD applies a minimum rate of 0.10% (its range is 0.10% to 5%). SCAG's actual 10-year average is only 0.022%, so the floor sets the number.",
+  why:"Small. By arithmetic the floor adds roughly 5,000 units more than the region's actual rate would. Worth a footnote, not an objection.",
+  qs:["Is the 0.10% floor in statute or HCD practice? (The packet describes it as HCD's practice.)",
+      "Does the allocation methodology credit cities for demolitions they report?"],
+  rel:["s_b1E","t13","sl12","e2"], src:"HCD Table 2 step 13 p.52; slide p.39; statute p.60", page:39},
+
+ {id:"e7", name:"Jobs-housing relationship", units:9467, level:"low",
+  cycles:"Share of total: 5th 0% / 6th 0% / 7th 0.7% (p.41)",
+  what:"A new HCD adjustment for in-commuters: the region has about 14,201 more jobs than resident workers (7,602,382 jobs vs. 7,588,181 workers), divided by HCD's standard of 1.5.",
+  law:["s_b1G","s_c1"],
+  hcd:"The 1.5 standard and the use of 2023 commute data. For the separate &ldquo;feasible balance&rdquo; test, HCD used a Caltrans forecast instead of SCAG's RTP employment projections, and found no extra adjustment was needed.",
+  why:"Low. Be careful with the feasible-balance test: the statute says to use the RTP employment projections, but SCAG's own projections might produce a <i>higher</i> number. Raising it could backfire.",
+  qs:["Why did HCD use a Caltrans forecast rather than the RTP employment projections that (c)(1) names?",
+      "Would SCAG's own employment projections trigger an additional adjustment?"],
+  rel:["s_b1G","s_c1","t14","t20","sl15"], src:"HCD Table 2 steps 14 and 20 pp.53-54; slide p.41; statute pp.60-61", page:41},
+
+ {id:"e8", name:"Homelessness adjustment", units:38646, level:"low",
+  cycles:"Share of total: 5th 0% / 6th 0% / 7th 2.8% (p.42)",
+  what:"Units for people experiencing homelessness: 91,310 people in the 2025 point-in-time counts, multiplied by household formation rates. Assigned 75% to the acutely low and 25% to the extremely low income categories.",
+  law:["s_b1J"],
+  hcd:"Using the point-in-time count as the measure, and the 75/25 split. SCAG and HCD agreed on the data and counts.",
+  why:"Low. Consensus item; the statute explicitly requires this factor.",
+  qs:["Are there better data sources than the point-in-time count? The statute allows the state's Homeless Data Integration System.",
+      "How will these lowest-income units be distributed among jurisdictions in the methodology?"],
+  rel:["s_b1J","t15","sl17","i_al","i_el","d_meth"], src:"HCD Table 2 step 15 p.53; slide p.42; staff report p.28; statute p.60", page:42},
+
+ {id:"e9", name:"State of emergency losses", units:8056, level:"low",
+  cycles:"Share of total: 5th 0% / 6th 0% / 7th 0.6% (p.41)",
+  what:"Units destroyed in Governor-declared emergencies that have not been rebuilt: 97% from the Palisades and Eaton fires in Los Angeles County. A unit counts as rebuilt once a building permit is issued.",
+  law:["s_b1I"],
+  hcd:"Counting permitted units as rebuilt. This was a point of consensus won by SCAG staff.",
+  why:"Low. It is statutory. The open question is where the units land in the allocation, not the regional number.",
+  qs:["Will the methodology assign these units only to the jurisdictions that lost them, or spread them?",
+      "Does Orange County have any share of the 8,056? (Not in the packet.)"],
+  rel:["s_b1I","t16","sl16","d_meth"], src:"HCD Table 2 step 16 p.53; slide p.41; staff report p.28; statute p.60", page:41}
+];
+
+const LAWS = [
+ {id:"s_a", cite:"Gov. Code 65584.01(a)", title:"Population basis",
+  plain:"HCD's determination rests on DOF population projections and regional forecasts used in the RTP. If the regional forecast is within 1.5% of DOF's, the regional forecast &ldquo;shall be the basis.&rdquo; Otherwise HCD and the council of governments try to agree; failing that, DOF's projection controls.",
+  note:"Packet: SCAG's 2037 projection is 0.05% above DOF's, inside the band. SCAG staff nonetheless recommended DOF's series, and HCD accepted (p.29-30).",
+  rel:["e1","s_c2","sl9"], page:59},
+ {id:"s_b1A", cite:"65584.01(b)(1)(A), (B), (D), (F)", title:"Household growth, size, headship rates, composition",
+  plain:"HCD considers household growth from projected population, household size trends, headship (household formation) rates by age, gender and ethnicity, and other characteristics of the population. (A)(ii) adds UC and CSU enrollment changes, which is where the 708 student households come from.",
+  note:"", rel:["e1","t7"], page:59},
+ {id:"s_b1C", cite:"65584.01(b)(1)(C)", title:"Overcrowding",
+  plain:"HCD considers the share of households that are overcrowded, defined as &ldquo;more than one resident per room,&rdquo; in the region and in the nation.",
+  note:"The statute says to consider the two rates. It does not say the whole gap must become new units; that is HCD's method.", rel:["e3","t10"], page:60},
+ {id:"s_b1E", cite:"65584.01(b)(1)(E)", title:"Vacancy and replacement needs",
+  plain:"HCD considers existing vacancy rates, the vacancy rates for healthy market functioning and mobility, and housing replacement needs. &ldquo;The vacancy rate for a healthy rental housing market shall be considered no less than 5 percent.&rdquo;",
+  note:"HCD uses 7% for rentals and 2% for owners. 5% is the statutory floor.", rel:["e2","e6","t9a","t13"], page:60},
+ {id:"s_b1G", cite:"65584.01(b)(1)(G)", title:"Jobs-housing relationship",
+  plain:"HCD considers the relationship between jobs and housing, including any imbalance.", note:"", rel:["e7","t14"], page:60},
+ {id:"s_b1H", cite:"65584.01(b)(1)(H)", title:"Cost burden",
+  plain:"HCD considers the share of households that are cost burdened in the region and nationally. &ldquo;Cost burdened&rdquo; means &ldquo;the share of very low, low-, moderate-, and above moderate-income households that are paying more than 30 percent of household income on housing costs.&rdquo;",
+  note:"Names all four income groups. This is HCD's best textual answer to a lower-income-only alternative. The statute gives no formula for converting the gap into units.", rel:["e4","e5","t11","tab_cost"], page:60},
+ {id:"s_b1I", cite:"65584.01(b)(1)(I)", title:"State of emergency losses",
+  plain:"HCD considers units lost during a Governor-declared state of emergency in the preceding planning period that have yet to be rebuilt or replaced.", note:"", rel:["e9","t16"], page:60},
+ {id:"s_b1J", cite:"65584.01(b)(1)(J)", title:"Homelessness",
+  plain:"HCD considers the housing needs of individuals and families experiencing homelessness. Data should align with best practices; sources may include the state's Homeless Data Integration System, the point-in-time count, or others HCD deems appropriate.", note:"", rel:["e8","t15"], page:60},
+ {id:"s_b3", cite:"65584.01(b)(3)", title:"HCD's discretion",
+  plain:"HCD &ldquo;may accept or reject the information provided by the council of governments or modify its own assumptions or methodology.&rdquo; Its methodology &ldquo;may make adjustments based on the region's total projected households, which includes existing households as well as projected households.&rdquo;",
+  note:"The most important sentence for the objection. The second sentence is HCD's textual basis for applying the cost-burden gap to all 6.5 million households.", rel:["e4","s_c2"], page:61},
+ {id:"s_c1", cite:"65584.01(c)(1)", title:"Feasible jobs-housing balance and the 30-day clock",
+  plain:"The determination must reflect &ldquo;a feasible balance between jobs and housing&rdquo; using the employment projections in the regional transportation plan. &ldquo;Within 30 days following notice of the determination&rdquo; the council of governments may file an objection.",
+  note:"HCD's notice was dated October 15, 2026, so the staff report puts the deadline at November 14, 2026.", rel:["e7","d_obj","t20"], page:61},
+ {id:"s_c2", cite:"65584.01(c)(2)", title:"The only two grounds for objecting",
+  plain:"An objection must be based on and substantiate one of two things: (A) HCD failed to use the population projection established under subdivision (a), and says which projection should be used; or (B) the determination &ldquo;is not a reasonable application of the methodology and assumptions determined pursuant to subdivision (b),&rdquo; and includes a proposed alternative determination with analysis of why it is more reasonable.",
+  note:"Staff recommend ground (B), limited to cost burden. Ground (A) is awkward because SCAG staff recommended DOF's series.", rel:["e4","e1","s_c3","sl22"], page:61},
+ {id:"s_c3", cite:"65584.01(c)(3)", title:"Documentation and HCD's 45-day response",
+  plain:"An objection with an alternative must include documentation of its basis. Within 45 days of receiving it, HCD considers the objection and issues a final written determination with an explanation.",
+  note:"If SCAG files on November 14, 45 days ends December 29, 2026 (simple date arithmetic).", rel:["d_final","s_d","sl2"], page:61},
+ {id:"s_d", cite:"65584.01(d)", title:"Later laws do not reopen the number",
+  plain:"Statutory changes enacted after HCD issues a final determination &ldquo;shall not be a basis for a revision of the final determination.&rdquo;",
+  note:"Statute text in the packet shows the section was last amended by Stats. 2025, Ch. 593 (AB 1275), effective January 1, 2026.", rel:["d_final"], page:62},
+ {id:"s_88", cite:"Gov. Code 65588 (as cited in HCD's letter)", title:"Projection period and housing element due dates",
+  plain:"Sets the projection period start (December 31 or June 30, whichever most closely precedes the prior period end). Per HCD's letter: housing elements for Orange, Riverside, San Bernardino and Ventura counties are due October 15, 2029; Imperial and Los Angeles counties April 15, 2030.",
+  note:"", rel:["d_he","sl8"], page:47},
+ {id:"s_inc", cite:"Health and Safety Code 50063.5; Gov. Code 65584(f)", title:"The six income categories",
+  plain:"Income categories are set by Health and Safety Code section 50063.5 and are based on <i>county</i> median income. HCD's letter says the percentages in the determination &ldquo;are derived based on Census/ACS reported household income brackets and county median income as determined by HCD.&rdquo;",
+  note:"SCAG's housing manager told the subcommittee (Sept 10 minutes, p.20) that state law requires county median income to be used regardless of variation within a county.", rel:["i_al","i_el","i_vl","i_low","i_mod","i_abv"], page:49}
+];
+
+const DATES = [
+ {id:"d_oct15", date:"Oct 15, 2026", title:"HCD issues the final 7th Cycle determination", status:"confirmed",
+  detail:"HCD letter to SCAG Executive Director Kome Ajise: 1,359,750 units for June 30, 2029 to October 15, 2037. Followed consultation from August to October 2026 (staff met Sept 2, Sept 17, Sept 28, Oct 8, Oct 12).", rel:["s_c1","e4","a_att2"], src:"HCD letter pp.46-48; staff report p.28", page:46},
+ {id:"d_oct26", date:"Oct 26, 2026, 2:00 PM", title:"RHNA Subcommittee special meeting (Meeting 3)", status:"confirmed",
+  detail:"Staff recommend the subcommittee advise CEHD and the Regional Council to object to the determination on cost burden, and to choose one of two alternative totals. SCAG Main Office, Policy B room, with remote participation.", rel:["d_obj","tab_cost","a_agenda","a_item3"], src:"Packet pp.1, 6, 27; revised Topic Outlook p.25", page:6},
+ {id:"d_nov5", date:"Nov 5, 2026", title:"CEHD and Regional Council votes on the objection", status:"unverified",
+  detail:"Reported in Liz Smith's briefing, not in the Oct 26 packet. Confirm against SCAG's posted calendar.", rel:["d_obj"], src:"Liz Smith briefing, Oct 24-25", page:25},
+ {id:"d_obj", date:"Nov 14, 2026", title:"Deadline to file the objection with HCD", status:"confirmed",
+  detail:"30 days from the October 15 notice. The objection must cite ground (B) and include a proposed alternative with supporting analysis.", rel:["s_c1","s_c2","s_c3","sl22","tab_cost"], src:"Staff report p.32; statute p.61", page:32},
+ {id:"d_nov12", date:"Nov 12, 2026", title:"RHNA Subcommittee Meeting 4: transit and job access", status:"tentative",
+  detail:"Methodology factors for transit access and job access (the revised outlook combines them).", rel:["d_meth","a_item2"], src:"Revised Topic Outlook p.25", page:25},
+ {id:"d_final", date:"By about Dec 29, 2026", title:"HCD final written decision on the objection", status:"derived",
+  detail:"HCD has 45 days from receiving the objection. If filed Nov 14, that ends Dec 29. After that the number is final, and later law changes cannot reopen it.", rel:["s_c3","s_d"], src:"Statute p.61-62; date derived (Nov 14 + 45 days)", page:61},
+ {id:"d_jan", date:"Jan 29, 2027, 5:00 PM", title:"Local Planning Factor and AFFH surveys due from cities", status:"confirmed",
+  detail:"City manager or CEO acknowledgment required; one survey per jurisdiction. Responses can support later appeals.", rel:["d_meth","a_item1"], src:"Sept 10 minutes in the packet, pp.10-16", page:16},
+ {id:"d_meth", date:"Mar 11, 2027 and following", title:"Proposed allocation methodology, public comment, draft, adoption", status:"tentative",
+  detail:"Mar 11, 2027 proposed methodology (Meeting 7); Mar to Apr comment and hearings; Jun draft methodology and appeals guidelines; Jul Regional Council submits draft to HCD; Oct 2027 adopt methodology and release draft allocations. This is where each city's share is decided.", rel:["e8","e9","d_alloc","a_item2"], src:"Revised Topic Outlook pp.25-26", page:26},
+ {id:"d_alloc", date:"Oct 2027", title:"Draft RHNA allocations released (a Sept 2027 ad hoc meeting precedes it)", status:"tentative",
+  detail:"Appeals then run December 2027 to February 2028.", rel:["d_meth","e1"], src:"Revised Topic Outlook p.26", page:26},
+ {id:"d_apr28", date:"Apr 2028", title:"Regional Council adopts the final RHNA plan", status:"tentative",
+  detail:"Submitted to HCD.", rel:["d_alloc"], src:"Revised Topic Outlook p.26", page:26},
+ {id:"d_he", date:"Oct 15, 2029 (Orange County)", title:"Housing elements due", status:"confirmed",
+  detail:"Orange, Riverside, San Bernardino and Ventura counties: Oct 15, 2029. Los Angeles and Imperial: Apr 15, 2030. RHNA credit can be taken for units approved, permitted or built since June 30, 2029.", rel:["s_88"], src:"HCD letter p.47", page:47},
+ {id:"d_label", date:"Open item", title:"Ask HCD to correct the vacancy labels", status:"unverified",
+  detail:"HCD's letter (Step 9) labels 16,275 as existing households and 131,589 as projected; the workbook and SCAG slides say the opposite. Total is unaffected.", rel:["e2","t9a","t9b"], src:"HCD Table 2 p.50 vs. workbook p.56", page:50}
+];
+
+const COST = {
+ hcd:  {id:"hcd",  label:"HCD determination",            total:1359750, cb:504627, note:"Cost-burden gap applied to all 6.5 million households (764,476 gross) less the 259,849 overlap deduction."},
+ alt1: {id:"alt1", label:"Alternative 1: lower-income only", total:1081926, cb:226803, note:"Cost burden measured for very low (80,942) and low (145,861) income households only, with overcrowded households already removed. Down 277,824 units, about 20%."},
+ alt2: {id:"alt2", label:"Alternative 2: remove it",     total:855123,  cb:0,      note:"Drop the adjustment entirely. The overlap deduction goes with it. Down 504,627 units, about 37%."}
+};
+
+/* ---- Agenda / table of contents (packet page numbers) ---- */
+const AGENDA = [
+ {id:"a_front", grp:"Meeting notice and members", title:"Public advisory, how to participate, teleconference locations", pages:"pp.1-3", page:1,
+  sum:"Special meeting, Monday Oct 26, 2026, 2:00 to 4:00 PM, SCAG Main Office (Policy B room, 900 Wilshire Blvd., Suite 1700, Los Angeles) with Zoom and phone. Written comments received by 5 PM Friday Oct 23 are posted before the meeting; verbal comments are 3 minutes. Teleconference sites include Los Alamitos City Hall (Tanya Doby).",
+  detail:["Written comments: ePublicComment@scag.ca.gov","Clerk of the Board contact: Maggie Aguilar, (213) 630-1420","Agendas and minutes are posted at scag.ca.gov/meetings-subcommittees"],
+  rel:["d_oct26","a_members"], links:[{t:"SCAG meetings page",u:SCAG_MTG}]},
+ {id:"a_members", grp:"Meeting notice and members", title:"Subcommittee membership (17 members)", pages:"pp.4-5", page:4,
+  sum:"Chair Rocky Rhodes (Ventura County). Orange County has three seats: Debbie Baker, Tanya Doby and John Gabbard (elected Vice Chair Sept 10, 7-5). Los Angeles 4, Riverside 3, San Bernardino 3, Ventura 2, Imperial 2.",
+  detail:[], rel:["a_item1","d_oct26"], links:[{t:"SCAG meetings page",u:SCAG_MTG}]},
+ {id:"a_agenda", grp:"Agenda", title:"Agenda", pages:"p.6", page:6,
+  sum:"Consent calendar: Item 1 (minutes of Sept 10), Item 2 (Topic Outlook, receive and file). Action item: Item 3, Regional Housing Needs Determination for the SCAG region (Kevin Kane). Page references in the agenda: Item 1 p.7, Item 2 p.23, Item 3 p.27.",
+  detail:[], rel:["a_item1","a_item2","a_item3"], links:[{t:"SCAG meetings page",u:SCAG_MTG}]},
+ {id:"a_item1", grp:"Consent calendar", title:"Item 1. Minutes of the Sept 10, 2026 meeting", pages:"pp.7-22", page:7,
+  sum:"Consent calendar passed 11-0. John Gabbard elected Vice Chair 7-5 over Chelsea Byers. The 7th Cycle Survey Packet was approved 13-0 as amended: Doby added explicit military base lands, Gabbard added city manager or CEO acknowledgment; responses due Jan 29, 2027. Information items: overview of the 6th Cycle methodology and a social-equity brainstorm. The Chair reported HCD consultation began Sept 2 and the October meeting was moved to Oct 26 to act on the RHND.",
+  detail:["Survey: one response per jurisdiction; staff to bring results back to the subcommittee before methodology work","Income categories: staff said state law requires county median income, regardless of variation inside a county (p.20)","Minutes are unofficial until approved (p.22)"],
+  rel:["d_jan","s_inc","a_members"], links:[{t:"Video of Sept 10 meeting",u:SCAG_VIDEO}]},
+ {id:"a_item2", grp:"Consent calendar", title:"Item 2. RHNA Subcommittee Topic Outlook (receive and file)", pages:"pp.23-26", page:23,
+  sum:"Schedule of subcommittee meetings and CEHD and Regional Council actions from Aug 2026 to Apr 2028, revised 8/21/26. Meeting 3 is Oct 26 (RHND, objection within 30 days of HCD transmittal); Meeting 4 Nov 12 (transit and job access); Meeting 5 Jan 14, 2027 (subregional delegation guidelines); Meeting 7 Mar 11, 2027 (proposed methodology); final plan adopted Apr 2028.",
+  detail:["Subcommittee also hears and decides appeals on draft allocations (Dec 2027 to Feb 2028)"],
+  rel:["d_nov12","d_meth","d_alloc","d_apr28"], links:[{t:"SCAG meetings page",u:SCAG_MTG}]},
+ {id:"a_item3", grp:"Action item", title:"Item 3. Regional Housing Needs Determination for the SCAG region (staff report)", pages:"pp.27-33", page:27,
+  sum:"Recommended action: recommend that CEHD and the Regional Council object to HCD's Oct 15, 2026 determination because its use of cost-burden data is not a reasonable application of the methodology under Gov. Code 65584.01(b). Staff accept most of the 1,359,750 units but call the 504,627-unit cost-burden adjustment unreasonable and offer two alternative determinations (1,081,926 or 855,123). Objection deadline Nov 14, 2026.",
+  detail:["Background and points of consensus with HCD (pp.28-29)","Population projections and the DOF series (pp.29-30)","Cost-burden adjustment and the lower-income alternative (pp.30-33)","Staff recommendation and two proposed alternatives (pp.32-33)"],
+  rel:["e4","tab_cost","d_obj","s_c2","sl21","sl22"], links:[{t:"SCAG meetings page",u:SCAG_MTG}]},
+ {id:"a_att1", grp:"Attachments to Item 3", title:"Attachment 1. PowerPoint: 7th Cycle RHND (22 slides)", pages:"pp.34-45", page:34,
+  sum:"Kevin Kane's presentation: the process, the determination by income category, a component-by-component walk through HCD's adjustments, and the staff finding and objection. The Slides tab lists each slide by its headline, with questions tied to the numbers.",
+  detail:[], rel:["tab_slides","sl1","sl19","sl22"], links:[{t:"SCAG meetings page",u:SCAG_MTG}]},
+ {id:"a_att2", grp:"Attachments to Item 3", title:"Attachment 2. HCD final determination letter (Oct 15, 2026)", pages:"pp.46-54", page:46,
+  sum:"HCD's letter to SCAG: 1,359,750 units; projection period; housing element due dates; 30-day right to object. Includes the income-category table (p.49) and HCD's step-by-step methodology with explanations (pp.50-54).",
+  detail:["Letter pp.46-48","Attachment 1 to the letter: RHND by income category, p.49","Attachment 2 to the letter: methodology, explanation and data sources, pp.50-54"],
+  rel:["tab_table2","tab_income","d_oct15","d_he"], links:[]},
+ {id:"a_att3", grp:"Attachments to Item 3", title:"Attachment 3. SCAG 7th Cycle RHND workbook: table of contents", pages:"p.55", page:55,
+  sum:"Lists the 16 tables in HCD's workbook with data sources and statutory references (income by category, DOF estimates and projections, vacancy, overcrowding, cost burden, double-counting, demolitions, seasonal use, state of emergency, homelessness, jobs-housing, income calculator).",
+  detail:[], rel:["tab_table2"], links:[]},
+ {id:"a_att4", grp:"Attachments to Item 3", title:"Attachment 4. Workbook Table 2: regional housing needs", pages:"pp.56-58", page:56,
+  sum:"The calculation itself, step by step, with the age-group headship rates, vacancy detail by owner and renter, and the split of the total into existing need (1,090,785) and projected need (268,965).",
+  detail:[], rel:["tab_table2","t_exist","t_proj"], links:[]},
+ {id:"a_att5", grp:"Attachments to Item 3", title:"Attachment 5. Gov. Code section 65584.01", pages:"pp.59-62", page:59,
+  sum:"The statute: population basis (a), the factors HCD must consider (b)(1)(A)-(J), HCD's discretion (b)(3), the 30-day objection right and its two grounds (c), HCD's 45-day response, and the bar on revising a final determination (d). Last amended by Stats. 2025, Ch. 593 (AB 1275).",
+  detail:[], rel:["tab_law","s_b3","s_c2"], links:[]}
+];
+
+/* ---- Income categories (Orange County, HCD Revised 2026 State Income Limits, June 23, 2026) ---- */
+const AMI4 = 138600;
+const LIM = {
+  i_al:  [14550,16650,18700,20800,22450,24150,25800,27450],
+  i_el:  [39100,44700,50300,55850,60350,64800,69300,73750],
+  i_vl:  [65150,74450,83750,93050,100500,107950,115400,122850],
+  i_low: [104200,119100,134000,148850,160800,172700,184600,196500],
+  i_mod: [116400,133050,149650,166300,179600,192900,206200,219500]
+};
+const INCOME = [
+ {id:"i_al",  name:"Acutely low",   units:141930, pct:10.4, def:"Up to 15% of county median income. A category created by state law in 2021 (AB 1043).", key:"i_al",
+  extra:"The homelessness adjustment puts 75% of its 38,646 units here: about 28,985 of this category's 141,930 (about 20%), if the 75/25 split is applied exactly."},
+ {id:"i_el",  name:"Extremely low", units:180582, pct:13.3, def:"Roughly 30% of county median income. HUD sets the limit at the greater of the federal poverty guideline and 60% of the very-low limit.", key:"i_el",
+  extra:"The other 25% of the homelessness adjustment goes here: about 9,662 of this category's 180,582 units."},
+ {id:"i_vl",  name:"Very low",      units:189752, pct:14.0, def:"Up to 50% of county median income in general. HUD may adjust the published limit for local conditions.", key:"i_vl", extra:""},
+ {id:"i_low", name:"Low",           units:257749, pct:19.0, def:"Up to 80% of county median income in general. HUD may adjust the published limit for local conditions.", key:"i_low", extra:""},
+ {id:"i_mod", name:"Moderate",      units:124839, pct:9.2,  def:"Up to 120% of county median income.", key:"i_mod", extra:""},
+ {id:"i_abv", name:"Above moderate",units:464898, pct:34.2, def:"More than 120% of county median income.", key:null, extra:"The category with the most units (34.2%). SCAG's analysis says 57% of the cost-burden adjustment comes from moderate and above-moderate households combined."}
+];
+
+/* ---- HCD Table 2 steps ---- */
+const STEPS = [
+ {id:"t1",  n:"1",  name:"Population, DOF projection for 6/30/2037, adjusted 3.5 months to 10/15/2037", val:18792495, unit:"persons", statute:"65584.01(a)", source:"DOF projections (2026)",
+  say:"Projections were extrapolated from Department of Finance projections. Population reflects total persons.", el:null, page:50},
+ {id:"t2",  n:"2",  name:"Minus group quarters population", val:-394638, unit:"persons", statute:"65584.01(a)", source:"DOF projections (2026)",
+  say:"Group quarters are people in dormitories, group homes, institutions, military housing and similar settings who do not require residential housing.", el:null, page:51},
+ {id:"t3",  n:"3",  name:"Equals household population (10/15/2037)", val:18397857, unit:"persons", statute:"65584.01(a)", source:"DOF projections (2026)",
+  say:"Household population is persons requiring residential housing, not counting students in apartment-style student housing.", el:null, page:50},
+ {id:"t5",  n:"5",  name:"Preliminary projected households (occupied unit stock)", val:6888555, unit:"households", statute:"65584.01(a), (b)(1)(D)", source:"DOF headship rates by age group",
+  say:"Projected households reflect the propensity of persons, by age group, to form households at different rates based on Census trends. Workbook rates range from 6.94% (ages 15-24) to 59.20% (85+), with 33.25% at ages 25-34 and about 52-55% for ages 45-74.", el:"e1", page:56},
+ {id:"t7",  n:"7",  name:"Plus projected apartment-style student households", val:708, unit:"households", statute:"65584.01(b)(1)(A)(ii)", source:"DOF student projections",
+  say:"The Census counts all college-owned or managed student housing as group quarters, so DOF household projections miss it. HCD takes the net change in students in apartment-style housing (10,195) and applies the age 15-24 headship rate of 6.94%, giving 708 households.", el:"e1", page:51},
+ {id:"t8",  n:"8",  name:"Total projected households (10/15/2037)", val:6889263, unit:"households", statute:"65584.01", source:"Computed",
+  say:"The end-of-period household count that the vacancy, overcrowding and cost-burden adjustments are measured against.", el:"e1", page:50},
+ {id:"t9a", n:"9a", name:"Plus vacancy adjustment, existing households (workbook label)", val:131589, unit:"units", statute:"65584.01(b)(1)(E)", source:"ACS 5-year 2024 (B25001, B25003, B25004); DOF E-5 2026",
+  say:"Difference between healthy vacancy (2% owner, 7% renter) and the region's current vacancy, multiplied by existing households. Owner vacancy 0.78% (1.22-point adjustment); renter vacancy 4.07% (2.93-point adjustment). Workbook: owner 42,469 plus renter 89,120. HCD's letter labels this 16,275 instead; see the open item.", el:"e2", page:51},
+ {id:"t9b", n:"9b", name:"Plus vacancy adjustment, projected households (workbook label)", val:16275, unit:"units", statute:"65584.01(b)(1)(E)", source:"ACS 5-year 2024; DOF E-5 2026",
+  say:"The same healthy-vacancy standards applied to projected households by tenure. Workbook: owner 3,994 plus renter 12,281. The 2025 5-year ACS tables were used where 2024 1-year tables were not available for all counties (Imperial).", el:"e2", page:51},
+ {id:"t10", n:"10", name:"Plus overcrowding adjustment", val:398400, unit:"units", statute:"65584.01(b)(1)(C)", source:"ACS 1-year 2024 (B25014); DOF E-5 2026",
+  say:"Region's overcrowding rate 9.66% vs. national 3.54% = 6.12% adjustment, applied to the region's 6,514,134 occupied households. Per SCAG's request, 2024 1-year ACS data was used; HCD received satisfactory evidence it is not anomalous.", el:"e3", page:52},
+ {id:"t11", n:"11", name:"Plus cost-burden adjustment", val:764476, unit:"units", statute:"65584.01(b)(1)(H)", source:"ACS 1-year 2024 (B25140); DOF E-5 2026",
+  say:"Region's cost-burden rate 43.19% vs. national 31.45% = 11.74% adjustment, applied to the region's 6,514,134 occupied households.", el:"e4", page:52},
+ {id:"t12", n:"12", name:"Minus households both overcrowded and cost-burdened", val:-259849, unit:"units", statute:"65584.01(b)(1) (HCD double-counting step)", source:"ACS 2024 PUMS analysis provided by DOF",
+  say:"To minimize double counting, HCD subtracts households estimated to be both overcrowded and cost-burdened. If DOF's figure exceeds either individual adjustment, the deduction is limited to the lesser of the two. Result: a 259,849-unit reduction.", el:"e5", page:52},
+ {id:"t13", n:"13", name:"Plus replacement adjustment: demolitions", val:6889, unit:"units", statute:"65584.01(b)(1)", source:"DOF-DRU 2026 custom tabulations, Annual Housing Unit Survey",
+  say:"HCD applies 0.10% to 5% of the housing stock based on the 10-year average demolition rate (Jan 2017 to Jan 2026). SCAG's average was 0.022%, so the 0.10% minimum is applied to projected occupied households. Units lost in a state of emergency are excluded.", el:"e6", page:52},
+ {id:"t14", n:"14", name:"Plus jobs-housing relationship adjustment", val:9467, unit:"units", statute:"65584.01(b)(1)(G)", source:"US Census LEHD origin-destination, 2023",
+  say:"In-commuters to the region divided by HCD's jobs/housing standard of 1.5. SCAG has 7,602,382 primary jobs and 7,588,181 employed residents, a net inflow of 14,201.", el:"e7", page:53},
+ {id:"t15", n:"15", name:"Plus homelessness adjustment", val:38646, unit:"units", statute:"65584.01(b)(1)(J)", source:"HUD 2025 point-in-time counts; DOF household formation rates",
+  say:"Based on point-in-time counts from SCAG's Continuums of Care (Imperial, Los Angeles, Santa Ana, Anaheim/Orange County, Riverside, San Bernardino, Oxnard, Ventura, Long Beach, Pasadena, Glendale) and DOF household formation rates. Allocated 75% to acutely low and 25% to extremely low income.", el:"e8", page:53},
+ {id:"t16", n:"16", name:"Plus state of emergency adjustment", val:8056, unit:"units", statute:"65584.01(b)(1)(I)", source:"CalOES, CAL FIRE, ACS 5-year B25004, Franchise Tax Board",
+  say:"Units lost in Governor-declared emergencies since 2021 and not yet rebuilt. A unit counts as rebuilt when a building permit is issued. HCD retrieved the damage data in August 2026 and applies an occupancy rate from ACS.", el:"e9", page:53},
+ {id:"t17", n:"17", name:"Minus occupied units projected for June 30, 2029", val:-6643462, unit:"households", statute:"65584.01(a)", source:"DOF projections",
+  say:"DOF's projected occupied units at the start of the projection period. This is the baseline the whole determination is measured from.", el:"e1", page:53},
+ {id:"t18", n:"18", name:"Equals preliminary regional housing need", val:1359750, unit:"units", statute:"65584.01", source:"Computed",
+  say:"Housing need after steps 1 through 17. It is used to test the jobs-housing balance and the seasonal-use replacement.", el:null, page:53},
+ {id:"t19", n:"19", name:"Plus replacement: seasonal, recreational, occasional use", val:0, unit:"units", statute:"65584.01(b)(1)", source:"ACS 5-year 2016 and 2024 (B25004)",
+  say:"No adjustment: seasonal and recreational units fell by 11,110 from 2016 to 2024 while total housing grew by 341,030.", el:null, page:54},
+ {id:"t20", n:"20", name:"Plus feasible jobs-housing balance adjustment", val:0, unit:"units", statute:"65584.01(c)(1)", source:"Caltrans 2026 Long-Term Socio-Economic Forecast (via DOF)",
+  say:"HCD compared the determination and occupied units to employment projections and found a ratio of 1.11, below its healthy 1.5, so no adjustment. The statute names the RTP employment projections; HCD used the Caltrans forecast.", el:"e7", page:54},
+ {id:"t_total", n:"", name:"7th Cycle Regional Housing Need Determination", val:1359750, unit:"units", statute:"65584.01", source:"HCD final letter, Oct 15, 2026",
+  say:"The six income-category figures sum to this total.", el:null, page:50},
+ {id:"t_exist", n:"", name:"Split: existing need", val:1090785, unit:"units", statute:"n/a (presentation)", source:"Workbook Table 2 summary",
+  say:"Existing need = existing-household vacancy 131,589 + overcrowding 398,400 + cost burden 764,476 - overlap 259,849 + jobs-housing 9,467 + homelessness 38,646 + state of emergency 8,056. About 80.2% of the total.", el:"e4", page:58},
+ {id:"t_proj", n:"", name:"Split: projected need", val:268965, unit:"units", statute:"n/a (presentation)", source:"Workbook Table 2 summary",
+  say:"Projected need = projected households 6,888,555 + student 708 + projected vacancy 16,275 + demolitions 6,889 - the 6,643,462 occupied units at June 2029. About 19.8% of the total.", el:"e1", page:58}
+];
+
+const WORKBOOK = [
+ ["1","Regional housing need by income","ACS 2024 (B19001, B19013); HCD State Income Limits 2026 (4-person); HUD MFI methodology","65584(a)(1), (f)"],
+ ["2","Regional housing needs (summary of all sources)","Summary of all data sources in the workbook","65584.01"],
+ ["3","DOF E-5 existing households","DOF E-5 Population and Housing Estimates, 2026","65584.01(a)"],
+ ["4","DOF projections","DOF Population and Household Projections, 2026","65584.01(a)"],
+ ["5(A)","DOF regional projections calculator","DOF Population and Household Projections, 2026","65584.01(a), (b)(1)"],
+ ["6","Vacancy rate adjustment (existing and projected)","ACS 5-year 2024 (B25001, B25003, B25004); DOF E-5 2026","65584.01(b)(1)"],
+ ["7","Overcrowding adjustment","ACS 1-year 2024 (B25014)","65584.01(b)(1)"],
+ ["8","Cost-burden adjustment","ACS 1-year 2024 (B25140)","65584.01(b)(1)"],
+ ["9","Households both overcrowded and cost-burdened","DOF 2025; ACS 1-year 2024 (B01003)","65584.01(b)(1)"],
+ ["10","Replacement adjustment: demolitions","DOF Demographic Research Unit, Housing Unit Change Survey 2008-2025","65584.01(b)(1)"],
+ ["11","Replacement: seasonal, recreational, occasional use","ACS 5-year 2016 and 2024 (B25003, B25004)","65584.01(b)(1)"],
+ ["12","Units lost in a Governor-declared state of emergency","CalOES DINS data 2013-2026; ACS 5-year 2024 (B25004); Franchise Tax Board","65584.01(b)(1)"],
+ ["13","Homelessness adjustment","HUD point-in-time counts 2025; DOF 2025","65584.01(b)(1)"],
+ ["14","Relationship between jobs and housing (existing jobs)","LEHD origin-destination employment statistics, 2023","65584.01(b)(1)"],
+ ["15","Feasible jobs-housing balance (employment projections)","Caltrans Long-Term Socio-Economic Forecast, DOF 2026 (or RTP projections)","65584.01(c)(1)"],
+ ["16","Income calculator: region","ACS 1-year 2024 (B19001, B19013); HCD State Income Limits 2026; HUD MFI methodology","65584(f)"]
+];
+
+/* ---- Presentation slides (Attachment 1) ---- */
+const SLIDES = [
+ {n:1, head:"7th Cycle Regional Housing Needs Determination (RHND)", page:34, num:"1,359,750",
+  says:"Title slide: Kevin Kane, PhD, Program Manager, Demographics and Growth Vision, RHNA Subcommittee, October 2026.",
+  qs:["What exactly is the subcommittee being asked to decide today, and what happens if it takes no action before Nov 14?","Which parts of the 1,359,750 do staff accept as reasonable?"],
+  rel:["d_oct26","d_obj","a_item3"]},
+ {n:2, head:"RHND Process", page:34, num:"30 days to object; 45 days for HCD to respond",
+  says:"Flow: population projections; SCAG provides additional required data; HCD consults with SCAG on assumptions and methodology; HCD calculates the RHND; SCAG may object; HCD issues a written response; the RHND is considered final.",
+  qs:["What must an objection contain to be valid?","Is HCD's written response appealable, or is the number final at that point?","Which consultation points did SCAG already win before the determination was issued?"],
+  rel:["s_c2","s_c3","d_final"]},
+ {n:3, head:"Projected need + existing need = total RHND (graphic, no printed headline)", page:35, num:"268,965 + 1,090,785 = 1,359,750",
+  says:"Diagram showing projected need and existing need adding to the total RHND. (Slide numbers 1 to 6 are inferred from the order of the pages.)",
+  qs:["Existing need is about 80% of the total. Which adjustments does HCD count as existing, and does the allocation methodology treat them the same way?","Would an objection change the existing and projected split?"],
+  rel:["t_exist","t_proj","e1"]},
+ {n:4, head:"RHND Process (SCAG's role)", page:35, num:"Check / X / check",
+  says:"Data sharing opportunity: yes. SCAG authority to determine regional housing needs: no. Starting point for RHNA collaboration: yes.",
+  qs:["If SCAG has no authority to set the number, what is the practical value of an objection?","Which of HCD's choices did SCAG already influence (DOF series, permits counted as rebuilt, 1-year ACS)?"],
+  rel:["s_b3","e1","e9"]},
+ {n:5, head:"Regional Determination", page:36, num:"7th 1,359,750; 6th 1,341,827; 5th 412,137; 4th 699,368",
+  says:"The determination for each cycle: 7th (2029-2037) 1,359,750; 6th (2021-2029) 1,341,827; 5th (2013-2021) 412,137; 4th (2006-2014) 699,368.",
+  qs:["The 7th is only about 1.3% above the 6th. Are the cycles comparable, given an 8.3-year versus 8-year period and different adjustments?","If the headline is flat, how should the Board explain that the mix changed so much?"],
+  rel:["tab_overview","e4"]},
+ {n:6, head:"RHND by Income Category", page:36, num:"Six categories, 10.4% to 34.2%",
+  says:"Acutely low 141,930 (10.4%); extremely low 180,582 (13.3%); very low 189,752 (14.0%); low 257,749 (19.0%); moderate 124,839 (9.2%); above moderate 464,898 (34.2%).",
+  qs:["What do these categories mean in dollars for Orange County households?","How much of the lower-income total of 770,013 comes from the homelessness and cost-burden adjustments rather than growth?","Does the cost-burden adjustment change the income mix?"],
+  rel:["tab_income","i_al","i_low","e8"]},
+ {n:7, head:"SCAG's RHND &amp; Consultation Assessment", page:37, num:"Strengths vs. areas of differing interpretation",
+  says:"Strengths: a high-quality, data-driven approach; clear documentation; it addresses 6th Cycle challenges; it recognizes the distinction between regional forecasts and planning for housing needs. Differing interpretation: more emphasis on statewide consistency; a more piecemeal, item-by-item approach than SCAG's integrated forecast; different views on how market dynamics and regional planning should inform the RHND.",
+  qs:["Which of the &ldquo;differing interpretations&rdquo; is staff leaving unchallenged, and why?","Does accepting an item-by-item approach weaken the argument that cost burden has no modeled link to supply?"],
+  rel:["e1","e4","s_a"]},
+ {n:8, head:"Breaking Down HCD's RHND for the SCAG Region", page:37, num:"8.3 years",
+  says:"Section slide: &ldquo;What is the region's total housing need over July 1, 2029 to October 15, 2038 (8.3 years)?&rdquo;",
+  qs:["This slide says 2038; HCD's letter and the staff report say October 15, 2037. Which is right?","The slide starts the period July 1, 2029; HCD's letter says June 30, 2029. Does that matter for RHNA credit?"],
+  rel:["d_he","s_88","e1"]},
+ {n:9, head:"Population growth + changing age structure", page:38, num:"+94,705 people; +245,093 households; 18% of total",
+  says:"The determination is based on DOF population projections (Gov. Code 65584.01(a)). Growth is concentrated at older ages with high household formation rates. Share of total: 5th 97%, 6th 35%, 7th 18%.",
+  qs:["Population grows only 94,705 but households grow 245,093. How sensitive is that to the headship assumptions?","Why did household growth fall from 35% of the 6th Cycle to 18% of the 7th?","What did SCAG give up by recommending DOF's series over its own forecast?"],
+  rel:["e1","s_a","t5"]},
+ {n:10, head:"Ensure that future households have enough &ldquo;slack&rdquo; in the market", page:38, num:"16,275 units",
+  says:"Per DOF and HCD the region adds 245,093 households but needs slightly more units to maintain healthy vacancy: 7% for rentals (statutory minimum 5%) and 2% for owners. Adds 16,275 units.",
+  qs:["What is the unit effect of a 5% rental standard instead of 7%?","The letter labels 16,275 as existing households, while this slide ties it to future households. Which is right?"],
+  rel:["e2","t9b","d_label"]},
+ {n:11, head:"Add apartment-style student housing that is expected to be built in the region", page:39, num:"708 units",
+  says:"The Census counts all student housing as group quarters. HCD adds apartment-style student housing so cities can count it for RHNA when built. 0% / 0% / 0.05% of the 5th, 6th and 7th determinations.",
+  qs:["Which jurisdictions would receive credit for these units?","Why only 708 when DOF projects 10,195 more students in apartment-style housing? (Answer in Table 2: headship rate of 6.94%.)"],
+  rel:["e1","t7"]},
+ {n:12, head:"Add an estimate of how many units will be demolished, or consolidated, 2029-2038", page:39, num:"6,889 units",
+  says:"A city gets +1 for each unit built, but losses have no effect. HCD uses DOF demolition survey data (2017-2026). Share: 0.6% / 2.5% / 0.5%. The slide says 2038; HCD's period ends 2037.",
+  qs:["If cities get no credit for losses, is it reasonable to add replacement units?","Why a 0.10% floor when the region's actual rate is 0.022%?"],
+  rel:["e6","t13"]},
+ {n:13, head:"Get SCAG's vacancy rate up enough so there's enough &ldquo;slack&rdquo; in the market (renter)", page:40, num:"131,589 units (renter and owner combined)",
+  says:"SCAG's rental vacancy is 3.97%; the US rate is 5.67%; HCD's healthy rental market is 7.00%. Adds 131,589 units. Share: 3% / 13% / 11%.",
+  qs:["The national rate is 5.67%. Why is 7% the right target for SCAG?","HCD cites a 6.64% long-run national average. How did it justify 7%?"],
+  rel:["e2","t9a"]},
+ {n:14, head:"Get SCAG's vacancy rate up enough so there's enough &ldquo;slack&rdquo; in the market (owner)", page:40, num:"131,589 units (42,469 owner; 89,120 renter)",
+  says:"SCAG's owner vacancy is 0.71%; the US rate is 0.96%; HCD's healthy owner market is 2.00%.",
+  qs:["Even the nation is under 1%. Is a 2% owner standard attainable?","How many of the 131,589 units are for owners versus renters? (Workbook: 42,469 owner; 89,120 renter.)"],
+  rel:["e2","t9a"]},
+ {n:15, head:"Correct for inter-regional imbalances in where the jobs &rarr; sleep at night", page:41, num:"9,467 units",
+  says:"A new HCD adjustment: SCAG has slightly more primary jobs (7,602,382) than resident workers (7,588,181). Adds 9,467 units. Share: 0% / 0% / 0.7%.",
+  qs:["The net inflow is 14,201 workers. Why divide by HCD's standard of 1.5?","Could this adjustment push units onto jobs-rich jurisdictions in the allocation?"],
+  rel:["e7","t14"]},
+ {n:16, head:"State of emergency losses that haven't yet been rebuilt", page:41, num:"8,056 units",
+  says:"Uses the past 8 years. 97% of losses are from the Palisades and Eaton fires (Los Angeles County). 8,056 units were lost and not yet rebuilt or re-permitted. Share: 0% / 0% / 0.6%.",
+  qs:["Will the methodology assign these units only to the jurisdictions that lost them?","Does any part of the 8,056 fall in Orange County?"],
+  rel:["e9","t16"]},
+ {n:17, head:"Homelessness adjustment", page:42, num:"38,646 units; 91,310 people",
+  says:"Uses January and February 2025 point-in-time counts: 91,310 people in the SCAG region, multiplied by the household formation rate. Added only to the acutely low and extremely low categories. Share: 0% / 0% / 2.8%.",
+  qs:["Are point-in-time counts the best available data? The statute lists other sources.","How will these lowest-income units be spread among jurisdictions in the methodology?"],
+  rel:["e8","i_al","i_el","t15"]},
+ {n:18, head:"Household overcrowding", page:42, num:"398,400 units; 9.66% vs. 3.54%",
+  says:"Households with more than one person per room. The slide adds 398,400 units to help &ldquo;unbundle&rdquo; (multiple families in one unit, grown children living with parents, more roommates than desired) and asks: would these moves happen? &ldquo;Maybe; depends on many factors.&rdquo; Share: 0% / 34% / 29%.",
+  qs:["What share of the 398,400 would realistically be new units versus households choosing to stay together?","Staff accept this adjustment but challenge cost burden. Both assume a gap to the national rate becomes units. What is the principled difference?"],
+  rel:["e3","e4","t10"]},
+ {n:19, head:"Household cost burden", page:43, num:"43.19% vs. 31.45% = 11.74 points; 504,627 net units",
+  says:"Percent of households spending more than 30% of income on housing, compared with the nation. The 11.74-point difference is applied to the region's 6.5 million households, adding 504,627 units. Share: 0% / 9% / 37%.",
+  qs:["What amount of new housing moves the cost-burden rate by one point?","The slide shows 504,627; HCD's gross figure is 764,476 less a 259,849 overlap deduction. Should the objection cite both?","Why did cost burden go from 9% of the 6th Cycle to 37% of the 7th?"],
+  rel:["e4","e5","tab_cost","t11","t12"]},
+ {n:20, head:"Comparing major indicators of housing need", page:43, num:"Cost burden: data exist, but do not indicate a number of units",
+  says:"A table: for each major component, do data exist, and do the data indicate a number of units? Every component passes both tests except cost burden (data exist, but do not indicate units). Cost burden is described as &ldquo;a key indicator of pent-up demand.&rdquo;",
+  qs:["Is the &ldquo;data indicate number of units&rdquo; test written into the statute, or is it SCAG staff's framework?","Applied consistently, do any other adjustments (overcrowding) fail that test?"],
+  rel:["e4","e3","s_b3"]},
+ {n:21, head:"Staff Findings &amp; Recommendations", page:44, num:"About 63% of the number found reasonable",
+  says:"Staff find HCD's projected need reasonable, find most of its existing-need assessments reasonable (high-quality data; a sufficiently clear link between target and added units), and do not believe the cost-burden assessment is a reasonable application of the statute.",
+  qs:["Staff call about 63% of the number reasonable. Should the Board say so publicly as part of the objection?","What evidence supports &ldquo;sufficiently clear relationship&rdquo; for the accepted adjustments?"],
+  rel:["a_item3","e4","e3"]},
+ {n:22, head:"Objection &amp; Proposed Alternative Determination", page:44, num:"1,081,926 or 855,123",
+  says:"Quotes the objection standard from Gov. Code 65584.01(c)(2)(B) and the requirement to include a proposed alternative determination with analysis.",
+  qs:["The second quotation is attributed to 65584.01(b)(1)(A)(i) but its text matches (c)(2)(B). Should the slide be corrected before anything is filed?","Which alternative does the subcommittee recommend: 1,081,926 or 855,123?"],
+  rel:["s_c2","tab_cost","d_obj"]}
+];
+</script>
+
+<script>
+(function(){
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const fmt = n => (n<0?"-":"")+Math.abs(Math.round(n)).toLocaleString("en-US");
+  const usd = n => "$"+Math.round(n).toLocaleString("en-US");
+  const byId = {};
+  ELEMENTS.forEach(x=>{x.type="element"; byId[x.id]=x;});
+  LAWS.forEach(x=>{x.type="law"; byId[x.id]=x;});
+  DATES.forEach(x=>{x.type="date"; byId[x.id]=x;});
+  AGENDA.forEach(x=>{x.type="agenda"; byId[x.id]=x;});
+  INCOME.forEach(x=>{x.type="income"; byId[x.id]=x;});
+  STEPS.forEach(x=>{x.type="step"; byId[x.id]=x;});
+  SLIDES.forEach(x=>{x.id="sl"+x.n; x.type="slide"; byId[x.id]=x;});
+  const TABS = [
+    {id:"tab_agenda",  label:"Agenda"},
+    {id:"tab_overview",label:"The 1,359,750"},
+    {id:"tab_income",  label:"Income categories"},
+    {id:"tab_table2",  label:"HCD Table 2"},
+    {id:"tab_slides",  label:"Slides"},
+    {id:"tab_cost",    label:"Cost burden"},
+    {id:"tab_dates",   label:"Dates"},
+    {id:"tab_law",     label:"The law"}
+  ];
+  const TABOF = {element:"tab_overview", law:"tab_law", date:"tab_dates", agenda:"tab_agenda", income:"tab_income", step:"tab_table2", slide:"tab_slides"};
+  let state = {tab:"tab_agenda", sel:null, opt:"hcd"};
+
+  function plain(s){ return String(s).replace(/&rarr;/g,"to").replace(/&amp;/g,"and").replace(/&ldquo;|&rdquo;/g,'"').replace(/&[a-z]+;/g,""); }
+  function nameOf(id){
+    const o = byId[id];
+    if(o){
+      switch(o.type){
+        case "element": return o.name;
+        case "law": return o.cite;
+        case "date": return o.date+": "+o.title;
+        case "agenda": return o.title;
+        case "income": return o.name;
+        case "step": return "Step "+(o.n||"")+(o.n?": ":"")+o.name;
+        case "slide": return "Slide "+o.n+": "+plain(o.head);
+      }
+    }
+    const t = TABS.find(t=>t.id===id); return t? "Tab: "+t.label : id;
+  }
+  function go(id){
+    const o = byId[id];
+    if(o){ state.sel = id; state.tab = TABOF[o.type]; }
+    else if(TABS.some(t=>t.id===id)){ state.tab = id; }
+    render();
+    const sel = document.querySelector(".sel"); if(sel && sel.scrollIntoView) sel.scrollIntoView({block:"nearest"});
+  }
+  window.__go = go;
+
+  function chips(ids){
+    return '<div class="chips">'+ids.map(i=>'<button class="chip" data-go="'+i+'">'+nameOf(i)+'</button>').join("")+'</div>';
+  }
+  function ext(url,label){ return '<a class="ext" href="'+url+'" target="_blank" rel="noopener">'+label+' &#8599;</a>'; }
+  function pgLink(p,label){ return ext(pk(p), label||("Open packet p."+p)); }
+
+  function renderTabs(){
+    $("#tabs").innerHTML = TABS.map(t=>'<button class="tab" role="tab" aria-selected="'+(state.tab===t.id)+'" data-go="'+t.id+'">'+t.label+'</button>').join("");
+  }
+
+  /* ---------- overview ---------- */
+  function overview(){
+    const glance =
+      '<div class="glance">'+
+      '<div><b>1,359,750</b><span>units, 6 income categories, June 30, 2029 to Oct 15, 2037</span></div>'+
+      '<div><b>37%</b><span>of it (504,627) is the cost-burden adjustment staff want to challenge</span></div>'+
+      '<div><b>Nov 14</b><span>deadline for SCAG to file an objection with HCD</span></div>'+
+      '<div><b>Oct 15, 2029</b><span>Orange County housing elements due</span></div></div>';
+    const cyc = [["4th",699368,"2006-2014"],["5th",412137,"2013-2021"],["6th",1341827,"2021-2029"],["7th",1359750,"2029-2037"]];
+    const cmax = 1400000;
+    const cycHtml = '<table class="mix"><tr><th>Cycle</th><th>Period</th><th class="num">SCAG regional determination</th><th></th></tr>'+
+      cyc.map(c=>'<tr><td>'+c[0]+'</td><td>'+c[2]+'</td><td class="num">'+fmt(c[1])+'</td><td style="width:34%"><div class="meter" style="background:'+(c[0]==="7th"?"#1f2a44":"#aab4c8")+';width:'+Math.round(c[1]/cmax*100)+'%"></div></td></tr>').join("")+'</table>'+
+      '<p class="hint" style="margin-top:6px">The 7th Cycle total is about 1.3% above the 6th. What changed is the mix: cost burden was 9% of the 6th Cycle total and is 37% of the 7th, while household growth fell from 35% to 18%. (SCAG staff slides, pp.36, 38-43.) '+pgLink(36,"Slide p.36")+'</p>';
+
+    const rowH = 44, left = 210, right = 120, W = 900, plotW = W-left-right;
+    let cum = 0; const rows = [];
+    ELEMENTS.forEach(e=>{
+      const start = cum, end = cum + e.units; cum = end;
+      rows.push({e, a:Math.min(start,end), b:Math.max(start,end)});
+    });
+    const maxV = Math.max.apply(null, rows.map(r=>r.b));
+    const sx = v => left + v/maxV*plotW;
+    const H = (rows.length+1)*rowH + 14;
+    let svg = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="group" aria-label="Waterfall chart of the nine components of the determination">';
+    rows.forEach((r,i)=>{
+      const y = i*rowH + 4, e = r.e, sel = state.sel===e.id;
+      const col = LEVELS[e.level].color;
+      const x1 = sx(r.a), x2 = Math.max(sx(r.b), x1+3);
+      svg += '<g class="row'+(sel?' sel':'')+'" tabindex="0" role="button" data-go="'+e.id+'" aria-label="'+e.name+', '+fmt(e.units)+' units">'+
+        '<rect class="rowbg" x="0" y="'+y+'" width="'+W+'" height="'+(rowH-4)+'" rx="6" fill="transparent"></rect>'+
+        '<text x="8" y="'+(y+24)+'" font-size="14" fill="#1c2433">'+e.name+'</text>'+
+        '<rect class="barrect" x="'+x1+'" y="'+(y+8)+'" width="'+(x2-x1)+'" height="'+(rowH-20)+'" rx="3" fill="'+col+'"></rect>'+
+        '<text x="'+(x2+8)+'" y="'+(y+24)+'" font-size="13" fill="#3b4558">'+(e.units<0?"-":"+")+fmt(Math.abs(e.units))+'</text></g>';
+    });
+    const ty = rows.length*rowH + 4;
+    svg += '<g role="img" aria-label="Total 1,359,750"><rect x="0" y="'+ty+'" width="'+W+'" height="'+(rowH-4)+'" rx="6" fill="#eef1f6"></rect>'+
+      '<text x="8" y="'+(ty+24)+'" font-size="14" font-weight="700" fill="#1c2433">Total determination</text>'+
+      '<rect x="'+sx(0)+'" y="'+(ty+8)+'" width="'+(sx(TOTAL)-sx(0))+'" height="'+(rowH-20)+'" rx="3" fill="#1f2a44"></rect>'+
+      '<text x="'+(sx(TOTAL)+8)+'" y="'+(ty+24)+'" font-size="13" font-weight="700" fill="#1c2433">'+fmt(TOTAL)+'</text></g>';
+    svg += '</svg>';
+    const legend = '<div class="legend">'+Object.keys(LEVELS).map(k=>'<span><i style="background:'+LEVELS[k].color+'"></i>'+LEVELS[k].label+'</span>').join("")+'<span>(color = how challengeable, draft assessment)</span></div>';
+
+    return glance+
+      '<div class="card"><h2>How the number is built</h2><p class="hint">Each bar is one step in HCD&rsquo;s calculation (Table 2). Bars start where the last one ended; the red bar is the contested one. Click a bar for the law, the judgment call, and questions to ask.</p>'+svg+legend+'</div>'+
+      '<div class="card" style="margin-top:14px"><h2>Where this sits among past cycles</h2>'+cycHtml+'</div>';
+  }
+
+  /* ---------- agenda tab ---------- */
+  function agendaTab(){
+    let out = '<div class="card"><h2>Tomorrow&rsquo;s agenda: table of contents</h2>'+
+      '<p class="hint">SCAG RHNA Subcommittee special meeting, Monday Oct 26, 2026, 2:00 PM. Each entry shows the packet pages, a summary, and links to the page in the packet. The one item for action is Item 3: whether to recommend that CEHD and the Regional Council object to HCD&rsquo;s determination.</p>';
+    let grp = "";
+    AGENDA.forEach(a=>{
+      if(a.grp!==grp){ grp=a.grp; out += '<div class="grp">'+grp+'</div>'; }
+      out += '<div class="ai'+(state.sel===a.id?' sel':'')+'" data-go="'+a.id+'" tabindex="0" role="button">'+
+        '<span class="t">'+a.title+'</span><span class="pg">'+a.pages+'</span>'+
+        '<div class="s">'+a.sum+'</div>'+
+        '<div>'+pgLink(a.page,"Open "+a.pages)+'</div></div>';
+    });
+    return out+'</div>';
+  }
+
+  /* ---------- income tab ---------- */
+  function incomeTab(){
+    const lowerTotal = INCOME.slice(0,4).reduce((a,x)=>a+x.units,0);
+    const idx = {1:0,3:2,5:4};
+    function cell(x,sz){
+      const k = x.key;
+      if(k){ return usd(LIM[k][idx[sz]]); }
+      return "above "+usd(LIM.i_mod[idx[sz]]);
+    }
+    let t = '<table><tr><th>Category</th><th class="num">Units</th><th class="num">Share</th><th class="num">1 person</th><th class="num">3 persons</th><th class="num">5 persons</th></tr>';
+    INCOME.forEach(x=>{
+      t += '<tr class="click'+(state.sel===x.id?' sel':'')+'" data-go="'+x.id+'" tabindex="0"><td><b>'+x.name+'</b></td><td class="num">'+fmt(x.units)+'</td><td class="num">'+x.pct.toFixed(1)+'%</td><td class="num">'+cell(x,1)+'</td><td class="num">'+cell(x,3)+'</td><td class="num">'+cell(x,5)+'</td></tr>';
+    });
+    t += '<tr><td><b>Lower-income total</b> (first four)</td><td class="num"><b>'+fmt(lowerTotal)+'</b></td><td class="num"><b>'+(lowerTotal/TOTAL*100).toFixed(1)+'%</b></td><td colspan="3" class="src">Households at or below the &ldquo;low&rdquo; limit</td></tr>';
+    t += '<tr><td><b>Total</b></td><td class="num"><b>'+fmt(TOTAL)+'</b></td><td class="num"><b>100.0%</b></td><td colspan="3"></td></tr></table>';
+    return '<div class="card"><h2>The six income categories, in Orange County dollars</h2>'+
+      '<p class="hint">Units are the SCAG regional determination (HCD letter, p.49). Dollar figures are the <b>maximum annual household income</b> for each category in <b>Orange County</b>, from HCD&rsquo;s Revised 2026 State Income Limits (June 23, 2026; county median income for a 4-person household $138,600). Click a row for every household size, monthly housing cost at 30% of income, and what it means for RHNA.</p>'+t+
+      '<p class="src" style="margin-top:8px">The units are regional; this table shows what each category means in dollars in one county. A different county&rsquo;s limits would differ. '+ext(HCD_IL,"HCD 2026 State Income Limits (PDF)")+pgLink(49,"Income table p.49")+'</p></div>';
+  }
+
+  /* ---------- table 2 tab ---------- */
+  function table2Tab(){
+    let t = '<table><tr><th>Step</th><th>What HCD does</th><th class="num">Amount</th><th>Statute</th></tr>';
+    STEPS.forEach(s=>{
+      const unit = s.unit==="units"? "" : ' <span class="src">'+s.unit+'</span>';
+      const bold = (s.id==="t_total"||s.id==="t18")? ' style="font-weight:700"' : '';
+      t += '<tr class="click'+(state.sel===s.id?' sel':'')+'" data-go="'+s.id+'" tabindex="0"'+bold+'><td>'+(s.n||"&ndash;")+'</td><td>'+s.name+'</td><td class="num">'+(s.val<0?"(":"")+fmt(Math.abs(s.val))+(s.val<0?")":"")+unit+'</td><td class="src">'+s.statute+'</td></tr>';
+    });
+    t += '</table>';
+    let w = '<table><tr><th>Table</th><th>Title</th><th>Data source</th><th>Statute</th></tr>'+
+      WORKBOOK.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td class="src">'+r[2]+'</td><td class="src">'+r[3]+'</td></tr>').join("")+'</table>';
+    return '<div class="card"><h2>HCD Table 2: every step of the calculation</h2>'+
+      '<p class="hint">Steps follow HCD&rsquo;s numbering in its final determination letter (steps 4 and 6 are internal to the workbook). Click a row for HCD&rsquo;s explanation, the data source, the statute, and the link to the matching bar on the chart. '+pgLink(50,"Open Table 2, p.50")+pgLink(56,"Workbook, p.56")+'</p>'+t+'</div>'+
+      '<div class="card" style="margin-top:14px"><h2>Behind Table 2: the workbook&rsquo;s 16 tables</h2><p class="hint">Table of contents of the HCD workbook for SCAG (Attachment 3). '+pgLink(55,"Open p.55")+'</p>'+w+'</div>';
+  }
+
+  /* ---------- slides tab ---------- */
+  function slidesTab(){
+    let t = '<table><tr><th>Slide</th><th>Headline</th><th>Key figure</th><th class="num">Packet page</th></tr>';
+    SLIDES.forEach(s=>{
+      t += '<tr class="click'+(state.sel===s.id?' sel':'')+'" data-go="'+s.id+'" tabindex="0"><td>'+s.n+'</td><td><b>'+s.head+'</b></td><td class="src">'+s.num+'</td><td class="num">'+ext(pk(s.page),'p.'+s.page)+'</td></tr>';
+    });
+    t += '</table>';
+    return '<div class="card"><h2>Committee report, Attachment 1: the 22 slides</h2>'+
+      '<p class="hint">The slides are not reproduced here. Each is listed by its headline, with questions that tie it back to the RHND numbers. Click a slide for the questions; the page link opens the slide in the packet. Slides are numbered in order of appearance (slides 1 to 6 are inferred because their numbers did not print).</p>'+t+'</div>';
+  }
+
+  /* ---------- cost burden tab ---------- */
+  function costTab(){
+    const o = COST[state.opt];
+    const opts = Object.keys(COST).map(k=>{
+      const c = COST[k];
+      return '<div class="opt'+(state.opt===k?' sel':'')+'" data-opt="'+k+'" tabindex="0" role="button"><small>'+c.label+'</small><b>'+fmt(c.total)+'</b><small>cost-burden adjustment: '+(c.cb?fmt(c.cb):"none")+'</small></div>';
+    }).join("");
+    const maxT = 1359750;
+    const bars = Object.keys(COST).map(k=>{
+      const c = COST[k];
+      return '<div style="margin:6px 0"><div style="font-size:13px;color:var(--muted)">'+c.label+'</div><div style="display:flex;align-items:center;gap:8px"><div style="height:16px;border-radius:4px;background:'+(k==="hcd"?"#1f2a44":k==="alt1"?"#2b5fa8":"#7aa2d8")+';width:'+Math.round(c.total/maxT*100)+'%"></div><span style="font-size:13px">'+fmt(c.total)+'</span></div></div>';
+    }).join("");
+    return '<div class="card"><h2>The cost-burden objection</h2><p class="hint">Staff recommend objecting to this one adjustment and offer two alternative totals. Click an option. '+pgLink(32,"Staff report p.32")+'</p>'+
+      '<div class="three">'+opts+'</div>'+
+      '<p style="margin:0 0 8px"><b>'+o.label+':</b> '+o.note+'</p>'+bars+
+      '<div class="sec"><h3>The arithmetic</h3><table>'+
+        '<tr><td>Gross cost-burden adjustment (11.74 points x 6.5M households)</td><td class="num">+764,476</td></tr>'+
+        '<tr><td>Overlap with overcrowding (HCD step 12)</td><td class="num">-259,849</td></tr>'+
+        '<tr><td><b>Net, as HCD calculated it</b></td><td class="num"><b>504,627</b></td></tr>'+
+        '<tr><td>Staff alternative 1: lower-income only (80,942 very low + 145,861 low)</td><td class="num">226,803</td></tr>'+
+        '<tr><td>Reduction under alternative 1 (504,627 - 226,803)</td><td class="num">-277,824</td></tr>'+
+        '<tr><td>Reduction under alternative 2 (adjustment removed)</td><td class="num">-504,627</td></tr></table>'+
+        '<p class="src">Note: the staff report says HCD applied the gap to 6.5M households and &ldquo;added 504,627.&rdquo; That is the net figure; the gross is 764,476. Alternative totals are derived from Table 2; the packet does not print them.</p></div>'+
+      '<div class="two" style="margin-top:12px"><div class="for"><h3 style="margin:0 0 4px;font-size:13px">The case for objecting</h3><ul style="margin:0;padding-left:18px">'+
+        '<li>The statute names cost burden but gives no formula for turning it into units.</li>'+
+        '<li>HCD acknowledged it would take extensive economic modeling to link supply to cost burden.</li>'+
+        '<li>Other adjustments have a clear target (vacancy rate, zero homelessness, national overcrowding level). This one does not.</li>'+
+        '<li>It was 9% of the 6th Cycle total and is 37% of the 7th.</li>'+
+        '<li>About 57% of it comes from moderate and above-moderate households, outside RHNA&rsquo;s lower-income tools.</li>'+
+        '<li>HCD replicated SCAG&rsquo;s lower-income calculation but did not adopt it.</li></ul></div>'+
+      '<div class="against"><h3 style="margin:0 0 4px;font-size:13px">What HCD will say</h3><ul style="margin:0;padding-left:18px">'+
+        '<li>The statute lists all four income groups, including moderate and above-moderate.</li>'+
+        '<li>Subdivision (b)(3) lets HCD base adjustments on total projected households.</li>'+
+        '<li>HCD may &ldquo;accept or reject&rdquo; SCAG&rsquo;s information and modify its own assumptions.</li>'+
+        '<li>The objection standard is &ldquo;not a reasonable application,&rdquo; a higher bar than &ldquo;not the best.&rdquo;</li>'+
+        '<li>HCD calls cost burden &ldquo;a key indicator of pent-up demand.&rdquo;</li></ul></div></div>'+
+      '<div class="sec"><h3>Draft read (for discussion, not a position)</h3><p>Alternative 2 is stronger on principle (no model exists), but a larger ask. Alternative 1 is a narrower, more defensible fallback, though HCD can answer it with the statute&rsquo;s four-income-group language. The sharpest question for the Board: if HCD rejects the lower-income version, does SCAG want the objection to stand on Alternative 2 alone?</p></div>'+
+      '<div class="sec"><h3>Related</h3>'+chips(["e4","e5","t11","t12","sl19","sl22","s_b1H","s_b3","s_c2","s_c3","d_obj","d_final"])+'</div></div>';
+  }
+
+  /* ---------- dates tab ---------- */
+  function datesTab(){
+    return '<div class="card"><h2>What happens when</h2><p class="hint">Click a date for detail and links to the elements and laws it touches. Green = confirmed in the packet; amber = tentative; slate = derived; red = not yet verified.</p><div class="tl">'+
+      DATES.map(d=>'<div class="ti'+(state.sel===d.id?' sel':'')+'" data-go="'+d.id+'" tabindex="0" role="button"><span class="d">'+d.date+'</span><span class="st '+d.status+'">'+d.status+'</span><div>'+d.title+'</div></div>').join("")+'</div></div>';
+  }
+
+  /* ---------- law tab ---------- */
+  function lawTab(){
+    return '<div class="card"><h2>Where the law says what</h2><p class="hint">Gov. Code &sect;65584.01, as printed in the packet (pp.59-62), plus the income-category rule. Click a provision to see which parts of the number it supports. '+pgLink(59,"Open statute p.59")+'</p>'+
+      LAWS.map(l=>'<div class="lawitem'+(state.sel===l.id?' sel':'')+'" data-go="'+l.id+'" tabindex="0" role="button"><b>'+l.cite+'</b><div>'+l.title+'</div></div>').join("")+'</div>';
+  }
+
+  /* ---------- side panel ---------- */
+  function monthly(x){ return Math.round(x*0.3/12); }
+  function panel(){
+    const o = byId[state.sel];
+    if(!o){
+      return '<h2>How to use this</h2>'+
+      '<div class="sec"><p>Click a bar, a table row, a date or a law. This panel shows what it is, what the statute requires, what is HCD&rsquo;s judgment call, the questions worth asking, and a link to the page in the packet.</p></div>'+
+      '<div class="sec"><h3>Three takeaways</h3><ul>'+
+      '<li>The statute decides <i>which factors</i> HCD must look at. HCD decides <i>how many units</i> each one adds.</li>'+
+      '<li>About 63% of the number comes from adjustments SCAG staff accept as reasonable.</li>'+
+      '<li>The contested piece is cost burden: 504,627 units, 37% of the total. The objection is due November 14.</li></ul></div>'+
+      '<div class="sec"><h3>Start here</h3>'+chips(["a_item3","e4","i_al","sl19","d_obj","tab_cost"])+'</div>';
+    }
+    if(o.type==="element"){
+      const L = LEVELS[o.level];
+      return '<span class="pill" style="background:'+L.color+'">'+L.label+'</span><span class="src">'+(o.units<0?"-":"+")+fmt(Math.abs(o.units))+' units &middot; '+(o.shareNote? o.shareNote : (Math.abs(o.units)/TOTAL*100).toFixed(1)+'% of total')+'</span>'+
+      '<h2 style="margin-top:8px">'+o.name+'</h2>'+
+      '<div class="sec"><h3>What it is</h3><p>'+o.what+'</p></div>'+
+      '<div class="sec"><h3>What the statute says</h3>'+
+        (o.law.length? o.law.map(function(i){var l=byId[i];return '<div class="quote"><b>'+l.cite+'</b>: '+l.plain+'</div>';}).join("") : '<p>Nothing. This step is HCD&rsquo;s own.</p>')+'</div>'+
+      '<div class="sec"><h3>What is HCD&rsquo;s judgment call</h3><p>'+o.hcd+'</p></div>'+
+      '<div class="sec"><h3>How challengeable</h3><p>'+o.why+'</p></div>'+
+      '<div class="sec"><h3>Questions to ask</h3><ul>'+o.qs.map(q=>'<li>'+q+'</li>').join("")+'</ul></div>'+
+      '<div class="sec"><h3>How the share changed</h3><p>'+o.cycles+'</p></div>'+
+      '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
+      '<div class="sec src">Source: '+o.src+'</div><div class="sec">'+pgLink(o.page,"Open slide or table in packet, p."+o.page)+'</div>';
+    }
+    if(o.type==="law"){
+      const els = ELEMENTS.filter(e=>e.law.indexOf(o.id)>=0).map(e=>e.id);
+      const ds = DATES.filter(d=>d.rel.indexOf(o.id)>=0).map(d=>d.id);
+      return '<span class="pill" style="background:#6d4aa8">Law</span><span class="src">'+o.cite+'</span><h2 style="margin-top:8px">'+o.title+'</h2>'+
+      '<div class="sec"><h3>In plain terms</h3><p>'+o.plain+'</p></div>'+
+      (o.note?'<div class="sec"><h3>Why it matters here</h3><p>'+o.note+'</p></div>':'')+
+      (els.length?'<div class="sec"><h3>Parts of the number it supports</h3>'+chips(els)+'</div>':'')+
+      (ds.length?'<div class="sec"><h3>Dates it drives</h3>'+chips(ds)+'</div>':'')+
+      '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
+      '<div class="sec src">Source: packet, statute text and HCD letter</div><div class="sec">'+pgLink(o.page,"Open packet p."+o.page)+'</div>';
+    }
+    if(o.type==="date"){
+      return '<span class="pill" style="background:#a8561f">Date</span><span class="st '+o.status+'" style="margin:0">'+o.status+'</span><h2 style="margin-top:8px">'+o.date+'</h2><p style="margin:0 0 6px"><b>'+o.title+'</b></p>'+
+      '<div class="sec"><p>'+o.detail+'</p></div>'+
+      '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
+      '<div class="sec src">Source: '+o.src+'</div><div class="sec">'+pgLink(o.page,"Open packet p."+o.page)+'</div>';
+    }
+    if(o.type==="agenda"){
+      return '<span class="pill" style="background:#2a7a8c">Agenda</span><span class="src">'+o.grp+' &middot; packet '+o.pages+'</span><h2 style="margin-top:8px">'+o.title+'</h2>'+
+      '<div class="sec"><h3>Summary</h3><p>'+o.sum+'</p></div>'+
+      (o.detail.length?'<div class="sec"><h3>Points worth knowing</h3><ul>'+o.detail.map(d=>'<li>'+d+'</li>').join("")+'</ul></div>':'')+
+      '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
+      '<div class="sec"><h3>Open the source</h3>'+pgLink(o.page,"Open packet "+o.pages)+o.links.map(l=>ext(l.u,l.t)).join("")+'</div>';
+    }
+    if(o.type==="income"){
+      let tbl = '<table><tr><th>Household</th><th class="num">Max annual income</th><th class="num">30% a month</th></tr>';
+      if(o.key){
+        for(let i=0;i<6;i++){ const v = LIM[o.key][i]; tbl += '<tr><td>'+(i+1)+' person'+(i?'s':'')+'</td><td class="num">'+usd(v)+'</td><td class="num">'+usd(monthly(v))+'</td></tr>'; }
+      } else {
+        for(let i=0;i<6;i++){ const v = LIM.i_mod[i]; tbl += '<tr><td>'+(i+1)+' person'+(i?'s':'')+'</td><td class="num">above '+usd(v)+'</td><td class="num">&ndash;</td></tr>'; }
+      }
+      tbl += '</table>';
+      const pct4 = o.key? (LIM[o.key][3]/AMI4*100).toFixed(1)+'% of the $138,600 county median' : "";
+      const noteOC = (o.id==="i_vl"||o.id==="i_low")?
+        '<div class="sec"><h3>An Orange County wrinkle</h3><p>The published 4-person limit ('+usd(LIM[o.key][3])+') is '+pct4+', not the round 50% or 80%. HCD&rsquo;s briefing says HUD may adjust these limits for local conditions, so the dollar limits can differ from the simple percentages. The packet does not explain the Orange County adjustment.</p></div>' : '';
+      return '<span class="pill" style="background:#7a5a1f">Income category</span><span class="src">'+fmt(o.units)+' units &middot; '+o.pct.toFixed(1)+'% of the determination</span><h2 style="margin-top:8px">'+o.name+'</h2>'+
+      '<div class="sec"><h3>How the category is defined</h3><p>'+o.def+'</p></div>'+
+      '<div class="sec"><h3>What it means in Orange County (2026)</h3>'+tbl+
+        (o.key? '<p class="src" style="margin-top:6px">For one person working full time (2,080 hours) the 1-person limit is about '+usd(LIM[o.key][0]/2080)+' an hour. The &ldquo;30% a month&rdquo; column is the common affordability yardstick (30% of income); program rents can differ.</p>' : '')+'</div>'+
+      noteOC+
+      (o.extra?'<div class="sec"><h3>Link to the adjustments</h3><p>'+o.extra+'</p></div>':'')+
+      '<div class="sec"><h3>What it means for RHNA</h3><p>These units are the share of regional housing need meant for households in this income range. Staff note that for lower-income units, state law adds tools such as appropriate densities and streamlined approvals when cities identify sites (staff report p.32). Income categories are based on county median income by law.</p></div>'+
+      '<div class="sec"><h3>Questions to ask</h3><ul><li>How will the methodology distribute this category among Orange County cities, given county-level income limits?</li><li>Does the cost-burden adjustment change the mix across categories? (The packet does not say.)</li></ul></div>'+
+      '<div class="sec"><h3>Related</h3>'+chips(["s_inc","e8","e4","sl6","tab_income"])+'</div>'+
+      '<div class="sec src">Sources: HCD letter Attachment 1, packet p.49; HCD Revised 2026 State Income Limits (June 23, 2026).</div><div class="sec">'+pgLink(49,"Open income table p.49")+ext(HCD_IL,"HCD income limits (PDF)")+'</div>';
+    }
+    if(o.type==="step"){
+      return '<span class="pill" style="background:#3d6b3a">Table 2</span><span class="src">'+(o.n? 'Step '+o.n+' &middot; ':'')+(o.val<0?'(':'')+fmt(Math.abs(o.val))+(o.val<0?')':'')+' '+o.unit+'</span><h2 style="margin-top:8px">'+o.name+'</h2>'+
+      '<div class="sec"><h3>What HCD says</h3><p>'+o.say+'</p></div>'+
+      '<div class="sec"><h3>Statute</h3><p>'+o.statute+'</p></div>'+
+      '<div class="sec"><h3>Data source</h3><p>'+o.source+'</p></div>'+
+      (o.el? '<div class="sec"><h3>On the chart</h3>'+chips([o.el])+'</div>' : '')+
+      '<div class="sec"><h3>Related</h3>'+chips(o.id.indexOf("t9")===0? ["tab_table2","d_label","s_b3"] : ["tab_table2","s_b3"])+'</div>'+
+      '<div class="sec src">Source: HCD final determination letter, Attachment 2, and workbook Table 2.</div><div class="sec">'+pgLink(o.page,"Open packet p."+o.page)+'</div>';
+    }
+    return '<span class="pill" style="background:#8c2a6b">Committee report, slide '+o.n+'</span><span class="src">packet p.'+o.page+'</span><h2 style="margin-top:8px">'+o.head+'</h2>'+
+      '<div class="sec"><h3>What the slide says</h3><p>'+o.says+'</p></div>'+
+      '<div class="sec"><h3>Ties to the numbers</h3><p><b>'+o.num+'</b></p></div>'+
+      '<div class="sec"><h3>Smart questions for this slide</h3><ul>'+o.qs.map(q=>'<li>'+q+'</li>').join("")+'</ul></div>'+
+      '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
+      '<div class="sec">'+pgLink(o.page,"Open slide in packet, p."+o.page)+'</div>';
+  }
+
+  /* ---------- search ---------- */
+  function strip(s){ return String(s||"").replace(/<[^>]+>/g," ").replace(/&[a-z]+;/g," "); }
+  const INDEX = [];
+  ELEMENTS.forEach(e=>INDEX.push({id:e.id,type:"element",title:e.name,text:strip([e.name,e.what,e.hcd,e.why,e.qs.join(" ")].join(" ")).toLowerCase()}));
+  LAWS.forEach(l=>INDEX.push({id:l.id,type:"law",title:l.cite+" "+l.title,text:strip([l.cite,l.title,l.plain,l.note].join(" ")).toLowerCase()}));
+  DATES.forEach(d=>INDEX.push({id:d.id,type:"date",title:d.date+": "+d.title,text:strip([d.date,d.title,d.detail].join(" ")).toLowerCase()}));
+  AGENDA.forEach(a=>INDEX.push({id:a.id,type:"agenda",title:a.title,text:strip([a.title,a.sum,a.detail.join(" ")].join(" ")).toLowerCase()}));
+  INCOME.forEach(x=>INDEX.push({id:x.id,type:"income",title:x.name+" income",text:strip([x.name,x.def,x.extra,"income category ami"].join(" ")).toLowerCase()}));
+  STEPS.forEach(s=>INDEX.push({id:s.id,type:"step",title:"Step "+s.n+": "+s.name,text:strip([s.name,s.say,s.source,s.statute].join(" ")).toLowerCase()}));
+  SLIDES.forEach(s=>INDEX.push({id:s.id,type:"slide",title:"Slide "+s.n+": "+plain(s.head),text:strip([s.head,s.says,s.num,s.qs.join(" ")].join(" ")).toLowerCase()}));
+  function search(q){
+    q = q.trim().toLowerCase(); const box = $("#results");
+    if(q.length<2){ box.style.display="none"; box.innerHTML=""; return; }
+    const parts = q.split(/\s+/);
+    const hits = INDEX.filter(it=>parts.every(p=>it.text.indexOf(p)>=0)).slice(0,14);
+    box.innerHTML = hits.length? hits.map(h=>'<button data-go="'+h.id+'"><span class="tag '+h.type+'">'+h.type+'</span><span>'+h.title+'</span></button>').join("") : '<div style="padding:10px 12px;color:#5d6678;font-size:13.5px">No matches</div>';
+    box.style.display = "block";
+  }
+
+  /* ---------- render + events ---------- */
+  function render(){
+    renderTabs();
+    const v = {tab_agenda:agendaTab, tab_overview:overview, tab_income:incomeTab, tab_table2:table2Tab, tab_slides:slidesTab, tab_cost:costTab, tab_dates:datesTab, tab_law:lawTab};
+    $("#view").innerHTML = (v[state.tab]||overview)();
+    $("#panel").innerHTML = panel();
+  }
+  document.addEventListener("click", function(ev){
+    if(ev.target.closest("a.ext")) return;
+    const g = ev.target.closest("[data-go]");
+    if(g){ $("#results").style.display="none"; go(g.getAttribute("data-go")); return; }
+    const op = ev.target.closest("[data-opt]");
+    if(op){ state.opt = op.getAttribute("data-opt"); render(); return; }
+    if(!ev.target.closest(".search")) $("#results").style.display="none";
+  });
+  document.addEventListener("keydown", function(ev){
+    if(ev.key!=="Enter" && ev.key!==" ") return;
+    const t = ev.target;
+    if(t.matches && (t.matches(".row,.ti,.lawitem,.opt,.ai,tr.click"))){ ev.preventDefault(); t.click(); }
+  });
+  $("#q").addEventListener("input", function(){ search(this.value); });
+  render();
+})();
+</script>
+</body>
+</html>
