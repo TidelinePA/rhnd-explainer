@@ -108,13 +108,14 @@
   <aside><div class="card" id="panel"></div></aside>
 </main>
 <footer>
-  Source: SCAG RHNA Subcommittee special meeting packet, October 26, 2026 (agenda, minutes, topic outlook, staff report, slides, HCD final RHND letter and Table 2 workbook, Gov. Code &sect;65584.01); a copy is stored with this page at source/RHNA102626fullpacket.pdf and &ldquo;p.&rdquo; links open that PDF at the page. Income limits: HCD Revised 2026 State Income Limits (June 23, 2026). The nine RHND components sum to 1,359,750. Alternative totals (1,081,926 and 855,123) are derived from Table 2 and the staff report&rsquo;s 226,803 figure; the packet does not print them.
+  Source: SCAG RHNA Subcommittee special meeting packet, October 26, 2026 (agenda, minutes, topic outlook, staff report, slides, HCD final RHND letter and Table 2 workbook, Gov. Code &sect;65584.01); a copy is stored with this page. Each &ldquo;p.&rdquo; link opens just that page, and agenda links open that section of the packet. Income limits: HCD Revised 2026 State Income Limits (June 23, 2026). The nine RHND components sum to 1,359,750. Alternative totals (1,081,926 and 855,123) are derived from Table 2 and the staff report&rsquo;s 226,803 figure; the packet does not print them.
 </footer>
 
 <script id="data">
 const TOTAL = 1359750;
 const PDF = "source/RHNA102626fullpacket.pdf";
-const pk = p => PDF + "#page=" + p;
+const pk = p => "source/pages/p" + String(p).padStart(2,"0") + ".pdf";
+const secUrl = r => { const m = String(r).match(/(\d+)(?:-(\d+))?/); const a = +m[1], b = m[2] ? +m[2] : a; return a===b ? pk(a) : "source/sections/pp" + String(a).padStart(2,"0") + "-" + String(b).padStart(2,"0") + ".pdf"; };
 const SCAG_MTG = "https://scag.ca.gov/meetings-subcommittees";
 const SCAG_VIDEO = "http://scag.iqm2.com/Citizens/";
 const HCD_IL = "https://www.hcd.ca.gov/sites/default/files/docs/grants-and-funding/income-limits-2026.pdf";
@@ -643,7 +644,7 @@ const SLIDES = [
       out += '<div class="ai'+(state.sel===a.id?' sel':'')+'" data-go="'+a.id+'" tabindex="0" role="button">'+
         '<span class="t">'+a.title+'</span><span class="pg">'+a.pages+'</span>'+
         '<div class="s">'+a.sum+'</div>'+
-        '<div>'+pgLink(a.page,"Open "+a.pages)+'</div></div>';
+        '<div>'+ext(secUrl(a.pages),"Open "+a.pages)+ext(PDF,"Full packet")+'</div></div>';
     });
     return out+'</div>';
   }
@@ -796,7 +797,7 @@ const SLIDES = [
       '<div class="sec"><h3>Summary</h3><p>'+o.sum+'</p></div>'+
       (o.detail.length?'<div class="sec"><h3>Points worth knowing</h3><ul>'+o.detail.map(d=>'<li>'+d+'</li>').join("")+'</ul></div>':'')+
       '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
-      '<div class="sec"><h3>Open the source</h3>'+pgLink(o.page,"Open packet "+o.pages)+o.links.map(l=>ext(l.u,l.t)).join("")+'</div>';
+      '<div class="sec"><h3>Open the source</h3>'+ext(secUrl(o.pages),"Open packet "+o.pages)+ext(PDF,"Full packet")+o.links.map(l=>ext(l.u,l.t)).join("")+'</div>';
     }
     if(o.type==="income"){
       let tbl = '<table><tr><th>Household</th><th class="num">Max annual income</th><th class="num">30% a month</th></tr>';
