@@ -636,8 +636,8 @@ const SLIDES = [
 
   /* ---------- agenda tab ---------- */
   function agendaTab(){
-    let out = '<div class="card"><h2>Tomorrow&rsquo;s agenda: table of contents</h2>'+
-      '<p class="hint">SCAG RHNA Subcommittee special meeting, Monday Oct 26, 2026, 2:00 PM. Each entry shows the packet pages, a summary, and links to the page in the packet. The one item for action is Item 3: whether to recommend that CEHD and the Regional Council object to HCD&rsquo;s determination.</p>';
+    let out = '<div class="card"><h2>SCAG RHNA Subcommittee special meeting, Monday Oct 26, 2026, 2:00 PM: table of contents</h2>'+
+      '<p class="hint">Each entry shows the packet pages, a summary, and links to the page in the packet. The one item for action is Item 3: whether to recommend that CEHD and the Regional Council object to HCD&rsquo;s determination.</p>';
     let grp = "";
     AGENDA.forEach(a=>{
       if(a.grp!==grp){ grp=a.grp; out += '<div class="grp">'+grp+'</div>'; }
