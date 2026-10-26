@@ -328,7 +328,7 @@ const AGENDA = [
   detail:["Background and points of consensus with HCD (pp.28-29)","Population projections and the DOF series (pp.29-30)","Cost-burden adjustment and the lower-income alternative (pp.30-33)","Staff recommendation and two proposed alternatives (pp.32-33)"],
   rel:["e4","tab_cost","d_obj","s_c2","sl21","sl22"], links:[{t:"SCAG meetings page",u:SCAG_MTG}]},
  {id:"a_att1", grp:"Attachments to Item 3", title:"Attachment 1. PowerPoint: 7th Cycle RHND (22 slides)", pages:"pp.34-45", page:34,
-  sum:"Kevin Kane's presentation: the process, the determination by income category, a component-by-component walk through HCD's adjustments, and the staff finding and objection. The Slides tab lists each slide by its headline, with questions tied to the numbers.",
+  sum:"Kevin Kane's presentation: the process, the determination by income category, a component-by-component walk through HCD's adjustments, and the staff finding and objection. The 10/26 Slides tab lists each slide by its headline, with questions tied to the numbers.",
   detail:[], rel:["tab_slides","sl1","sl19","sl22"], links:[{t:"SCAG meetings page",u:SCAG_MTG}]},
  {id:"a_att2", grp:"Attachments to Item 3", title:"Attachment 2. HCD final determination letter (Oct 15, 2026)", pages:"pp.46-54", page:46,
   sum:"HCD's letter to SCAG: 1,359,750 units; projection period; housing element due dates; 30-day right to object. Includes the income-category table (p.49) and HCD's step-by-step methodology with explanations (pp.50-54).",
@@ -540,11 +540,11 @@ const SLIDES = [
   STEPS.forEach(x=>{x.type="step"; byId[x.id]=x;});
   SLIDES.forEach(x=>{x.id="sl"+x.n; x.type="slide"; byId[x.id]=x;});
   const TABS = [
-    {id:"tab_agenda",  label:"Agenda"},
+    {id:"tab_agenda",  label:"10/26 Agenda"},
+    {id:"tab_slides",  label:"10/26 Slides"},
     {id:"tab_overview",label:"The 1,359,750"},
     {id:"tab_income",  label:"Income categories"},
     {id:"tab_table2",  label:"HCD Table 2"},
-    {id:"tab_slides",  label:"Slides"},
     {id:"tab_cost",    label:"Cost burden"},
     {id:"tab_dates",   label:"Dates"},
     {id:"tab_law",     label:"The law"}
