@@ -19,6 +19,13 @@
   .tabs{display:flex;gap:4px;flex-wrap:wrap}
   .tab{border:1px solid var(--line);background:#fff;padding:7px 12px;border-radius:7px;cursor:pointer;font-size:13.5px;color:var(--ink)}
   .tab[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .mtgs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 0}
+  .mtg{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13.5px;text-align:left;color:var(--ink)}
+  .mtg small{display:block;color:var(--muted);font-size:12px}
+  .mtg[aria-selected="true"]{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy)}
+  .subtabs{display:flex;gap:4px;margin:12px 0 0;border-bottom:1px solid var(--line)}
+  .subtab{border:1px solid transparent;border-bottom:none;background:none;padding:7px 14px;cursor:pointer;font-size:13.5px;color:var(--muted);border-radius:7px 7px 0 0;margin-bottom:-1px}
+  .subtab[aria-selected="true"]{background:#fff;color:var(--ink);border-color:var(--line);font-weight:600}
   .search{margin-left:auto;position:relative}
   .search input{width:240px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:14px}
   .results{position:absolute;right:0;top:38px;width:400px;max-height:380px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:none}
@@ -559,8 +566,7 @@ const SLIDES = [
   STEPS.forEach(x=>{x.type="step"; byId[x.id]=x;});
   SLIDES.forEach(x=>{x.id="sl"+x.n; x.type="slide"; byId[x.id]=x;});
   const TABS = [
-    {id:"tab_agenda",  label:"10/26 Agenda"},
-    {id:"tab_slides",  label:"10/26 Slides"},
+    {id:"tab_subc",    label:"RHNA Subcommittee meetings"},
     {id:"tab_overview",label:"The 1,359,750"},
     {id:"tab_income",  label:"Income categories"},
     {id:"tab_table2",  label:"HCD Table 2"},
@@ -569,7 +575,13 @@ const SLIDES = [
     {id:"tab_law",     label:"The law"}
   ];
   const TABOF = {element:"tab_overview", law:"tab_law", date:"tab_dates", agenda:"tab_agenda", income:"tab_income", step:"tab_table2", slide:"tab_slides"};
-  let state = {tab:"tab_agenda", sel:null, opt:"hcd"};
+  /* RHNA Subcommittee meetings: each meeting nests its own Agenda and Slides views.
+     To add a meeting, add an entry here with its own agenda/slides render functions. */
+  const SUBVIEWS = {tab_agenda:"Agenda", tab_slides:"Slides"};
+  const MEETINGS = [
+    {id:"m20261026", date:"Oct 26, 2026", label:"Special meeting (Meeting 3), 2:00 PM", views:["tab_agenda","tab_slides"]}
+  ];
+  let state = {tab:"tab_subc", sub:"tab_agenda", mtg:"m20261026", sel:null, opt:"hcd"};
 
   function plain(s){ return String(s).replace(/&rarr;/g,"to").replace(/&amp;/g,"and").replace(/&ldquo;|&rdquo;/g,'"').replace(/&[a-z]+;/g,""); }
   function nameOf(id){
@@ -585,12 +597,15 @@ const SLIDES = [
         case "slide": return "Slide "+o.n+": "+plain(o.head);
       }
     }
+    if(SUBVIEWS[id]) return "Subcommittee: "+SUBVIEWS[id];
     const t = TABS.find(t=>t.id===id); return t? "Tab: "+t.label : id;
   }
   function go(id){
     const o = byId[id];
-    if(o){ state.sel = id; state.tab = TABOF[o.type]; }
-    else if(TABS.some(t=>t.id===id)){ state.tab = id; }
+    const setTab = t => { if(SUBVIEWS[t]){ state.tab = "tab_subc"; state.sub = t; } else { state.tab = t; } };
+    if(o){ state.sel = id; setTab(TABOF[o.type]); }
+    else if(SUBVIEWS[id] || TABS.some(t=>t.id===id)){ setTab(id); }
+    else if(MEETINGS.some(m=>m.id===id)){ state.tab = "tab_subc"; state.mtg = id; }
     render();
     if(o && isPhone()){ openSheet(); }
     else { const sel = document.querySelector(".sel"); if(sel && sel.scrollIntoView) sel.scrollIntoView({block:"nearest"}); }
@@ -655,6 +670,18 @@ const SLIDES = [
     return glance+
       '<div class="card"><h2>How the number is built</h2><p class="hint">Each bar is one step in HCD&rsquo;s calculation (Table 2). Bars start where the last one ended; the red bar is the contested one. Click a bar for the law, the judgment call, and questions to ask.</p>'+svg+legend+'</div>'+
       '<div class="card" style="margin-top:14px"><h2>Where this sits among past cycles</h2>'+cycHtml+'</div>';
+  }
+
+  /* ---------- RHNA Subcommittee tab (meetings, each with Agenda / Slides) ---------- */
+  function subcTab(){
+    const m = MEETINGS.find(x=>x.id===state.mtg) || MEETINGS[0];
+    if(m.views.indexOf(state.sub)<0) state.sub = m.views[0];
+    const head = '<div class="card"><h2>SCAG RHNA Subcommittee meetings</h2>'+
+      '<p class="hint">Pick a meeting, then its agenda or slides. Meetings are listed newest first.</p>'+
+      '<div class="mtgs" role="tablist" aria-label="Meetings">'+MEETINGS.map(x=>'<button class="mtg" role="tab" aria-selected="'+(x.id===m.id)+'" data-go="'+x.id+'"><b>'+x.date+'</b><small>'+x.label+'</small></button>').join("")+'</div>'+
+      '<div class="subtabs" role="tablist" aria-label="Meeting materials">'+m.views.map(v=>'<button class="subtab" role="tab" aria-selected="'+(state.sub===v)+'" data-go="'+v+'">'+SUBVIEWS[v]+'</button>').join("")+'</div></div>';
+    const body = state.sub==="tab_slides"? slidesTab() : agendaTab();
+    return head + '<div style="margin-top:14px">'+body+'</div>';
   }
 
   /* ---------- agenda tab ---------- */
@@ -883,7 +910,7 @@ const SLIDES = [
   /* ---------- render + events ---------- */
   function render(){
     renderTabs();
-    const v = {tab_agenda:agendaTab, tab_overview:overview, tab_income:incomeTab, tab_table2:table2Tab, tab_slides:slidesTab, tab_cost:costTab, tab_dates:datesTab, tab_law:lawTab};
+    const v = {tab_subc:subcTab, tab_agenda:subcTab, tab_slides:subcTab, tab_overview:overview, tab_income:incomeTab, tab_table2:table2Tab, tab_slides:slidesTab, tab_cost:costTab, tab_dates:datesTab, tab_law:lawTab};
     $("#view").innerHTML = '<div class="mobilehint">Tap any row or bar for details.</div>' + (v[state.tab]||overview)();
     $("#panel").innerHTML = panel();
   }
@@ -902,7 +929,7 @@ const SLIDES = [
     if(ev.key==="Escape") closeSheet();
     if(ev.key!=="Enter" && ev.key!==" ") return;
     const t = ev.target;
-    if(t.matches && (t.matches(".row,.ti,.lawitem,.opt,.ai,tr.click"))){ ev.preventDefault(); t.click(); }
+    if(t.matches && (t.matches(".row,.ti,.lawitem,.opt,.ai,tr.click,.mtg,.subtab"))){ ev.preventDefault(); t.click(); }
   });
   $("#q").addEventListener("input", function(){ search(this.value); });
   render();
