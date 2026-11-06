@@ -178,7 +178,7 @@
   <h1>7th Cycle Regional Housing Needs Determination: how 1,359,750 units are built</h1>
   <div class="sub">SCAG region &middot; HCD determination, October 15, 2026 (issued as &ldquo;final&rdquo;; open to objection until November 14) &middot; RHNA projection period June 30, 2029 to October 15, 2037 &middot; Click anything to see the law, the judgment call, the source page, and the questions to ask.</div>
 </header>
-<div class="draft"><b>DRAFT for internal review.</b> Not an OCCOG position and not legal advice. Facts are cited to the 62-page SCAG RHNA Subcommittee packet (Oct 26, 2026). The challenge ratings and questions are working analysis, for discussion. Information as of Oct 25, 2026.</div>
+<div class="draft"><b>DRAFT for internal review.</b> Not an OCCOG position and not legal advice. This site represents a working analysis, for discussion.</div>
 
 <div class="bar">
   <div class="tabs" role="tablist" id="tabs"></div>
@@ -200,6 +200,7 @@
 
 <script>window.HCD_EMBED = true;</script>
 <script src="hcd-data.js"></script>
+<script src="past-data.js"></script>
 <script id="data">
 const TOTAL = 1359750;
 const PDF = "source/RHNA102626fullpacket.pdf";
@@ -628,6 +629,10 @@ const SLIDES = [
   INCOME.forEach(x=>{x.type="income"; byId[x.id]=x;});
   STEPS.forEach(x=>{x.type="step"; byId[x.id]=x;});
   SLIDES.forEach(x=>{x.id="sl"+x.n; x.type="slide"; byId[x.id]=x;});
+  /* Past subcommittee meetings (2014 to 2019): data comes from past-data.js, built from the SCAG packets */
+  const PAST = window.PAST || {meetings:[], threads:[]};
+  PAST.meetings.forEach(m=>m.items.forEach(x=>{ x.type="pastitem"; x.stem=m.stem; byId[x.id]=x; }));
+  PAST.threads.forEach(t=>{ t.type="theme"; byId[t.id]=t; });
   const TABS = [
     {id:"tab_subc",    label:"RHNA Subcommittee meetings"},
     {id:"tab_overview",label:"The 1,359,750"},
@@ -638,13 +643,13 @@ const SLIDES = [
     {id:"tab_law",     label:"The law"},
     {id:"tab_hcd",     label:'HCD advice<span class="beta">beta</span>'}
   ];
-  const TABOF = {element:"tab_overview", law:"tab_law", date:"tab_dates", agenda:"tab_agenda", income:"tab_income", step:"tab_table2", slide:"tab_slides"};
+  const TABOF = {element:"tab_overview", law:"tab_law", date:"tab_dates", agenda:"tab_agenda", income:"tab_income", step:"tab_table2", slide:"tab_slides", pastitem:"tab_agenda", theme:"tab_themes"};
   /* RHNA Subcommittee meetings: each meeting nests its own Agenda and Slides views.
      To add a meeting, add an entry here with its own agenda/slides render functions. */
-  const SUBVIEWS = {tab_agenda:"Agenda", tab_slides:"Slides"};
+  const SUBVIEWS = {tab_agenda:"Agenda", tab_slides:"Slides", tab_themes:"Themes across the past meetings"};
   const MEETINGS = [
     {id:"m20261026", date:"Oct 26, 2026", label:"Special meeting (Meeting 3), 2:00 PM", views:["tab_agenda","tab_slides"]}
-  ];
+  ].concat(PAST.meetings.map(m=>({id:m.id, date:m.date, label:m.label, views:["tab_agenda","tab_themes"], past:true})));
   let state = {tab:"tab_subc", sub:"tab_agenda", mtg:"m20261026", sel:null, opt:"hcd"};
 
   function plain(s){ return String(s).replace(/&rarr;/g,"to").replace(/&amp;/g,"and").replace(/&ldquo;|&rdquo;/g,'"').replace(/&[a-z]+;/g,""); }
@@ -659,6 +664,8 @@ const SLIDES = [
         case "income": return o.name;
         case "step": return "Step "+(o.n||"")+(o.n?": ":"")+o.name;
         case "slide": return "Slide "+o.n+": "+plain(o.head);
+        case "pastitem": return mtgDate(o.mtg)+": "+o.title;
+        case "theme": return "Theme: "+o.title;
       }
     }
     if(SUBVIEWS[id]) return "Subcommittee: "+SUBVIEWS[id];
@@ -667,9 +674,13 @@ const SLIDES = [
   function go(id){
     const o = byId[id];
     const setTab = t => { if(SUBVIEWS[t]){ state.tab = "tab_subc"; state.sub = t; } else { state.tab = t; } };
-    if(o){ state.sel = id; setTab(TABOF[o.type]); }
+    if(o){ state.sel = id; setTab(TABOF[o.type]);
+      if(o.type==="pastitem") state.mtg = o.mtg;
+      else if(o.type==="theme") state.mtg = PAST.meetings[0].id;
+      else if(o.type==="agenda" || o.type==="slide") state.mtg = "m20261026"; }
     else if(SUBVIEWS[id] || TABS.some(t=>t.id===id)){ setTab(id); }
-    else if(MEETINGS.some(m=>m.id===id)){ state.tab = "tab_subc"; state.mtg = id; }
+    else if(MEETINGS.some(m=>m.id===id)){ state.tab = "tab_subc"; state.mtg = id;
+      if(byId[state.sel] && byId[state.sel].type==="pastitem") state.sel = null; }   /* do not leave another meeting's item in the panel */
     render();
     if(o && isPhone()){ openSheet(); }
     else { const sel = document.querySelector(".sel"); if(sel && sel.scrollIntoView) sel.scrollIntoView({block:"nearest"}); }
@@ -739,14 +750,47 @@ const SLIDES = [
   /* ---------- RHNA Subcommittee tab (meetings, each with Agenda / Slides) ---------- */
   function subcTab(){
     const m = MEETINGS.find(x=>x.id===state.mtg) || MEETINGS[0];
+    const pm = m.past ? pastMtg(m.id) : null;   /* MEETINGS rows carry only id/date/label/views; the content is in PAST */
     if(m.views.indexOf(state.sub)<0) state.sub = m.views[0];
     const head = '<div class="card"><h2>SCAG RHNA Subcommittee meetings</h2>'+
       '<p class="hint">Pick a meeting, then its agenda or slides. Meetings are listed newest first.</p>'+
       '<div class="mtgs" role="tablist" aria-label="Meetings">'+MEETINGS.map(x=>'<button class="mtg" role="tab" aria-selected="'+(x.id===m.id)+'" data-go="'+x.id+'"><b>'+x.date+'</b><small>'+x.label+'</small></button>').join("")+'</div>'+
       '<div class="subtabs" role="tablist" aria-label="Meeting materials">'+m.views.map(v=>'<button class="subtab" role="tab" aria-selected="'+(state.sub===v)+'" data-go="'+v+'">'+SUBVIEWS[v]+'</button>').join("")+'</div></div>';
-    const body = state.sub==="tab_slides"? slidesTab() : agendaTab();
+    const body = state.sub==="tab_themes"? pastThemes() : pm? pastAgenda(pm) : state.sub==="tab_slides"? slidesTab() : agendaTab();
     return head + '<div style="margin-top:14px">'+body+'</div>';
   }
+
+  /* ---------- past meetings (2014 to 2019), built from the SCAG packets ---------- */
+  const pastMtg = id => PAST.meetings.find(x=>x.id===id);
+  function mtgDate(id){ const m = pastMtg(id); return m? m.date : id; }
+  function pastUrl(stem, a){ return "source/past/"+stem+".pdf"+(a? "#page="+a : ""); }
+  function pastPages(p){ return p? (p[0]===p[1]? "p."+p[0] : "pp."+p[0]+"-"+p[1]) : "not in this packet"; }
+  function pastAgenda(m){
+    let votes = esc(m.votes.text);
+    if(m.votes.src){ const s = pastMtg(m.votes.src); votes += ' '+ext(pastUrl(s.stem, m.votes.srcPages[0]), "Open those minutes ("+s.date+" packet, p."+m.votes.srcPages[0]+")"); }
+    let out = '<div class="card"><h2>'+esc(m.date)+': table of contents</h2>'+
+      '<p class="hint">'+esc(m.place)+'. Chair: '+esc(m.chair)+'. This is a '+m.pdfPages+'-page packet from SCAG&rsquo;s past-agendas page; every row links to the packet page. Summaries are working notes written from the packet text, not SCAG&rsquo;s words.</p>'+
+      '<div class="sec"><h3>What this meeting was about</h3><ul>'+m.overview.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>'+
+      '<div class="sec"><h3>How the votes came out</h3><p>'+votes+'</p></div>'+
+      '<p style="margin:6px 0 0">'+ext(pastUrl(m.stem), "Full packet (PDF, "+m.pdfPages+" pages)")+ext(PAST.listing, "SCAG past agendas page")+'</p>';
+    let grp = "";
+    m.items.forEach(a=>{
+      if(a.grp!==grp){ grp=a.grp; out += '<div class="grp">'+esc(grp)+'</div>'; }
+      out += '<div class="ai'+(state.sel===a.id?' sel':'')+'" data-go="'+a.id+'" tabindex="0" role="button">'+
+        '<span class="t">'+esc(a.title)+'</span><span class="pg">'+pastPages(a.pages)+'</span>'+
+        '<div class="s">'+esc(a.sum.length>260? a.sum.slice(0,257).replace(/\s+\S*$/,"")+"..." : a.sum)+'</div>'+
+        '<div>'+(a.pages? ext(pastUrl(m.stem, a.pages[0]), "Open "+pastPages(a.pages)) : "")+ext(pastUrl(m.stem), "Full packet")+'</div></div>';
+    });
+    return out+'</div>';
+  }
+  function pastThemes(){
+    return '<div class="card"><h2>Themes across the past meetings</h2>'+
+      '<p class="hint">Topics that came up in more than one of the seven past meetings (2014, 2015 and 2019), each linked to the agenda items where it appears. Click an item to open it.</p>'+
+      PAST.threads.map(t=>'<div class="sec"><h3>'+esc(t.title)+'</h3><p>'+esc(t.blurb)+'</p>'+
+        '<div class="chips">'+t.refs.map(r=>'<button class="chip" data-go="'+r+'">'+esc(nameOf(r))+'</button>').join("")+'</div></div>').join("")+
+      '</div>';
+  }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
   /* ---------- agenda tab ---------- */
   function agendaTab(){
@@ -867,6 +911,16 @@ const SLIDES = [
   function panel(){
     if(state.tab==="tab_hcd" && window.HCDTab) return window.HCDTab.panel();
     const o = byId[state.sel];
+    const cm = MEETINGS.find(x=>x.id===state.mtg);
+    if(!o && cm && cm.past){          /* a past meeting with nothing selected: describe the meeting itself */
+      const pm = pastMtg(cm.id);
+      return '<h2>'+esc(pm.date)+'</h2><div class="sec"><p>'+esc(pm.label)+'</p></div>'+
+        '<div class="sec"><h3>Chair</h3><p>'+esc(pm.chair)+'</p></div>'+
+        '<div class="sec"><h3>Place</h3><p>'+esc(pm.place)+'</p></div>'+
+        '<div class="sec"><h3>How the votes came out</h3><p>'+esc(pm.votes.text)+'</p></div>'+
+        '<div class="sec"><h3>Open the source</h3>'+ext(pastUrl(pm.stem),"Full packet (PDF, "+pm.pdfPages+" pages)")+ext(PAST.listing,"SCAG past agendas page")+'</div>'+
+        '<div class="sec src">Working notes written from the packet text, not SCAG&rsquo;s words. Click a row to read an item.</div>';
+    }
     if(!o){
       return '<h2>How to use this</h2>'+
       '<div class="sec"><p>Click a bar, a table row, a date or a law. This panel shows what it is, what the statute requires, what is HCD&rsquo;s judgment call, the questions worth asking, and a link to the page in the packet.</p></div>'+
@@ -913,6 +967,22 @@ const SLIDES = [
       (o.detail.length?'<div class="sec"><h3>Points worth knowing</h3><ul>'+o.detail.map(d=>'<li>'+d+'</li>').join("")+'</ul></div>':'')+
       '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
       '<div class="sec"><h3>Open the source</h3>'+ext(secUrl(o.pages),"Open packet "+o.pages)+ext(PDF,"Full packet")+o.links.map(l=>ext(l.u,l.t)).join("")+'</div>';
+    }
+    if(o.type==="theme"){
+      return '<span class="pill" style="background:#5b4a8a">Theme</span><span class="src">runs across the past meetings</span><h2 style="margin-top:8px">'+esc(o.title)+'</h2>'+
+      '<div class="sec"><p>'+esc(o.blurb)+'</p></div>'+
+      '<div class="sec"><h3>Where it appears</h3>'+chips(o.refs)+'</div>';
+    }
+    if(o.type==="pastitem"){
+      const m = pastMtg(o.mtg);
+      return '<span class="pill" style="background:#5b4a8a">Past meeting</span><span class="src">'+esc(m.date)+' &middot; '+esc(o.grp)+' &middot; packet '+pastPages(o.pages)+'</span><h2 style="margin-top:8px">'+esc(o.title)+'</h2>'+
+      '<div class="sec"><h3>Summary</h3><p>'+esc(o.sum)+'</p></div>'+
+      (o.outcome?'<div class="sec"><h3>Outcome</h3><p>'+esc(o.outcome)+'</p></div>':'')+
+      (o.detail.length?'<div class="sec"><h3>Points worth knowing</h3><ul>'+o.detail.map(d=>'<li>'+esc(d)+'</li>').join("")+'</ul></div>':'')+
+      (o.qs.length?'<div class="sec"><h3>Questions to ask</h3><ul>'+o.qs.map(q=>'<li>'+esc(q)+'</li>').join("")+'</ul></div>':'')+
+      (o.rel.length?'<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>':'')+
+      '<div class="sec src">These are working notes written from the packet text. Read the pages before relying on them.</div>'+
+      '<div class="sec"><h3>Open the source</h3>'+(o.pages? ext(pastUrl(o.stem, o.pages[0]), "Open "+pastPages(o.pages)) : "")+ext(pastUrl(o.stem), "Full packet")+ext(PAST.listing, "SCAG past agendas page")+'</div>';
     }
     if(o.type==="income"){
       let tbl = '<table><tr><th>Household</th><th class="num">Max annual income</th><th class="num">30% a month</th></tr>';
@@ -964,6 +1034,10 @@ const SLIDES = [
   LAWS.forEach(l=>INDEX.push({id:l.id,type:"law",title:l.cite+" "+l.title,text:strip([l.cite,l.title,l.plain,l.note].join(" ")).toLowerCase()}));
   DATES.forEach(d=>INDEX.push({id:d.id,type:"date",title:d.date+": "+d.title,text:strip([d.date,d.title,d.detail].join(" ")).toLowerCase()}));
   AGENDA.forEach(a=>INDEX.push({id:a.id,type:"agenda",title:a.title,text:strip([a.title,a.sum,a.detail.join(" ")].join(" ")).toLowerCase()}));
+  /* the past meetings are searchable too, and so are the themes that run across them */
+  PAST.meetings.forEach(m=>m.items.forEach(x=>INDEX.push({id:x.id,type:"pastitem",title:m.date+": "+x.title,
+    text:strip([x.title,x.sum,(x.detail||[]).join(" "),(x.qs||[]).join(" "),x.outcome||"",m.date,m.place,m.chair].join(" ")).toLowerCase()})));
+  PAST.threads.forEach(t=>INDEX.push({id:t.id,type:"theme",title:t.title,text:strip([t.title,t.blurb].join(" ")).toLowerCase()}));
   INCOME.forEach(x=>INDEX.push({id:x.id,type:"income",title:x.name+" income",text:strip([x.name,x.def,x.extra,"income category ami"].join(" ")).toLowerCase()}));
   STEPS.forEach(s=>INDEX.push({id:s.id,type:"step",title:"Step "+s.n+": "+s.name,text:strip([s.name,s.say,s.source,s.statute].join(" ")).toLowerCase()}));
   SLIDES.forEach(s=>INDEX.push({id:s.id,type:"slide",title:"Slide "+s.n+": "+plain(s.head),text:strip([s.head,s.says,s.num,s.qs.join(" ")].join(" ")).toLowerCase()}));
