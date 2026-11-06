@@ -110,6 +110,65 @@
     .ai:after,.lawitem:after,.ti:after{content:"\203A";position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:24px;line-height:1;color:#8a94a8}
     tr.click td:last-child:after{content:"\203A";margin-left:8px;font-size:20px;color:#8a94a8}
   }
+  /* ---- HCD advice (beta) tab ---- */
+  .beta{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;background:var(--lowmod);color:#fff;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+  .hcdnav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+  .hcdnav button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--ink)}
+  .hcdnav button:disabled{opacity:.4;cursor:default}
+  .hcdnav .crumb{font-size:13px;color:var(--muted)}
+  .hcdnav .crumb b{color:var(--ink)}
+  .hcdtoggle{display:flex;gap:4px;margin:0 0 10px;flex-wrap:wrap}
+  .hcdtoggle button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--muted)}
+  .hcdtoggle button[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .cityrow{display:grid;grid-template-columns:minmax(120px,1.4fr) 46px 46px 46px minmax(90px,1fr) 96px;gap:8px;align-items:center;padding:6px 8px;border-bottom:1px solid #edf0f4;cursor:pointer;font-size:13.5px}
+  .cityrow:hover{background:#f5f8fd}
+  .cityrow.sel{background:#eaf1fb}
+  .cityrow .nm{font-weight:600}
+  .cityrow .num{text-align:right;font-variant-numeric:tabular-nums}
+  .cityrow .rng{font-size:12px;color:var(--muted)}
+  .cityrow .minibar{height:8px;border-radius:4px;background:#c9d3e6}
+  @media (max-width:700px){.cityrow{grid-template-columns:1fr 40px 40px;grid-auto-rows:auto}
+    .cityrow .rng,.cityrow .minibar{display:none}}
+  .lcard{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px 12px;margin:0 0 9px;cursor:pointer}
+  .lcard:hover{border-color:#b9c9e6;background:#fafcff}
+  .lcard.sel{border-color:var(--accent);background:#f2f7ff}
+  .lcard .hd{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:3px}
+  .lcard .dt{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .lcard .sm{font-size:13.5px;color:#3b4558}
+  .lcard .tags{margin-top:5px;font-size:12px;color:var(--muted)}
+  .sev{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:#fff;padding:1px 7px;border-radius:4px;flex:none}
+  .sev0{background:var(--low)} .sev1{background:#5a6b8c} .sev2{background:#3d6b8a}
+  .sev3{background:var(--lowmod)} .sev4{background:#c2571f} .sev5{background:var(--contested)}
+  .concept{margin:0 0 7px}
+  .concept .lb{display:flex;justify-content:space-between;font-size:13px;gap:10px}
+  .concept .lb span:last-child{color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
+  .concept .tr{height:15px;background:#eef1f6;border-radius:4px;margin-top:2px;overflow:hidden}
+  .concept .fl{height:100%;border-radius:4px}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .faq{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px 13px;margin:0 0 8px}
+  .faq h4{margin:0 0 4px;font-size:14px}
+  .faq p{margin:0;font-size:13.5px;color:#3b4558}
+  .dyk{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:9px;background:#fff;padding:11px 14px}
+  .dyk .big{font-size:24px;font-weight:700;line-height:1.1;color:var(--navy)}
+  .dyk .lb{font-size:13.5px;color:#3b4558;margin-top:4px}
+  .chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px}
+  .chain .nd{border:1px solid var(--line);border-radius:6px;padding:3px 8px;background:#fff;cursor:pointer}
+  .chain .nd:hover{background:#f2f7ff}
+  .chain .ar{color:#9aa4b8}
+  
+
+  .lcard .sm.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .lcard{position:relative;padding-right:30px}
+  .lcard:after{content:"\203A";position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:24px;color:#8a94a8}
+  @media (max-width:700px){
+    .cityrow{grid-template-columns:1fr auto auto auto;grid-template-areas:"nm n h a" "rng rng rng rng" "bar bar bar bar";gap:2px 10px;padding:10px 8px}
+    .cityrow>:nth-child(1){grid-area:nm} .cityrow>:nth-child(2){grid-area:n} .cityrow>:nth-child(3){grid-area:h} .cityrow>:nth-child(4){grid-area:a}
+    .cityrow>:nth-child(5){grid-area:rng;display:block!important} .cityrow>:nth-child(6){grid-area:bar}
+    .cityrow .minibar{display:block!important}
+    .cityrow .num:nth-child(3):before{content:"HAU ";color:var(--muted);font-size:11px} .cityrow .num:nth-child(4):before{content:"ADU ";color:var(--muted);font-size:11px}
+    .cityrow.head{display:none}
+    .hcdtoggle button,.hcdnav button{padding:9px 12px}
+  }
   @media print{.bar{display:none} aside .card{position:static;max-height:none} main{display:block}}
 </style>
 </head>
@@ -135,8 +194,11 @@
 </main>
 <footer>
   Source: SCAG RHNA Subcommittee special meeting packet, October 26, 2026 (agenda, minutes, topic outlook, staff report, slides, HCD final RHND letter and Table 2 workbook, Gov. Code &sect;65584.01); a copy is stored with this page. Each &ldquo;p.&rdquo; link opens just that page, and agenda links open that section of the packet. Income limits: HCD Revised 2026 State Income Limits (June 23, 2026). The nine RHND components sum to 1,359,750. Alternative totals (1,081,926 and 855,123) are derived from Table 2 and the staff report&rsquo;s 226,803 figure; the packet does not print them.
+  <br>The <b>HCD advice (beta)</b> tab is a separate source: letters from HCD&rsquo;s public enforcement-letters dashboard (downloaded Oct 29, 2026), not the SCAG packet. Each letter links to HCD&rsquo;s own PDF.
 </footer>
 
+<script>window.HCD_EMBED = true;</script>
+<script src="hcd-data.js"></script>
 <script id="data">
 const TOTAL = 1359750;
 const PDF = "source/RHNA102626fullpacket.pdf";
@@ -572,7 +634,8 @@ const SLIDES = [
     {id:"tab_table2",  label:"HCD Table 2"},
     {id:"tab_cost",    label:"Cost burden"},
     {id:"tab_dates",   label:"Dates"},
-    {id:"tab_law",     label:"The law"}
+    {id:"tab_law",     label:"The law"},
+    {id:"tab_hcd",     label:'HCD advice<span class="beta">beta</span>'}
   ];
   const TABOF = {element:"tab_overview", law:"tab_law", date:"tab_dates", agenda:"tab_agenda", income:"tab_income", step:"tab_table2", slide:"tab_slides"};
   /* RHNA Subcommittee meetings: each meeting nests its own Agenda and Slides views.
@@ -801,6 +864,7 @@ const SLIDES = [
   /* ---------- side panel ---------- */
   function monthly(x){ return Math.round(x*0.3/12); }
   function panel(){
+    if(state.tab==="tab_hcd" && window.HCDTab) return window.HCDTab.panel();
     const o = byId[state.sel];
     if(!o){
       return '<h2>How to use this</h2>'+
@@ -888,6 +952,10 @@ const SLIDES = [
       '<div class="sec">'+pgLink(o.page,"Open slide in packet, p."+o.page)+'</div>';
   }
 
+  /* ---------- HCD advice (beta) tab: hosted by hcd-module.js ---------- */
+  function hcdTab(){ return window.HCDTab? window.HCDTab.view() : '<div class="card"><h2>HCD advice letters</h2><p class="hint">This tab&rsquo;s script did not load.</p></div>'; }
+  window.__hcdRedraw = function(){ render(); };
+
   /* ---------- search ---------- */
   function strip(s){ return String(s||"").replace(/<[^>]+>/g," ").replace(/&[a-z]+;/g," "); }
   const INDEX = [];
@@ -910,7 +978,7 @@ const SLIDES = [
   /* ---------- render + events ---------- */
   function render(){
     renderTabs();
-    const v = {tab_subc:subcTab, tab_agenda:subcTab, tab_slides:subcTab, tab_overview:overview, tab_income:incomeTab, tab_table2:table2Tab, tab_slides:slidesTab, tab_cost:costTab, tab_dates:datesTab, tab_law:lawTab};
+    const v = {tab_subc:subcTab, tab_agenda:subcTab, tab_slides:subcTab, tab_overview:overview, tab_income:incomeTab, tab_table2:table2Tab, tab_slides:slidesTab, tab_cost:costTab, tab_dates:datesTab, tab_law:lawTab, tab_hcd:hcdTab};
     $("#view").innerHTML = '<div class="mobilehint">Tap any row or bar for details.</div>' + (v[state.tab]||overview)();
     $("#panel").innerHTML = panel();
   }
@@ -935,5 +1003,6 @@ const SLIDES = [
   render();
 })();
 </script>
+<script src="hcd-module.js"></script>
 </body>
 </html>
