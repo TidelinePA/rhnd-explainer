@@ -207,6 +207,7 @@ const PDF = "source/RHNA102626fullpacket.pdf";
 const pk = p => "source/pages/p" + String(p).padStart(2,"0") + ".pdf";
 const secUrl = r => { const m = String(r).match(/(\d+)(?:-(\d+))?/); const a = +m[1], b = m[2] ? +m[2] : a; return a===b ? pk(a) : "source/sections/pp" + String(a).padStart(2,"0") + "-" + String(b).padStart(2,"0") + ".pdf"; };
 const SCAG_MTG = "https://scag.ca.gov/meetings-subcommittees";
+const SCAG_CUR = "https://scag.ca.gov/current-agendas";
 const SCAG_VIDEO = "http://scag.iqm2.com/Citizens/";
 const HCD_IL = "https://www.hcd.ca.gov/sites/default/files/docs/grants-and-funding/income-limits-2026.pdf";
 
@@ -364,13 +365,13 @@ const DATES = [
  {id:"d_oct15", date:"Oct 15, 2026", title:"HCD issues the final 7th Cycle determination", status:"confirmed",
   detail:"HCD letter to SCAG Executive Director Kome Ajise: 1,359,750 units for June 30, 2029 to October 15, 2037. Followed consultation from August to October 2026 (staff met Sept 2, Sept 17, Sept 28, Oct 8, Oct 12).", rel:["s_c1","e4","a_att2"], src:"HCD letter pp.46-48; staff report p.28", page:46},
  {id:"d_oct26", date:"Oct 26, 2026, 2:00 PM", title:"RHNA Subcommittee special meeting (Meeting 3)", status:"confirmed",
-  detail:"Staff recommend the subcommittee advise CEHD and the Regional Council to object to the determination on cost burden, and to choose one of two alternative totals. SCAG Main Office, Policy B room, with remote participation.", rel:["d_obj","tab_cost","a_agenda","a_item3"], src:"Packet pp.1, 6, 27; revised Topic Outlook p.25", page:6},
+  detail:"The Subcommittee voted to recommend that CEHD and the Regional Council object to the determination on cost burden, choosing the lower-income alternative of 1,081,926 units (12 ayes, 1 no; Byers against). The minutes are in the Nov 12, 2026 packet. SCAG Main Office, Policy B room, with remote participation.", rel:["d_obj","tab_cost","a_agenda","a_item3"], src:"Packet pp.1, 6, 27; revised Topic Outlook p.25; minutes in the Nov 12 packet p.11", page:6},
  {id:"d_nov5", date:"Nov 5, 2026", title:"CEHD and Regional Council votes on the objection", status:"confirmed",
   detail:"Regional Council date confirmed by Brian Probolsky (Oct 25). Not printed in the Oct 26 packet; first reported in Liz Smith's briefing.", rel:["d_obj"], src:"Confirmed by Brian Probolsky, Oct 25; Liz Smith briefing, Oct 24-25", page:25},
  {id:"d_obj", date:"Nov 14, 2026", title:"Deadline to file the objection with HCD", status:"confirmed",
   detail:"30 days from the October 15 notice. The objection must cite ground (B) and include a proposed alternative with supporting analysis.", rel:["s_c1","s_c2","s_c3","sl22","tab_cost"], src:"Staff report p.32; statute p.61", page:32},
- {id:"d_nov12", date:"Nov 12, 2026", title:"RHNA Subcommittee Meeting 4: transit and job access", status:"tentative",
-  detail:"Methodology factors for transit access and job access (the revised outlook combines them).", rel:["d_meth","a_item2"], src:"Revised Topic Outlook p.25", page:25},
+ {id:"d_nov12", date:"Nov 12, 2026", title:"RHNA Subcommittee Meeting 4: transit access and job access", status:"confirmed",
+  detail:"Information only: how the 6th cycle methodology treated transit accessibility and job accessibility, ahead of the 7th cycle methodology. 1:00 to 3:00 p.m., in person at the SCAG Main Office (Policy B room) and by Zoom or phone. The packet also carries the October 26 minutes and the outlook revised Oct 29.", rel:["n_3","n_4","d_oct26"], src:"Packet posted on scag.ca.gov/current-agendas; revised Topic Outlook p.15", page:25},
  {id:"d_final", date:"By about Dec 29, 2026", title:"HCD final written decision on the objection", status:"derived",
   detail:"HCD has 45 days from receiving the objection. If filed Nov 14, that ends Dec 29. After that the number is final, and later law changes cannot reopen it.", rel:["s_c3","s_d"], src:"Statute p.61-62; date derived (Nov 14 + 45 days)", page:61},
  {id:"d_jan", date:"Jan 29, 2027, 5:00 PM", title:"Local Planning Factor and AFFH surveys due from cities", status:"confirmed",
@@ -386,6 +387,13 @@ const DATES = [
  {id:"d_label", date:"Open item", title:"Ask HCD to correct the vacancy labels", status:"unverified",
   detail:"HCD's letter (Step 9) labels 16,275 as existing households and 131,589 as projected; the workbook and SCAG slides say the opposite. Total is unaffected.", rel:["e2","t9a","t9b"], src:"HCD Table 2 p.50 vs. workbook p.56", page:50}
 ];
+
+/* How the October 26, 2026 meeting voted: recorded in the minutes inside the November 12, 2026 packet. */
+const VOTES2026 = {
+ text:"The minutes of this meeting are in the November 12, 2026 packet (pp.7-12). On action item 3, an amended motion by member Hagman, seconded by member Doby, recommended that the CEHD Committee and the Regional Council object to HCD&rsquo;s determination by removing HCD&rsquo;s cost-burden methodology in Lines 11 and 12 and replacing it with a lower-income household cost-burden adjustment, for a revised determination of about 1,081,926 units. It passed 12 ayes (Doby, Finlay, Gabbard, Gardner, Goodsell, Hagman, Lopez, Manos, Rhodes, Shapiro, Tran, Warren), 1 no (Byers), no abstentions. The consent calendar (minutes of Sept 10 and the Topic Outlook) passed 10-0-0. The Clerk reported 39 public comments by the Oct 23 deadline and 32 more after it; Chair Rhodes opened at 2:05 p.m. and adjourned at 3:41 p.m., announcing Nov 12 at 1:00 p.m. These minutes are unofficial until approved.",
+ src:"Nov 12, 2026 packet, minutes of the October 26 meeting, p.11",
+ href:"source/past/rhna111226fullpacket.pdf#page=11"
+};
 
 const COST = {
  hcd:  {id:"hcd",  label:"HCD determination",            total:1359750, cb:504627, note:"Cost-burden gap applied to all 6.5 million households (764,476 gross) less the 259,849 overlap deduction."},
@@ -648,8 +656,9 @@ const SLIDES = [
      To add a meeting, add an entry here with its own agenda/slides render functions. */
   const SUBVIEWS = {tab_agenda:"Agenda", tab_slides:"Slides", tab_themes:"Themes across the past meetings"};
   const MEETINGS = [
-    {id:"m20261026", date:"Oct 26, 2026", label:"Special meeting (Meeting 3), 2:00 PM", views:["tab_agenda","tab_slides"]}
-  ].concat(PAST.meetings.map(m=>({id:m.id, date:m.date, label:m.label, views:["tab_agenda","tab_themes"], past:true})));
+    {id:"m20261026", iso:"2026-10-26", date:"Oct 26, 2026", label:"Special meeting (Meeting 3), 2:00 PM", views:["tab_agenda","tab_slides"]}
+  ].concat(PAST.meetings.map(m=>({id:m.id, iso:m.iso, date:m.date, label:m.label, views:["tab_agenda","tab_themes"], past:true})))
+   .sort((a,b)=> b.iso.localeCompare(a.iso));      /* newest first, wherever a meeting came from */
   let state = {tab:"tab_subc", sub:"tab_agenda", mtg:"m20261026", sel:null, opt:"hcd"};
 
   function plain(s){ return String(s).replace(/&rarr;/g,"to").replace(/&amp;/g,"and").replace(/&ldquo;|&rdquo;/g,'"').replace(/&[a-z]+;/g,""); }
@@ -766,13 +775,14 @@ const SLIDES = [
   function pastUrl(stem, a){ return "source/past/"+stem+".pdf"+(a? "#page="+a : ""); }
   function pastPages(p){ return p? (p[0]===p[1]? "p."+p[0] : "pp."+p[0]+"-"+p[1]) : "not in this packet"; }
   function pastAgenda(m){
+    const up = !!m.upcoming, src = up? SCAG_CUR : PAST.listing, srcLabel = up? "SCAG current agendas page" : "SCAG past agendas page";
     let votes = esc(m.votes.text);
     if(m.votes.src){ const s = pastMtg(m.votes.src); votes += ' '+ext(pastUrl(s.stem, m.votes.srcPages[0]), "Open those minutes ("+s.date+" packet, p."+m.votes.srcPages[0]+")"); }
     let out = '<div class="card"><h2>'+esc(m.date)+': table of contents</h2>'+
-      '<p class="hint">'+esc(m.place)+'. Chair: '+esc(m.chair)+'. This is a '+m.pdfPages+'-page packet from SCAG&rsquo;s past-agendas page; every row links to the packet page. Summaries are working notes written from the packet text, not SCAG&rsquo;s words.</p>'+
+      '<p class="hint">'+esc(m.place)+'. Chair: '+esc(m.chair)+'. This is a '+m.pdfPages+'-page packet from '+esc(srcLabel)+'; every row links to the packet page. Summaries are working notes written from the packet text, not SCAG&rsquo;s words.</p>'+
       '<div class="sec"><h3>What this meeting was about</h3><ul>'+m.overview.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></div>'+
-      '<div class="sec"><h3>How the votes came out</h3><p>'+votes+'</p></div>'+
-      '<p style="margin:6px 0 0">'+ext(pastUrl(m.stem), "Full packet (PDF, "+m.pdfPages+" pages)")+ext(PAST.listing, "SCAG past agendas page")+'</p>';
+      '<div class="sec"><h3>'+(up? 'Votes' : 'How the votes came out')+'</h3><p>'+votes+'</p></div>'+
+      '<p style="margin:6px 0 0">'+ext(pastUrl(m.stem), "Full packet (PDF, "+m.pdfPages+" pages)")+ext(src, srcLabel)+'</p>';
     let grp = "";
     m.items.forEach(a=>{
       if(a.grp!==grp){ grp=a.grp; out += '<div class="grp">'+esc(grp)+'</div>'; }
@@ -795,7 +805,8 @@ const SLIDES = [
   /* ---------- agenda tab ---------- */
   function agendaTab(){
     let out = '<div class="card"><h2>SCAG RHNA Subcommittee special meeting, Monday Oct 26, 2026, 2:00 PM: table of contents</h2>'+
-      '<p class="hint">Each entry shows the packet pages, a summary, and links to the page in the packet. The one item for action is Item 3: whether to recommend that CEHD and the Regional Council object to HCD&rsquo;s determination.</p>';
+      '<p class="hint">Each entry shows the packet pages, a summary, and links to the page in the packet. The one item for action is Item 3: whether to recommend that CEHD and the Regional Council object to HCD&rsquo;s determination.</p>'+
+      '<div class="sec"><h3>How the votes came out</h3><p>'+VOTES2026.text+'</p><p class="src">Source: '+VOTES2026.src+' &middot; '+ext(VOTES2026.href,"Open the minutes")+'</p></div>';
     let grp = "";
     AGENDA.forEach(a=>{
       if(a.grp!==grp){ grp=a.grp; out += '<div class="grp">'+grp+'</div>'; }
@@ -912,13 +923,13 @@ const SLIDES = [
     if(state.tab==="tab_hcd" && window.HCDTab) return window.HCDTab.panel();
     const o = byId[state.sel];
     const cm = MEETINGS.find(x=>x.id===state.mtg);
-    if(!o && cm && cm.past){          /* a past meeting with nothing selected: describe the meeting itself */
-      const pm = pastMtg(cm.id);
+    if(!o && cm && cm.past){          /* a meeting with nothing selected: describe the meeting itself */
+      const pm = pastMtg(cm.id), up = !!pm.upcoming;
       return '<h2>'+esc(pm.date)+'</h2><div class="sec"><p>'+esc(pm.label)+'</p></div>'+
         '<div class="sec"><h3>Chair</h3><p>'+esc(pm.chair)+'</p></div>'+
         '<div class="sec"><h3>Place</h3><p>'+esc(pm.place)+'</p></div>'+
-        '<div class="sec"><h3>How the votes came out</h3><p>'+esc(pm.votes.text)+'</p></div>'+
-        '<div class="sec"><h3>Open the source</h3>'+ext(pastUrl(pm.stem),"Full packet (PDF, "+pm.pdfPages+" pages)")+ext(PAST.listing,"SCAG past agendas page")+'</div>'+
+        '<div class="sec"><h3>'+(up? 'Votes' : 'How the votes came out')+'</h3><p>'+esc(pm.votes.text)+'</p></div>'+
+        '<div class="sec"><h3>Open the source</h3>'+ext(pastUrl(pm.stem),"Full packet (PDF, "+pm.pdfPages+" pages)")+ext(up? SCAG_CUR : PAST.listing, up? "SCAG current agendas page" : "SCAG past agendas page")+'</div>'+
         '<div class="sec src">Working notes written from the packet text, not SCAG&rsquo;s words. Click a row to read an item.</div>';
     }
     if(!o){
@@ -974,8 +985,8 @@ const SLIDES = [
       '<div class="sec"><h3>Where it appears</h3>'+chips(o.refs)+'</div>';
     }
     if(o.type==="pastitem"){
-      const m = pastMtg(o.mtg);
-      return '<span class="pill" style="background:#5b4a8a">Past meeting</span><span class="src">'+esc(m.date)+' &middot; '+esc(o.grp)+' &middot; packet '+pastPages(o.pages)+'</span><h2 style="margin-top:8px">'+esc(o.title)+'</h2>'+
+      const m = pastMtg(o.mtg), mup = !!m.upcoming;
+      return '<span class="pill" style="background:#5b4a8a">'+(mup? 'Upcoming meeting' : 'Past meeting')+'</span><span class="src">'+esc(m.date)+' &middot; '+esc(o.grp)+' &middot; packet '+pastPages(o.pages)+'</span><h2 style="margin-top:8px">'+esc(o.title)+'</h2>'+
       '<div class="sec"><h3>Summary</h3><p>'+esc(o.sum)+'</p></div>'+
       (o.outcome?'<div class="sec"><h3>Outcome</h3><p>'+esc(o.outcome)+'</p></div>':'')+
       (o.detail.length?'<div class="sec"><h3>Points worth knowing</h3><ul>'+o.detail.map(d=>'<li>'+esc(d)+'</li>').join("")+'</ul></div>':'')+
