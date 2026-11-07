@@ -643,7 +643,7 @@ const SLIDES = [
   PAST.meetings.forEach(m=>m.items.forEach(x=>{ x.type="pastitem"; x.stem=m.stem; byId[x.id]=x; }));
   PAST.threads.forEach(t=>{ t.type="theme"; byId[t.id]=t; });
   const TABS = [
-    {id:"tab_subc",    label:"RHNA Subcommittee meetings"},
+    {id:"tab_subc",    label:"RHNA Subcommittee"},
     {id:"tab_overview",label:"The 1,359,750"},
     {id:"tab_income",  label:"Income categories"},
     {id:"tab_table2",  label:"HCD Table 2"},
@@ -684,7 +684,9 @@ const SLIDES = [
   }
   function go(id){
     const o = byId[id];
-    const setTab = t => { if(SUBVIEWS[t]){ state.tab = "tab_subc"; state.sub = t; } else { state.tab = t; } };
+    const setTab = t => { if(SUBVIEWS[t]){ state.tab = "tab_subc"; state.sub = t; } else { state.tab = t; }
+    /* clicking the tab always returns that view to its own front page */
+    if(t==="tab_rhnd" && window.RHNDTab && window.RHNDTab.reset) window.RHNDTab.reset(); };
     if(o){ state.sel = id; setTab(TABOF[o.type]);
       if(o.type==="pastitem") state.mtg = o.mtg;
       else if(o.type==="theme") state.mtg = PAST.meetings[0].id;

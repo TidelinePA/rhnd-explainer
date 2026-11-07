@@ -65,6 +65,8 @@
   }
 
   function detail(l){
+    const nav = '<div class="hcdnav"><button data-rhnd="back">&#8592; All regions</button>'+
+      '<span class="crumb">Regional determinations / <b>'+esc(l.region)+'</b></span></div>';
     const steps = l.steps || [], inc = l.income || [];
     const maxStep = Math.max.apply(null, steps.map(s=>Math.abs(s.val)).concat([1]));
     const stepRows = steps.map(s=>'<tr class="rhrow"><td>'+(s.n==null? "" : s.n+". ")+esc(s.label)+'</td>'+
@@ -95,7 +97,7 @@
     if(l.corrected) notes.push("HCD marked this letter <b>corrected</b>.");
     if(l.kind==="county") notes.push("A county region with no council of governments, so HCD wrote the allocation plan as well as the determination.");
     if(!l.hasMethodology) notes.push("This letter is a short allocation notice: it has no methodology attachment, so there is no step table for it.");
-    return '<div class="card"><h2>'+esc(l.region)+'</h2>'+
+    return nav + '<div class="card"><h2>'+esc(l.region)+'</h2>'+
       '<p class="hint">'+kindLabel[l.kind]+' &middot; letter dated '+esc(l.date)+' to '+esc(l.addressee||"the region")+' &middot; '+l.pages+'-page letter &middot; '+
       '<b>'+n(l.total)+'</b> units over '+(l.sixCat? "six":"four")+' income categories</p>'+
       '<div class="grid2">'+
@@ -115,7 +117,8 @@
         '<table class="rhtbl inc"><tr><th>Income category</th><th class="n">Share</th><th class="n">Units</th><th></th></tr>'+incRows+
         '<tr class="rhrow tot"><td>Total</td><td class="n">100%</td><td class="n">'+n(l.total)+'</td><td></td></tr></table></div>'+
       (qs.length? '<div class="sec"><h3>Questions to ask</h3><ul>'+qs.map(q=>'<li>'+q+'</li>').join("")+'</ul></div>' : '')+
-      '<div class="hcdnav" style="margin-top:14px"><button data-rhnd="back">&#8592; All regions</button></div></div>';
+      '<div class="hcdnav" style="margin-top:14px"><button data-rhnd="back">&#8592; All regions</button>'+
+      '<span class="crumb">Back to the region list</span></div></div>';
   }
 
   function viewHtml(){
@@ -131,7 +134,8 @@
         '<div class="sec"><h3>The biggest</h3><p>'+esc(f.biggest.region)+': <b>'+n(f.biggest.total)+'</b> ('+Math.round(f.biggest.total/f.sum*100)+'% of the set)</p></div>'+
         '<div class="sec src">Source: '+ext(R.source, "hcd.ca.gov/rhna/seventh-cycle")+', downloaded '+esc(R.downloaded)+'.</div>'; }
     const l = R.letters.find(x=>x.file===state.sel);
-    return '<h2>'+esc(l.region)+'</h2><div class="sec"><p>'+kindLabel[l.kind]+'<br>'+esc(l.date)+'<br><b>'+n(l.total)+'</b> units</p></div>'+
+    return '<div class="hcdnav"><button data-rhnd="back">&#8592; All regions</button><span class="crumb">Region</span></div>'+
+      '<h2>'+esc(l.region)+'</h2><div class="sec"><p>'+kindLabel[l.kind]+'<br>'+esc(l.date)+'<br><b>'+n(l.total)+'</b> units</p></div>'+
       '<div class="sec"><h3>Projection period</h3><p>'+esc(l.period||"&ndash;")+'</p></div>'+
       '<div class="sec"><h3>Letter</h3>'+ext(letterUrl(l), "Open the PDF")+'<br>'+(l.stepsPage? ext(letterUrl(l,l.stepsPage), "Steps table p."+l.stepsPage)+"<br>":"")+
       (l.incomePage? ext(letterUrl(l,l.incomePage), "Income table p."+l.incomePage) : "")+'</div>';
@@ -152,5 +156,6 @@
   document.addEventListener("keydown", function(ev){
     if((ev.key==="Enter"||ev.key===" ") && ev.target.matches && ev.target.matches("tr.lk")){ ev.preventDefault(); ev.target.click(); }
   });
-  window.RHNDTab = {view:viewHtml, panel:panelHtml, _state:state};
+  window.RHNDTab = {view:viewHtml, panel:panelHtml, _state:state,
+    reset:function(){ state.sel = null; }};
 })();
