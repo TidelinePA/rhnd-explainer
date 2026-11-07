@@ -200,6 +200,7 @@
 
 <script>window.HCD_EMBED = true;</script>
 <script src="hcd-data.js"></script>
+<script src="rhnd-data.js"></script>
 <script src="past-data.js"></script>
 <script id="data">
 const TOTAL = 1359750;
@@ -649,6 +650,7 @@ const SLIDES = [
     {id:"tab_cost",    label:"Cost burden"},
     {id:"tab_dates",   label:"Dates"},
     {id:"tab_law",     label:"The law"},
+    {id:"tab_rhnd",    label:"Regional determinations"},
     {id:"tab_hcd",     label:'HCD advice<span class="beta">beta</span>'}
   ];
   const TABOF = {element:"tab_overview", law:"tab_law", date:"tab_dates", agenda:"tab_agenda", income:"tab_income", step:"tab_table2", slide:"tab_slides", pastitem:"tab_agenda", theme:"tab_themes"};
@@ -920,6 +922,7 @@ const SLIDES = [
   /* ---------- side panel ---------- */
   function monthly(x){ return Math.round(x*0.3/12); }
   function panel(){
+    if(state.tab==="tab_rhnd" && window.RHNDTab) return window.RHNDTab.panel();
     if(state.tab==="tab_hcd" && window.HCDTab) return window.HCDTab.panel();
     const o = byId[state.sel];
     const cm = MEETINGS.find(x=>x.id===state.mtg);
@@ -1034,6 +1037,9 @@ const SLIDES = [
       '<div class="sec">'+pgLink(o.page,"Open slide in packet, p."+o.page)+'</div>';
   }
 
+  /* ---------- Regional determinations: hosted by rhnd-module.js ---------- */
+  function rhndTab(){ return window.RHNDTab? window.RHNDTab.view() : '<div class="card"><h2>Regional determinations</h2><p class="hint">This tab&rsquo;s script did not load.</p></div>'; }
+  window.__rhndRedraw = function(){ render(); };
   /* ---------- HCD advice (beta) tab: hosted by hcd-module.js ---------- */
   function hcdTab(){ return window.HCDTab? window.HCDTab.view() : '<div class="card"><h2>HCD advice letters</h2><p class="hint">This tab&rsquo;s script did not load.</p></div>'; }
   window.__hcdRedraw = function(){ render(); };
@@ -1064,7 +1070,7 @@ const SLIDES = [
   /* ---------- render + events ---------- */
   function render(){
     renderTabs();
-    const v = {tab_subc:subcTab, tab_agenda:subcTab, tab_slides:subcTab, tab_overview:overview, tab_income:incomeTab, tab_table2:table2Tab, tab_slides:slidesTab, tab_cost:costTab, tab_dates:datesTab, tab_law:lawTab, tab_hcd:hcdTab};
+    const v = {tab_subc:subcTab, tab_agenda:subcTab, tab_slides:subcTab, tab_overview:overview, tab_income:incomeTab, tab_table2:table2Tab, tab_slides:slidesTab, tab_cost:costTab, tab_dates:datesTab, tab_law:lawTab, tab_rhnd:rhndTab, tab_hcd:hcdTab};
     $("#view").innerHTML = '<div class="mobilehint">Tap any row or bar for details.</div>' + (v[state.tab]||overview)();
     $("#panel").innerHTML = panel();
   }
@@ -1090,5 +1096,6 @@ const SLIDES = [
 })();
 </script>
 <script src="hcd-module.js"></script>
+<script src="rhnd-module.js"></script>
 </body>
 </html>
