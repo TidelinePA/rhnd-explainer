@@ -1098,6 +1098,8 @@ const SLIDES = [
     const today = todayIso();
     return DATES.filter(d=>d.iso && d.iso>=today).sort((a,b)=>a.iso.localeCompare(b.iso)).slice(0,2);
   }
+  /* A dated entry that falls on a meeting day opens that meeting's agenda (SPEC 8.2). Matched by iso date, so later meetings need no extra work. */
+  function mtgHrefOf(d){ const m = d.iso? MEETINGS.find(x=>x.iso===d.iso) : null; return m? "#/process/meetings/"+m.id+"/agenda" : ""; }
   function startTab(){
     const up = comingUp();
     const upBox = up.length? '<div class="upcoming"><h2>Coming up</h2>'+up.map(d=>{
@@ -1105,7 +1107,7 @@ const SLIDES = [
         return '<div class="up"><div class="dtile" aria-hidden="true"><small>'+m+'</small><b>'+day+'</b></div><div>'+
           '<div class="uptitle">'+d.title+'</div>'+
           '<div class="update">'+d.date+' <span class="st '+d.status+'">'+d.status+'</span></div>'+
-          '<a class="uplink" href="#/process/dates/'+d.id+'">Open &rarr;</a></div></div>'; }).join("")+'</div>' : '';
+          '<a class="uplink" href="'+(mtgHrefOf(d) || "#/process/dates/"+d.id)+'">Open &rarr;</a></div></div>'; }).join("")+'</div>' : '';
     const hero = '<section class="hero'+(up.length? '' : ' solo')+'"><div>'+
       '<div class="eyebrow">7th Cycle Regional Housing Needs Determination &middot; SCAG region</div>'+
       '<h1>How the state arrived at '+fmt(TOTAL)+' homes, and what can still change.</h1>'+
@@ -1457,6 +1459,7 @@ const SLIDES = [
       '<div class="sec"><p>'+o.detail+'</p></div>'+
       '<div class="sec connected"><h3>Connected to</h3>'+connected(o.rel)+'</div>'+
       (o.id==="d_he"? '<div class="sec">'+xlink("#/context/letters/Orange", "HCD advice letters in Orange County")+'</div>' : '')+
+      (mtgHrefOf(o)? '<div class="sec">'+xlink(mtgHrefOf(o), "Open this meeting&rsquo;s agenda")+'</div>' : '')+
       '<div class="sec src">Source: '+o.src+'</div><div class="sec">'+pgLink(o.page,"Open packet p."+o.page)+'</div>';
     }
     if(o.type==="agenda"){

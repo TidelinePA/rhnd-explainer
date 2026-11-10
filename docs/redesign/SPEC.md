@@ -473,7 +473,8 @@ Add an `iso` field to each entry in `DATES`. This is the only permitted data cha
 Rules:
 
 - Take entries whose `iso` is today or later, sort ascending, show the first two.
-- Each row shows a date tile (month and day), the entry's existing `title`, its existing `date` text, its status pill, and a link "Open →" to `#/process/dates/<id>`.
+- Each row shows a date tile (month and day), the entry's existing `title`, its existing `date` text, its status pill, and a link "Open →". If a meeting in `MEETINGS` has the same `iso` date as the entry, the link opens that meeting's agenda, `#/process/meetings/<meeting id>/agenda`; otherwise it opens `#/process/dates/<id>`. Match by `iso` only, never by hard-coded id.
+- On the Dates page, the detail panel of any date that matches a meeting the same way shows one cross-link box, "Open this meeting's agenda", to the same route.
 - Box heading: "Coming up".
 - If no entry is in the future, do not render the box, and let the hero take the full width.
 - The mock-up shows hand-written sub-lines under each event ("Thursday, 1:00 PM · …"). Do not reproduce those. Use only the fields above.
