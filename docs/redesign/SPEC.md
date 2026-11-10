@@ -478,10 +478,13 @@ Rules:
 - If no entry is in the future, do not render the box, and let the hero take the full width.
 - The mock-up shows hand-written sub-lines under each event ("Thursday, 1:00 PM · …"). Do not reproduce those. Use only the fields above.
 
-**Dates page order (owner decision, after Phase 7B):**
+**Dates page order (owner decision, after Phase 7B; replaces the earlier "newest first" rule):**
 
-- The Dates page (`#/process/dates`) lists entries **newest first**: it sorts at display time by `iso`, descending. The `DATES` array itself is not reordered.
-- Entries with no `iso` (today only "Open item", `d_label`) go at the bottom, in their existing order.
+- The Dates page (`#/process/dates`) shows the next upcoming date at the top. It sorts at display time using `iso` and today's date in the browser's local time, the same way "Coming up" does. The `DATES` array itself is not reordered.
+- First group, under the small label "Upcoming": entries dated today or later, soonest first. An event stays in "Upcoming" through its own day. Entries with no `iso` (today only "Open item", `d_label`) go at the end of this group, in their existing order.
+- Second group, under the small label "Past": entries dated before today, most recent first.
+- The labels use the existing small group-label style (`.grp`). If a group is empty, its label is not shown.
+- Selecting, linking to and the URL of each date are unchanged (`#/process/dates/<id>`).
 - This applies to any entry added later. Every new dated entry needs an `iso` value in `YYYY-MM-DD` form; a comment above `DATES` says so.
 - The "Coming up" box above is unchanged: it still shows the next two future dates, soonest first.
 
