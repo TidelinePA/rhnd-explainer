@@ -1,0 +1,91 @@
+<!doctype html><meta charset=utf-8><style>
+:root{--ink:#18202f;--muted:#5c667a;--line:#dfe3ea;--bg:#f4f5f8;--card:#fff;--navy:#141d33;
+ --num:#2b5fa8;--num-t:#eaf1fb;--proc:#1b7a6b;--proc-t:#e6f4f1;--law:#6a45a8;--law-t:#f0ebf9;--ctx:#b0680f;--ctx-t:#fbf1e2;
+ --ok:#2f7d6d;--warn:#c58b1a;--bad:#b8382f;--neutral:#5a6b8c}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 Inter,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);width:1440px}
+.chrome{background:#e4e7ed;padding:9px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #cfd4dd}
+.dots{display:flex;gap:6px}.dots i{width:11px;height:11px;border-radius:50%;background:#c2c7d1;display:block}
+.url{flex:1;background:#fff;border-radius:99px;padding:5px 16px;font-size:12.5px;color:#4a5468;font-family:ui-monospace,Menlo,monospace}
+.url b{color:var(--ink)}
+.top{background:var(--navy);color:#fff;display:flex;align-items:center;gap:28px;padding:0 40px;height:60px}
+.brand{font-weight:700;font-size:16px;letter-spacing:-.01em;white-space:nowrap}.brand span{font-weight:400;opacity:.65;margin-left:8px;font-size:13px}
+.nav{display:flex;gap:4px;height:100%}.nav a{display:flex;align-items:center;gap:8px;padding:0 14px;font-size:14px;color:#c9d0e0;border-bottom:3px solid transparent;border-top:3px solid transparent}
+.nav a i{width:8px;height:8px;border-radius:50%;display:block}
+.nav a.on{color:#fff;font-weight:600;background:rgba(255,255,255,.07)}
+.search{margin-left:auto;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:7px 12px;width:270px;font-size:13.5px;color:#aeb7cb;display:flex;justify-content:space-between}
+.search kbd{font:11px ui-monospace,monospace;border:1px solid rgba(255,255,255,.25);border-radius:4px;padding:0 5px}
+.draft{background:#fff6dc;color:#6b4e00;font-size:12.5px;padding:6px 40px;border-bottom:1px solid #ecd9a0}
+.wrap{padding:0 40px;max-width:1440px}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:40px;line-height:1.12;letter-spacing:-.022em;margin:10px 0 14px;font-weight:700}
+h2{font-size:20px;letter-spacing:-.01em;margin:0}
+h3{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 5px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.lead{font-size:17px;color:#3a4458;max-width:640px;margin:0}
+.btn{display:inline-block;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:99px;color:#fff}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 11px;font-size:12.5px;margin:0 6px 6px 0;color:#27324a}
+.chip i{width:7px;height:7px;border-radius:50%;display:block}
+.sec{margin-top:16px}.sec p{margin:0}
+.quote{border-left:3px solid var(--law);background:var(--law-t);padding:8px 12px;margin:6px 0;font-size:13.5px;border-radius:0 6px 6px 0}
+.band{padding:18px 40px 0;border-bottom:1px solid var(--line);background:#fff}
+.band .ttl{display:flex;align-items:baseline;gap:14px}.band .ttl h2{font-size:24px}.band .ttl p{margin:0;color:var(--muted);font-size:14px}
+.sub{display:flex;gap:26px;margin-top:14px}.sub a{padding:9px 0 11px;font-size:14.5px;color:var(--muted);border-bottom:3px solid transparent}
+.sub a.on{color:var(--ink);font-weight:650}
+.cols{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px;padding:22px 40px 40px;align-items:start}
+.crumb{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px}.crumb b{color:var(--ink);font-weight:600}
+.copy{margin-left:auto;border:1px solid var(--line);border-radius:7px;padding:3px 10px;font-size:12px;color:#27324a;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13.5px}th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:600}
+th,td{padding:11px 10px;border-bottom:1px solid #edf0f4;vertical-align:middle}.num{text-align:right;font-variant-numeric:tabular-nums}
+.foot{padding:18px 40px 30px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);background:#fff}
+</style>
+<div class=chrome><div class=dots><i></i><i></i><i></i></div><div class=url>rhnd-explainer/<b>#/</b></div></div>
+<div class=top><div class=brand>RHNA 7th Cycle<span>SCAG region explainer</span></div>
+<div class=nav><a class="on" style="border-bottom-color:#fff">Start</a><a class="" style=""><i style="background:var(--num)"></i>The number</a><a class="" style=""><i style="background:var(--proc)"></i>The process</a><a class="" style=""><i style="background:var(--law)"></i>The law</a><a class="" style=""><i style="background:var(--ctx)"></i>Statewide context</a></div>
+<div class=search><span>Search all four sections…</span><kbd>/</kbd></div></div>
+<div class=draft><b>DRAFT for internal review.</b> Not an OCCOG position and not legal advice.</div>
+<div style="background:#fff;border-bottom:1px solid var(--line)"><div class=wrap style="display:grid;grid-template-columns:1.45fr 1fr;gap:48px;padding-top:44px;padding-bottom:40px;align-items:center">
+ <div><div class=eyebrow>7th Cycle Regional Housing Needs Determination · SCAG region</div>
+  <h1>How the state arrived at 1,359,750 homes, and what can still change.</h1>
+  <p class=lead>HCD issued the determination on October 15, 2026. This site takes the number apart step by step, and ties every step to the statute, the meeting record, and the source page.</p>
+  <div style="margin-top:22px;display:flex;gap:10px"><span class=btn style="background:var(--num);color:#fff">See how the number is built →</span><span class=btn style="border:1px solid var(--line);color:var(--ink)">The cost-burden objection</span></div></div>
+ <div class=card style="padding:20px 22px;border-color:#e6c98a;background:#fffaf0">
+  <div class=eyebrow style="color:#8a5a00">Coming up this week</div>
+  <div style="display:flex;gap:16px;margin-top:14px;padding-bottom:14px;border-bottom:1px solid #f0e2c0"><div style="flex:none;width:58px;text-align:center;background:#fff;border:1px solid #ecd9a0;border-radius:9px;padding:5px 0"><div style="font-size:11px;font-weight:700;color:var(--proc);letter-spacing:.06em">NOV</div><div style="font-size:23px;font-weight:700;line-height:1">12</div></div>
+   <div><b>RHNA Subcommittee, Meeting 4</b><div style="font-size:13.5px;color:var(--muted)">Thursday, 1:00 PM · transit access and job access</div><div style="font-size:13.5px;color:var(--proc);font-weight:600;margin-top:3px">Open the agenda →</div></div></div>
+  <div style="display:flex;gap:16px;margin-top:14px"><div style="flex:none;width:58px;text-align:center;background:#fff;border:1px solid #ecd9a0;border-radius:9px;padding:5px 0"><div style="font-size:11px;font-weight:700;color:var(--bad);letter-spacing:.06em">NOV</div><div style="font-size:23px;font-weight:700;line-height:1">14</div></div>
+   <div><b>Deadline to file the objection with HCD</b><div style="font-size:13.5px;color:var(--muted)">Saturday · the Oct 26 subcommittee vote was 12 to 1 to object</div><div style="font-size:13.5px;color:var(--num);font-weight:600;margin-top:3px">See what is being objected to →</div></div></div>
+ </div></div></div>
+<div class=wrap style="padding-top:26px">
+ <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+ <div class=card style="padding:16px 18px"><div style="font-size:27px;font-weight:700;letter-spacing:-.02em;color:var(--num)">1,359,750</div><div style="font-size:13.5px;color:var(--muted);margin-top:2px">homes across six income categories, June 30, 2029 to Oct 15, 2037</div></div><div class=card style="padding:16px 18px"><div style="font-size:27px;font-weight:700;letter-spacing:-.02em;color:var(--bad)">37%</div><div style="font-size:13.5px;color:var(--muted);margin-top:2px">of the total (504,627) is the cost-burden adjustment under challenge</div></div><div class=card style="padding:16px 18px"><div style="font-size:27px;font-weight:700;letter-spacing:-.02em;color:var(--proc)">Nov 14</div><div style="font-size:13.5px;color:var(--muted);margin-top:2px">deadline for SCAG to file an objection with HCD</div></div><div class=card style="padding:16px 18px"><div style="font-size:27px;font-weight:700;letter-spacing:-.02em;color:var(--proc)">Oct 15, 2029</div><div style="font-size:13.5px;color:var(--muted);margin-top:2px">Orange County housing elements due</div></div></div>
+ <div class=card style="margin-top:16px;padding:18px 22px;display:grid;grid-template-columns:150px 1fr 1fr 1fr;gap:24px;align-items:start">
+  <div class=eyebrow style="padding-top:3px">Three things<br>to know</div>
+  <div style="display:flex;gap:10px"><b style="color:var(--muted)">1</b><span style="font-size:14.5px">The statute decides <i>which factors</i> HCD must look at. HCD decides <i>how many units</i> each one adds.</span></div><div style="display:flex;gap:10px"><b style="color:var(--muted)">2</b><span style="font-size:14.5px">About 63% of the number comes from adjustments SCAG staff accept as reasonable.</span></div><div style="display:flex;gap:10px"><b style="color:var(--muted)">3</b><span style="font-size:14.5px">The contested piece is cost burden: 504,627 units, 37% of the total.</span></div></div>
+ <div style="display:flex;align-items:baseline;gap:12px;margin:32px 0 14px"><h2>Explore by section</h2><span style="color:var(--muted);font-size:14px">Each colour follows its section through the whole site.</span></div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+ <div class=card style="border-top:4px solid var(--num);padding:22px 24px 16px">
+ <div style="display:flex;align-items:center;gap:12px"><div style="width:34px;height:34px;border-radius:9px;background:var(--num-t);color:var(--num);display:grid;place-items:center;font-weight:700">1</div>
+ <h2>The number</h2><span style="margin-left:auto;color:var(--num);font-weight:600;font-size:14px">Open →</span></div>
+ <p style="margin:10px 0 12px;color:#3a4458">What the 1,359,750 is made of, and which parts are open to challenge.</p>
+ <div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">How it is built</b><span style="font-size:13.5px;color:var(--muted)">Nine steps, from household growth to the total</span></div><div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">HCD Table 2</b><span style="font-size:13.5px;color:var(--muted)">Every step of the calculation, with its statute</span></div><div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">Income categories</b><span style="font-size:13.5px;color:var(--muted)">Six categories, in Orange County dollars</span></div><div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">Cost burden</b><span style="font-size:13.5px;color:var(--muted)">The contested 504,627 and two alternatives</span></div></div>
+ <div class=card style="border-top:4px solid var(--proc);padding:22px 24px 16px">
+ <div style="display:flex;align-items:center;gap:12px"><div style="width:34px;height:34px;border-radius:9px;background:var(--proc-t);color:var(--proc);display:grid;place-items:center;font-weight:700">2</div>
+ <h2>The process</h2><span style="margin-left:auto;color:var(--proc);font-weight:600;font-size:14px">Open →</span></div>
+ <p style="margin:10px 0 12px;color:#3a4458">Who decides what, when, and what has been said so far.</p>
+ <div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">Subcommittee meetings</b><span style="font-size:13.5px;color:var(--muted)">Nine meetings, 2014 to 2026: agendas, slides, votes</span></div><div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">Dates</b><span style="font-size:13.5px;color:var(--muted)">From the Oct 15, 2026 letter to housing elements in 2029</span></div><div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">Themes</b><span style="font-size:13.5px;color:var(--muted)">Topics that recur across the past meetings</span></div><div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">Oct 26 vote</b><span style="font-size:13.5px;color:var(--muted)">12 to 1 to object, for a revised total near 1,081,926</span></div></div>
+ <div class=card style="border-top:4px solid var(--law);padding:22px 24px 16px">
+ <div style="display:flex;align-items:center;gap:12px"><div style="width:34px;height:34px;border-radius:9px;background:var(--law-t);color:var(--law);display:grid;place-items:center;font-weight:700">3</div>
+ <h2>The law</h2><span style="margin-left:auto;color:var(--law);font-weight:600;font-size:14px">Open →</span></div>
+ <p style="margin:10px 0 12px;color:#3a4458">What the statute requires, and where HCD is using its own judgment.</p>
+ <div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">Gov. Code §65584.01</b><span style="font-size:13.5px;color:var(--muted)">Provision by provision, in plain terms</span></div><div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">What each provision supports</b><span style="font-size:13.5px;color:var(--muted)">Linked to the steps of the number it underpins</span></div><div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">The objection standard</b><span style="font-size:13.5px;color:var(--muted)">“Not a reasonable application” of the methodology</span></div></div>
+ <div class=card style="border-top:4px solid var(--ctx);padding:22px 24px 16px">
+ <div style="display:flex;align-items:center;gap:12px"><div style="width:34px;height:34px;border-radius:9px;background:var(--ctx-t);color:var(--ctx);display:grid;place-items:center;font-weight:700">4</div>
+ <h2>Statewide context</h2><span style="margin-left:auto;color:var(--ctx);font-weight:600;font-size:14px">Open →</span></div>
+ <p style="margin:10px 0 12px;color:#3a4458">How the SCAG number and Orange County compare with the rest of California.</p>
+ <div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">Regional determinations</b><span style="font-size:13.5px;color:var(--muted)">20 letters, 1,542,971 units; SCAG is 88%</span></div><div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">HCD advice letters <span class=pill style="background:var(--warn);font-size:10px">BETA</span></b><span style="font-size:13.5px;color:var(--muted)">1,264 letters to 473 jurisdictions; 113 in Orange County</span></div><div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-top:1px solid #edf0f4"><b style="font-size:14px;flex:none;width:190px">Concepts and connections</b><span style="font-size:13.5px;color:var(--muted)">What recurs, and how letters chain together</span></div></div>
+ </div>
+ <div class=card style="margin:18px 0 36px;padding:16px 22px;display:flex;gap:18px;align-items:center"><div class=eyebrow style="flex:none">Most used</div><div style="margin-bottom:-6px">
+ <span class=chip><i style="background:var(--proc)"></i>Item 3: staff report on the determination</span><span class=chip><i style="background:var(--num)"></i>Cost-burden adjustment</span><span class=chip><i style="background:var(--proc)"></i>Slide 19: Household cost burden</span><span class=chip><i style="background:var(--law)"></i>§65584.01(b)(1)(H)</span><span class=chip><i style="background:var(--num)"></i>Acutely low income</span><span class=chip><i style="background:var(--ctx)"></i>Orange County letters</span></div></div>
+</div>
+<div class=foot>Sources: SCAG RHNA Subcommittee packets; HCD final RHND letter and Table 2 workbook (Oct 15, 2026); Gov. Code §65584.01; HCD Revised 2026 State Income Limits; HCD enforcement-letters dashboard.</div>

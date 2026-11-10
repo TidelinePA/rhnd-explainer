@@ -1,0 +1,73 @@
+<!doctype html><meta charset=utf-8><style>
+:root{--ink:#18202f;--muted:#5c667a;--line:#dfe3ea;--bg:#f4f5f8;--card:#fff;--navy:#141d33;
+ --num:#2b5fa8;--num-t:#eaf1fb;--proc:#1b7a6b;--proc-t:#e6f4f1;--law:#6a45a8;--law-t:#f0ebf9;--ctx:#b0680f;--ctx-t:#fbf1e2;
+ --ok:#2f7d6d;--warn:#c58b1a;--bad:#b8382f;--neutral:#5a6b8c}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 Inter,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);width:1440px}
+.chrome{background:#e4e7ed;padding:9px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #cfd4dd}
+.dots{display:flex;gap:6px}.dots i{width:11px;height:11px;border-radius:50%;background:#c2c7d1;display:block}
+.url{flex:1;background:#fff;border-radius:99px;padding:5px 16px;font-size:12.5px;color:#4a5468;font-family:ui-monospace,Menlo,monospace}
+.url b{color:var(--ink)}
+.top{background:var(--navy);color:#fff;display:flex;align-items:center;gap:28px;padding:0 40px;height:60px}
+.brand{font-weight:700;font-size:16px;letter-spacing:-.01em;white-space:nowrap}.brand span{font-weight:400;opacity:.65;margin-left:8px;font-size:13px}
+.nav{display:flex;gap:4px;height:100%}.nav a{display:flex;align-items:center;gap:8px;padding:0 14px;font-size:14px;color:#c9d0e0;border-bottom:3px solid transparent;border-top:3px solid transparent}
+.nav a i{width:8px;height:8px;border-radius:50%;display:block}
+.nav a.on{color:#fff;font-weight:600;background:rgba(255,255,255,.07)}
+.search{margin-left:auto;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:7px 12px;width:270px;font-size:13.5px;color:#aeb7cb;display:flex;justify-content:space-between}
+.search kbd{font:11px ui-monospace,monospace;border:1px solid rgba(255,255,255,.25);border-radius:4px;padding:0 5px}
+.draft{background:#fff6dc;color:#6b4e00;font-size:12.5px;padding:6px 40px;border-bottom:1px solid #ecd9a0}
+.wrap{padding:0 40px;max-width:1440px}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:40px;line-height:1.12;letter-spacing:-.022em;margin:10px 0 14px;font-weight:700}
+h2{font-size:20px;letter-spacing:-.01em;margin:0}
+h3{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 5px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.lead{font-size:17px;color:#3a4458;max-width:640px;margin:0}
+.btn{display:inline-block;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:99px;color:#fff}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 11px;font-size:12.5px;margin:0 6px 6px 0;color:#27324a}
+.chip i{width:7px;height:7px;border-radius:50%;display:block}
+.sec{margin-top:16px}.sec p{margin:0}
+.quote{border-left:3px solid var(--law);background:var(--law-t);padding:8px 12px;margin:6px 0;font-size:13.5px;border-radius:0 6px 6px 0}
+.band{padding:18px 40px 0;border-bottom:1px solid var(--line);background:#fff}
+.band .ttl{display:flex;align-items:baseline;gap:14px}.band .ttl h2{font-size:24px}.band .ttl p{margin:0;color:var(--muted);font-size:14px}
+.sub{display:flex;gap:26px;margin-top:14px}.sub a{padding:9px 0 11px;font-size:14.5px;color:var(--muted);border-bottom:3px solid transparent}
+.sub a.on{color:var(--ink);font-weight:650}
+.cols{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px;padding:22px 40px 40px;align-items:start}
+.crumb{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px}.crumb b{color:var(--ink);font-weight:600}
+.copy{margin-left:auto;border:1px solid var(--line);border-radius:7px;padding:3px 10px;font-size:12px;color:#27324a;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13.5px}th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:600}
+th,td{padding:11px 10px;border-bottom:1px solid #edf0f4;vertical-align:middle}.num{text-align:right;font-variant-numeric:tabular-nums}
+.foot{padding:18px 40px 30px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);background:#fff}
+</style>
+<div class=chrome><div class=dots><i></i><i></i><i></i></div><div class=url>rhnd-explainer/<b>#/context/determinations/<b>scag</b></b></div></div>
+<div class=top><div class=brand>RHNA 7th Cycle<span>SCAG region explainer</span></div>
+<div class=nav><a class="" style="">Start</a><a class="" style=""><i style="background:var(--num)"></i>The number</a><a class="" style=""><i style="background:var(--proc)"></i>The process</a><a class="" style=""><i style="background:var(--law)"></i>The law</a><a class="on" style="border-bottom-color:var(--ctx)"><i style="background:var(--ctx)"></i>Statewide context</a></div>
+<div class=search><span>Search all four sections…</span><kbd>/</kbd></div></div>
+<div class=draft><b>DRAFT for internal review.</b> Not an OCCOG position and not legal advice.</div>
+<div class=band style="border-top:4px solid var(--ctx)"><div class=ttl><h2>Statewide context</h2><p>How the SCAG number and Orange County compare with the rest of California.</p></div>
+ <div class=sub><a class=on style="border-bottom-color:var(--ctx)">Regional determinations</a><a>HCD advice letters <span class=pill style="background:var(--warn);font-size:10px;margin-left:4px">BETA</span></a></div></div>
+<div class=cols>
+ <div class=card style="padding:20px 22px">
+  <h2>7th cycle regional housing need determinations</h2><p style="margin:4px 0 12px;color:var(--muted);font-size:13.5px">HCD issues one determination per region. 20 letters published so far, totalling 1,542,971 units.</p>
+  <div><span class=chip style="background:var(--ctx);border-color:var(--ctx);color:#fff;font-weight:600">All regions (20)</span><span class=chip style="">COG region (6)</span><span class=chip style="">County region (13)</span><span class=chip style="">City without a COG (1)</span><span class=chip style="float:right;margin-right:0">Sort: largest first ▾</span></div>
+  <table style="margin-top:6px"><tr><th>Region</th><th>Letter date</th><th class=num>Units</th><th style="width:150px">Relative size</th><th>Projection period</th><th></th></tr>
+  <tr style="background:var(--ctx-t);box-shadow:inset 4px 0 0 var(--ctx)"><td><b>SCAG</b><div style="font-size:12.5px;color:var(--muted)">Southern California Association of Governments · COG region</div></td><td style="white-space:nowrap">Oct 15, 2026</td><td class=num><b>1,359,750</b></td><td><div style="height:8px;border-radius:4px;background:#eceff4"><div style="height:8px;border-radius:4px;background:var(--ctx);width:100%"></div></div></td><td style="font-size:13px;color:#3a4458">Jun 30, 2029 – Oct 15, 2037</td><td style="color:var(--muted);font-size:13px;white-space:nowrap">Letter ↗</td></tr><tr style=""><td><b>SACOG</b><div style="font-size:12.5px;color:var(--muted)">Sacramento Area Council of Governments · COG region</div></td><td style="white-space:nowrap">Sep 15, 2026</td><td class=num><b>136,057</b></td><td><div style="height:8px;border-radius:4px;background:#eceff4"><div style="height:8px;border-radius:4px;background:var(--ctx);width:10.006030520316235%"></div></div></td><td style="font-size:13px;color:#3a4458">Jun 30, 2029 – May 15, 2037</td><td style="color:var(--muted);font-size:13px;white-space:nowrap">Letter ↗</td></tr><tr style=""><td><b>SLOCOG</b><div style="font-size:12.5px;color:var(--muted)">San Luis Obispo Council of Governments · COG region</div></td><td style="white-space:nowrap">Jun 17, 2026</td><td class=num><b>14,577</b></td><td><div style="height:8px;border-radius:4px;background:#eceff4"><div style="height:8px;border-radius:4px;background:var(--ctx);width:1.5%"></div></div></td><td style="font-size:13px;color:#3a4458">Jun 30, 2028 – Jan 15, 2037</td><td style="color:var(--muted);font-size:13px;white-space:nowrap">Letter ↗</td></tr><tr style=""><td><b>Shasta County</b><div style="font-size:12.5px;color:var(--muted)">County region</div></td><td style="white-space:nowrap">Aug 31, 2026</td><td class=num><b>7,594</b></td><td><div style="height:8px;border-radius:4px;background:#eceff4"><div style="height:8px;border-radius:4px;background:var(--ctx);width:1.5%"></div></div></td><td style="font-size:13px;color:#3a4458">Dec 31, 2027 – Apr 15, 2036</td><td style="color:var(--muted);font-size:13px;white-space:nowrap">Letter ↗</td></tr><tr style=""><td><b>Nevada County</b><div style="font-size:12.5px;color:var(--muted)">County region</div></td><td style="white-space:nowrap">Jan 8, 2026</td><td class=num><b>7,055</b></td><td><div style="height:8px;border-radius:4px;background:#eceff4"><div style="height:8px;border-radius:4px;background:var(--ctx);width:1.5%"></div></div></td><td style="font-size:13px;color:#3a4458">Jun 30, 2027 – May 15, 2035</td><td style="color:var(--muted);font-size:13px;white-space:nowrap">Letter ↗</td></tr><tr style=""><td><b>MCOG</b><div style="font-size:12.5px;color:var(--muted)">Mendocino Council of Governments · COG region</div></td><td style="white-space:nowrap">Aug 15, 2025</td><td class=num><b>6,456</b></td><td><div style="height:8px;border-radius:4px;background:#eceff4"><div style="height:8px;border-radius:4px;background:var(--ctx);width:1.5%"></div></div></td><td style="font-size:13px;color:#3a4458">Jun 30, 2027 – Aug 15, 2035</td><td style="color:var(--muted);font-size:13px;white-space:nowrap">Letter ↗</td></tr><tr style=""><td><b>HCAOG</b><div style="font-size:12.5px;color:var(--muted)">Humboldt County Association of Governments · COG region</div></td><td style="white-space:nowrap">Jul 15, 2025</td><td class=num><b>5,962</b></td><td><div style="height:8px;border-radius:4px;background:#eceff4"><div style="height:8px;border-radius:4px;background:var(--ctx);width:1.5%"></div></div></td><td style="font-size:13px;color:#3a4458">Jun 30, 2027 – Jul 15, 2035</td><td style="color:var(--muted);font-size:13px;white-space:nowrap">Letter ↗</td></tr><tr style=""><td><b>Lake APC</b><div style="font-size:12.5px;color:var(--muted)">Lake Area Planning Council · COG region</div></td><td style="white-space:nowrap">Aug 15, 2025</td><td class=num><b>2,498</b></td><td><div style="height:8px;border-radius:4px;background:#eceff4"><div style="height:8px;border-radius:4px;background:var(--ctx);width:1.5%"></div></div></td><td style="font-size:13px;color:#3a4458">Jun 30, 2027 – Aug 15, 2035</td><td style="color:var(--muted);font-size:13px;white-space:nowrap">Letter ↗</td></tr>
+  </table><div style="text-align:center;font-size:13px;color:var(--muted);padding-top:12px">Showing 8 of 20 · Show all</div></div>
+ <div class=card style="padding:18px 22px 22px">
+  <div class=crumb><i style="width:8px;height:8px;border-radius:50%;background:var(--ctx);display:block"></i>Statewide context <span>›</span> Regional determinations <span>›</span> <b>SCAG</b><span class=copy>Copy link</span></div>
+  <div style="margin-top:14px"><span class=pill style="background:var(--ctx)">COG region</span></div>
+  <div style="font-size:23px;font-weight:700;letter-spacing:-.015em;margin-top:8px;line-height:1.2">Southern California Association of Governments</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+   <div style="border:1px solid var(--line);border-radius:9px;padding:10px 12px"><div style="font-size:22px;font-weight:700">1,359,750</div><div style="font-size:12.5px;color:var(--muted)">units determined</div></div>
+   <div style="border:1px solid var(--line);border-radius:9px;padding:10px 12px"><div style="font-size:22px;font-weight:700">88%</div><div style="font-size:12.5px;color:var(--muted)">of all units determined statewide so far</div></div></div>
+  <div class=sec><h3>Letter</h3><p>October 15, 2026, addressed to Kome Ajise</p></div>
+  <div class=sec><h3>Projection period</h3><p>June 30, 2029 to October 15, 2037</p></div>
+  <div class=sec><h3>Housing elements due</h3><p>Varies by county (October 15, 2029 or April 15, 2030)</p></div>
+  <div class=sec style="border-top:1px solid #edf0f4;padding-top:14px"><h3>This is the number the rest of the site explains</h3>
+   <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-left:4px solid var(--num);border-radius:9px;margin-top:8px;background:#fff"><div><b style="font-size:14px">How the 1,359,750 is built</b><div style="font-size:12.5px;color:var(--muted)">Nine steps, each with its statute and source page</div></div><span style="margin-left:auto;color:var(--num);font-weight:700">→</span></div>
+   <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-left:4px solid var(--num);border-radius:9px;margin-top:8px;background:#fff"><div><b style="font-size:14px">The cost-burden objection</b><div style="font-size:12.5px;color:var(--muted)">504,627 units and two alternative totals</div></div><span style="margin-left:auto;color:var(--num);font-weight:700">→</span></div>
+   <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-left:4px solid var(--proc);border-radius:9px;margin-top:8px;background:#fff"><div><b style="font-size:14px">Oct 26 subcommittee vote</b><div style="font-size:12.5px;color:var(--muted)">12 to 1 to recommend an objection</div></div><span style="margin-left:auto;color:var(--proc);font-weight:700">→</span></div>
+   <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-left:4px solid var(--ctx);border-radius:9px;margin-top:8px;background:#fff"><div><b style="font-size:14px">HCD advice letters in this region</b><div style="font-size:12.5px;color:var(--muted)">Orange County: 113 letters to 35 jurisdictions</div></div><span style="margin-left:auto;color:var(--ctx);font-weight:700">→</span></div>
+  </div>
+  <div class=sec><span class=btn style="border:1px solid var(--line);font-size:13px;padding:6px 12px">Open HCD letter (PDF) ↗</span></div>
+ </div></div>

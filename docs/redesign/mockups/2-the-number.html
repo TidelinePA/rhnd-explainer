@@ -1,0 +1,98 @@
+<!doctype html><meta charset=utf-8><style>
+:root{--ink:#18202f;--muted:#5c667a;--line:#dfe3ea;--bg:#f4f5f8;--card:#fff;--navy:#141d33;
+ --num:#2b5fa8;--num-t:#eaf1fb;--proc:#1b7a6b;--proc-t:#e6f4f1;--law:#6a45a8;--law-t:#f0ebf9;--ctx:#b0680f;--ctx-t:#fbf1e2;
+ --ok:#2f7d6d;--warn:#c58b1a;--bad:#b8382f;--neutral:#5a6b8c}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 Inter,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);width:1440px}
+.chrome{background:#e4e7ed;padding:9px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #cfd4dd}
+.dots{display:flex;gap:6px}.dots i{width:11px;height:11px;border-radius:50%;background:#c2c7d1;display:block}
+.url{flex:1;background:#fff;border-radius:99px;padding:5px 16px;font-size:12.5px;color:#4a5468;font-family:ui-monospace,Menlo,monospace}
+.url b{color:var(--ink)}
+.top{background:var(--navy);color:#fff;display:flex;align-items:center;gap:28px;padding:0 40px;height:60px}
+.brand{font-weight:700;font-size:16px;letter-spacing:-.01em;white-space:nowrap}.brand span{font-weight:400;opacity:.65;margin-left:8px;font-size:13px}
+.nav{display:flex;gap:4px;height:100%}.nav a{display:flex;align-items:center;gap:8px;padding:0 14px;font-size:14px;color:#c9d0e0;border-bottom:3px solid transparent;border-top:3px solid transparent}
+.nav a i{width:8px;height:8px;border-radius:50%;display:block}
+.nav a.on{color:#fff;font-weight:600;background:rgba(255,255,255,.07)}
+.search{margin-left:auto;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:7px 12px;width:270px;font-size:13.5px;color:#aeb7cb;display:flex;justify-content:space-between}
+.search kbd{font:11px ui-monospace,monospace;border:1px solid rgba(255,255,255,.25);border-radius:4px;padding:0 5px}
+.draft{background:#fff6dc;color:#6b4e00;font-size:12.5px;padding:6px 40px;border-bottom:1px solid #ecd9a0}
+.wrap{padding:0 40px;max-width:1440px}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:40px;line-height:1.12;letter-spacing:-.022em;margin:10px 0 14px;font-weight:700}
+h2{font-size:20px;letter-spacing:-.01em;margin:0}
+h3{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 5px;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.lead{font-size:17px;color:#3a4458;max-width:640px;margin:0}
+.btn{display:inline-block;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:99px;color:#fff}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 11px;font-size:12.5px;margin:0 6px 6px 0;color:#27324a}
+.chip i{width:7px;height:7px;border-radius:50%;display:block}
+.sec{margin-top:16px}.sec p{margin:0}
+.quote{border-left:3px solid var(--law);background:var(--law-t);padding:8px 12px;margin:6px 0;font-size:13.5px;border-radius:0 6px 6px 0}
+.band{padding:18px 40px 0;border-bottom:1px solid var(--line);background:#fff}
+.band .ttl{display:flex;align-items:baseline;gap:14px}.band .ttl h2{font-size:24px}.band .ttl p{margin:0;color:var(--muted);font-size:14px}
+.sub{display:flex;gap:26px;margin-top:14px}.sub a{padding:9px 0 11px;font-size:14.5px;color:var(--muted);border-bottom:3px solid transparent}
+.sub a.on{color:var(--ink);font-weight:650}
+.cols{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px;padding:22px 40px 40px;align-items:start}
+.crumb{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:7px}.crumb b{color:var(--ink);font-weight:600}
+.copy{margin-left:auto;border:1px solid var(--line);border-radius:7px;padding:3px 10px;font-size:12px;color:#27324a;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13.5px}th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:600}
+th,td{padding:11px 10px;border-bottom:1px solid #edf0f4;vertical-align:middle}.num{text-align:right;font-variant-numeric:tabular-nums}
+.foot{padding:18px 40px 30px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);background:#fff}
+</style>
+<div class=chrome><div class=dots><i></i><i></i><i></i></div><div class=url>rhnd-explainer/<b>#/number/built/<b>cost-burden</b></b></div></div>
+<div class=top><div class=brand>RHNA 7th Cycle<span>SCAG region explainer</span></div>
+<div class=nav><a class="" style="">Start</a><a class="on" style="border-bottom-color:var(--num)"><i style="background:var(--num)"></i>The number</a><a class="" style=""><i style="background:var(--proc)"></i>The process</a><a class="" style=""><i style="background:var(--law)"></i>The law</a><a class="" style=""><i style="background:var(--ctx)"></i>Statewide context</a></div>
+<div class=search><span>Search all four sections…</span><kbd>/</kbd></div></div>
+<div class=draft><b>DRAFT for internal review.</b> Not an OCCOG position and not legal advice.</div>
+<div class=band style="border-top:4px solid var(--num)"><div class=ttl><h2>The number</h2><p>What the 1,359,750 is made of, and which parts are open to challenge.</p></div>
+ <div class=sub><a class=on style="border-bottom-color:var(--num)">How it is built</a><a>HCD Table 2</a><a>Income categories</a><a>Cost burden</a></div></div>
+<div class=cols>
+ <div><div class=card style="padding:20px 22px">
+   <h2>How the number is built</h2><p style="margin:4px 0 0;color:var(--muted);font-size:13.5px">Each bar is one step in HCD’s calculation and starts where the last one ended. Select a bar to see the law, the judgment call and the questions to ask.</p>
+   <svg viewBox="0 0 780 428" width="100%" style="display:block;margin-top:10px;font-family:inherit"><rect x="0" y="0" width="780" height="38" rx="7" fill="transparent" />
+ <text x="12" y="24" font-size="14" font-weight="400" fill="#18202f">Household growth</text>
+ <rect x="220" y="9" width="73.27250872286692" height="20" rx="3" fill="var(--ok)"/>
+ <text x="301.2725087228669" y="24" font-size="13" fill="#3a4458">+245,801</text><rect x="0" y="42" width="780" height="38" rx="7" fill="transparent" />
+ <text x="12" y="66" font-size="14" font-weight="400" fill="#18202f">Vacancy adjustment</text>
+ <rect x="293.2725087228669" y="51" width="44.07779557364694" height="20" rx="3" fill="var(--warn)"/>
+ <text x="345.35030429651385" y="66" font-size="13" fill="#3a4458">+147,864</text><rect x="0" y="84" width="780" height="38" rx="7" fill="transparent" />
+ <text x="12" y="108" font-size="14" font-weight="400" fill="#18202f">Overcrowding adjustment</text>
+ <rect x="337.35030429651385" y="93" width="118.76179297557854" height="20" rx="3" fill="var(--ok)"/>
+ <text x="464.1120972720924" y="108" font-size="13" fill="#3a4458">+398,400</text><rect x="0" y="126" width="780" height="38" rx="7" fill="#eaf1fb" stroke="#2b5fa8" stroke-width="1.5"/>
+ <text x="12" y="150" font-size="14" font-weight="650" fill="#18202f">Cost-burden adjustment (gross)</text>
+ <rect x="456.1120972720924" y="135" width="227.8879027279076" height="20" rx="3" fill="var(--bad)"/>
+ <text x="692" y="150" font-size="13" fill="#3a4458">+764,476</text><rect x="0" y="168" width="780" height="38" rx="7" fill="transparent" />
+ <text x="12" y="192" font-size="14" font-weight="400" fill="#18202f">Overlap deduction</text>
+ <rect x="606.5398264485164" y="177" width="77.46017355148365" height="20" rx="3" fill="var(--neutral)"/>
+ <text x="692" y="192" font-size="13" fill="#3a4458">−259,849</text><rect x="0" y="210" width="780" height="38" rx="7" fill="transparent" />
+ <text x="12" y="234" font-size="14" font-weight="400" fill="#18202f">Demolition replacement</text>
+ <rect x="606.5398264485164" y="219" width="3" height="20" rx="3" fill="var(--ok)"/>
+ <text x="617.5398264485164" y="234" font-size="13" fill="#3a4458">+6,889</text><rect x="0" y="252" width="780" height="38" rx="7" fill="transparent" />
+ <text x="12" y="276" font-size="14" font-weight="400" fill="#18202f">Jobs-housing relationship</text>
+ <rect x="608.5934157853857" y="261" width="3" height="20" rx="3" fill="var(--ok)"/>
+ <text x="619.5934157853857" y="276" font-size="13" fill="#3a4458">+9,467</text><rect x="0" y="294" width="780" height="38" rx="7" fill="transparent" />
+ <text x="12" y="318" font-size="14" font-weight="400" fill="#18202f">Homelessness adjustment</text>
+ <rect x="611.4154988529053" y="303" width="11.520251634874967" height="20" rx="3" fill="var(--ok)"/>
+ <text x="630.9357504877803" y="318" font-size="13" fill="#3a4458">+38,646</text><rect x="0" y="336" width="780" height="38" rx="7" fill="transparent" />
+ <text x="12" y="360" font-size="14" font-weight="400" fill="#18202f">State of emergency losses</text>
+ <rect x="622.9357504877803" y="345" width="3" height="20" rx="3" fill="var(--ok)"/>
+ <text x="633.9357504877803" y="360" font-size="13" fill="#3a4458">+8,056</text><rect x="0" y="382" width="780" height="38" rx="7" fill="#eef1f6"/><text x="12" y="406" font-size="14" font-weight="700">Total determination</text><rect x="220" y="391" width="405.3372188718447" height="20" rx="3" fill="#141d33"/><text x="633.3372188718447" y="406" font-size="13" font-weight="700">1,359,750</text></svg>
+   <div style="display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid #edf0f4"><b style="color:var(--ink)">How challengeable</b>
+   <span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;background:var(--ok);margin-right:6px;vertical-align:-1px"></i>Low</span><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;background:var(--warn);margin-right:6px;vertical-align:-1px"></i>Low to moderate</span><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;background:var(--bad);margin-right:6px;vertical-align:-1px"></i>Contested: the objection</span><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;background:var(--neutral);margin-right:6px;vertical-align:-1px"></i>Helps SCAG (HCD choice)</span></div></div>
+  <div class=card style="padding:18px 22px;margin-top:18px"><h2 style="font-size:17px">Where this sits among past cycles</h2>
+   <table style="margin-top:8px"><tr><td style="width:50px"><b>4th</b></td><td style="width:110px;color:var(--muted)">2006–2014</td><td class=num style="width:110px">699,368</td><td><div style="height:9px;border-radius:5px;width:50%;background:#b4bdcf"></div></td></tr><tr><td style="width:50px"><b>5th</b></td><td style="width:110px;color:var(--muted)">2013–2021</td><td class=num style="width:110px">412,137</td><td><div style="height:9px;border-radius:5px;width:29%;background:#b4bdcf"></div></td></tr><tr><td style="width:50px"><b>6th</b></td><td style="width:110px;color:var(--muted)">2021–2029</td><td class=num style="width:110px">1,341,827</td><td><div style="height:9px;border-radius:5px;width:96%;background:#b4bdcf"></div></td></tr><tr><td style="width:50px"><b>7th</b></td><td style="width:110px;color:var(--muted)">2029–2037</td><td class=num style="width:110px">1,359,750</td><td><div style="height:9px;border-radius:5px;width:97%;background:var(--num)"></div></td></tr></table></div></div>
+ <div class=card style="padding:18px 22px 22px">
+  <div class=crumb><i style="width:8px;height:8px;border-radius:50%;background:var(--num);display:block"></i>The number <span>›</span> How it is built <span>›</span> <b>Cost-burden adjustment</b><span class=copy>Copy link</span></div>
+  <div style="margin-top:14px"><span class=pill style="background:var(--bad)">Contested: the objection</span> <span style="font-size:12.5px;color:var(--muted);margin-left:6px">Step 4 of 9</span></div>
+  <div style="font-size:23px;font-weight:700;letter-spacing:-.015em;margin-top:8px">Cost-burden adjustment (gross)</div>
+  <div style="font-size:14px;color:var(--muted)">+764,476 units gross · net 504,627 after the overlap deduction · 37% of the total</div>
+  <div class=sec><h3>What it is</h3><p>Households paying more than 30% of income on housing. Region 43.19% vs. nation 31.45% = 11.74 points, applied to about 6.5 million occupied households.</p></div>
+  <div class=sec><h3>What the statute says</h3><div class=quote><b>65584.01(b)(1)(H)</b>: HCD considers the share of households that are cost burdened in the region and nationally.</div><div class=quote><b>65584.01(b)(3)</b>: HCD “may accept or reject the information provided by the council of governments or modify its own assumptions or methodology.”</div></div>
+  <div class=sec><h3>What is HCD’s judgment call</h3><p>Everything about how the gap becomes a unit count. The statute names the factor but has no formula. HCD applies the gap to <i>all</i> households, including moderate and above-moderate.</p></div>
+  <div class=sec style="border-top:1px solid #edf0f4;padding-top:14px"><h3>Connected to</h3>
+   <div style="display:flex;gap:10px;align-items:flex-start;margin-top:8px"><div style="flex:none;width:96px;font-size:12px;font-weight:650;color:var(--num);padding-top:5px">The number</div><div style="margin-bottom:-6px"><span class=chip><i style="background:var(--num)"></i>Overlap deduction</span><span class=chip><i style="background:var(--num)"></i>Table 2: steps 11 and 12</span><span class=chip><i style="background:var(--num)"></i>Cost burden: the two alternatives</span></div></div>
+   <div style="display:flex;gap:10px;align-items:flex-start;margin-top:8px"><div style="flex:none;width:96px;font-size:12px;font-weight:650;color:var(--law);padding-top:5px">The law</div><div style="margin-bottom:-6px"><span class=chip><i style="background:var(--law)"></i>§65584.01(b)(1)(H)</span><span class=chip><i style="background:var(--law)"></i>§65584.01(b)(3)</span></div></div>
+   <div style="display:flex;gap:10px;align-items:flex-start;margin-top:8px"><div style="flex:none;width:96px;font-size:12px;font-weight:650;color:var(--proc);padding-top:5px">The process</div><div style="margin-bottom:-6px"><span class=chip><i style="background:var(--proc)"></i>Oct 26: Item 3 staff report</span><span class=chip><i style="background:var(--proc)"></i>Slide 19: Household cost burden</span><span class=chip><i style="background:var(--proc)"></i>Nov 14: objection deadline</span></div></div>
+  </div>
+  <div class=sec><span class=btn style="border:1px solid var(--line);font-size:13px;padding:6px 12px">Open source page in packet ↗</span></div>
+ </div></div>
