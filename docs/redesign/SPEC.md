@@ -316,6 +316,26 @@ Note: `--ctx` is darker than in the mock-up images (`#b0680f` there) so that whi
 4. **SVG colours are set through a `style` attribute**, for example `style="fill:var(--ink)"`, never `fill="var(--ink)"`. This includes the chart bars that take their colour from `LEVELS`.
 5. Hex values with no exact token match (search-tag colours, chip and link blues, `#3b4558`, row-hover tints and so on) stay as they are until Phase 7.
 
+**Decisions made during Phase 7B (owner, recorded here so this spec stays the single source of truth):**
+
+6. **New tokens (Phase 7B).** Exactly two colour tokens were added to `:root`, plus one layout variable. Every other former hard-coded colour maps to a token that already existed.
+
+   | Token | Value | Reason |
+   |---|---|---|
+   | `--on-dark` | `#ffffff` | White text on dark or solid-colour backgrounds (top bar, section pills, search tags, severity tags, primary button). Replaces the eight `#fff` text colours that Phase 1 deferred. |
+   | `--bar-muted` | `#b4bdcf` | The un-highlighted bar in the cost-burden options and the past-cycles meter (§7.2), and the muted text on the navy top bar (inactive links, brand sub-line, search placeholder). Its contrast on `--navy` is 8.9 to 1. |
+   | `--gut` (layout, not a colour) | `max(40px, calc((100vw - 1440px) / 2 + 40px))` | Page gutter of §7.4: 40px, with content capped at 1440px and centred on wider screens. It is 22px at 980px or less and 16px at 700px or less. |
+
+   Two helper properties, `--sec` and `--sec-t`, are set on `body` from `data-sec` (the page's section). They are aliases of `--num`/`--proc`/`--law`/`--ctx` and their tints, not new colours. They carry the §7.2 rule that selected rows, list items, chart rows and bars use the page's section colour (so they are `--ctx` on Statewide context pages).
+7. **`--sev-4` changed from `#c2571f` to `#be551e` (HCD severity, owner choice 1A).** White text on `#c2571f` was 4.49 to 1, below the 4.5 to 1 rule. On `#be551e` it is 4.66 to 1. The ramp, the stage order and the text labels are unchanged.
+8. **HCD severity stage 3 uses `--ink` text (owner choice 1A).** White on `--sev-3` (`#c58b1a`) is 2.97 to 1; `--ink` on it is 5.5 to 1. The other four stages keep white text (4.91 to 5.76 to 1).
+9. **Cost-burden option bars (owner choice 2A).** The bar of the option the reader has selected uses `--num`; the other two use `--bar-muted`. The highlight moves when the reader selects another option. (Before Phase 7B each bar had its own fixed colour.)
+10. **Level pills and date-status pills** use the status tint with the `-ink` text (§7.2): the "how challengeable" pill in a Table 2 chart-bar panel (`LEVELS`, class `lv-ok` and so on) and the confirmed / tentative / unverified / derived pills. The "beta" badge uses `--warn-t` with `--warn-ink`.
+11. **Item-type pills** take the colour of the item's section: Law is `--law`; Date, Agenda, Theme, Past meeting and Committee report slide are `--proc`; Income category and Table 2 are `--num`. The pill text is unchanged.
+12. **Translucent white and shadows** are written with `color-mix(in srgb, var(--on-dark) N%, transparent)` and `color-mix(in srgb, var(--navy) N%, transparent)`, so no `rgb()` or `rgba()` colour appears outside `:root`. The dropdown and the phone sheet keep their overlay shadow; cards have none.
+13. **Navy** is used only for the top bar, the "Total" bar in the waterfall chart and, as `color-mix`, the sheet scrim and shadows. Selected toggles, the meeting picker, the timeline dots and the "Letters by year" bars take the page's section colour.
+14. **Focus ring.** `outline: 2px solid var(--num); outline-offset: 2px` on every link, button, input, select and `[tabindex]` element (`:focus-visible`). Inside the navy top bar the ring is `--on-dark`, because `--num` on `--navy` is only 2.5 to 1. Chart rows, which are SVG groups, also stroke their background rectangle.
+
 ### 7.2 What each colour means
 
 A colour must mean one thing.

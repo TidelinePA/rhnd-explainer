@@ -166,7 +166,7 @@
     const st = (HCD.pool.st[L.st]||"").split(";").map(s=>s.trim()).filter(Boolean);
     const rel = related(cv.ix), mean = meaning(L.t);
     const relHtml = rel.length? '<div class="sec"><h3>Connected letters</h3><div class="chain">'+rel.slice(0,8).map(([j])=>{
-      const R = HCD.letters[j]; return '<span class="nd" data-hcd="letter|'+j+'">'+(R.d? h(R.d) : "undated")+' '+h(R.t.replace(/ Letter$/,""))+'</span>'; }).join('<span class="ar">&middot;</span>')+
+      const R = HCD.letters[j]; return '<span class="nd" data-hcd="letter|'+j+'" tabindex="0" role="button">'+(R.d? h(R.d) : "undated")+' '+h(R.t.replace(/ Letter$/,""))+'</span>'; }).join('<span class="ar">&middot;</span>')+
       '</div><p class="src" style="margin-top:5px">Same HCD case number, or the same city with a shared issue tag.</p></div>' : '<div class="sec"><h3>Connected letters</h3><p class="src">None. No other letter in this set shares this HCD case number or a shared issue tag for this city.</p></div>';
     return '<div class="card"><div class="hd" style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><span class="sev sev'+L.sv+'">'+HCD_SEV[L.sv]+'</span>'+
       '<b>'+h(L.t)+'</b><span style="color:var(--muted);font-size:12.5px">'+(L.d? h(L.d) : "undated")+' &middot; '+h(L.p)+'</span></div>'+
@@ -213,21 +213,21 @@
     const ymax = Math.max.apply(null, ys.map(y=>yr[y].HAU+yr[y].ADU).concat([1]));
     const ybars = ys.map(y=>{ const t = yr[y].HAU+yr[y].ADU;
       return '<div class="concept"><div class="lb"><span>'+y+(y==="2026"?' (partial year)':'')+'</span><span>'+plural(t,'letter')+' &middot; '+yr[y].HAU+' HAU, '+yr[y].ADU+' ADU</span></div>'+
-      '<div class="tr" style="display:flex"><div class="fl" style="width:'+(yr[y].HAU/ymax*100)+'%;background:var(--navy)"></div><div class="fl" style="width:'+(yr[y].ADU/ymax*100)+'%;background:#6d9bd1"></div></div></div>'; }).join("");
+      '<div class="tr" style="display:flex"><div class="fl" style="width:'+(yr[y].HAU/ymax*100)+'%;background:var(--sec)"></div><div class="fl" style="width:'+(yr[y].ADU/ymax*100)+'%;background:var(--bar-muted)"></div></div></div>'; }).join("");
     const minChain = big? 3 : 2;
     const chains = Object.keys(F.byCase).filter(k=>F.byCase[k].length>=minChain)
       .map(k=>({k, ix:F.byCase[k].slice().sort((a,b)=>(HCD.letters[a].d||"").localeCompare(HCD.letters[b].d||""))}))
       .sort((a,b)=>b.ix.length-a.ix.length || a.k.localeCompare(b.k)).slice(0,8);
     const chainHtml = chains.length? chains.map(c=>'<div style="margin:0 0 9px"><div style="font-size:13px;font-weight:600">'+h(HCD.letters[c.ix[0]].city)+
       ' <span class="src">&middot; case '+h(c.k)+' &middot; '+c.ix.length+' letters</span></div><div class="chain">'+
-      c.ix.map((j,i)=>(i?'<span class="ar">&#8594;</span>':'')+'<span class="nd" data-hcd="letter|'+j+'" title="'+h(HCD.letters[j].t)+'">'+(HCD.letters[j].d? h(HCD.letters[j].d) : "?")+'</span>').join("")+'</div></div>').join("")
+      c.ix.map((j,i)=>(i?'<span class="ar">&#8594;</span>':'')+'<span class="nd" data-hcd="letter|'+j+'" tabindex="0" role="button" title="'+h(HCD.letters[j].t)+'">'+(HCD.letters[j].d? h(HCD.letters[j].d) : "?")+'</span>').join("")+'</div></div>').join("")
       : '<p class="src">No case in '+scopeLabel(sc)+' has '+(big? 'more than two letters' : 'more than one letter')+' in this set.</p>';
     const where = big? 'across California' : 'in '+scopeLabel(sc);
     return '<div class="grid2">'+
-      '<div class="card"><h2>Which law the letters cite</h2><p class="hint">The statute named in HCD&rsquo;s data for each letter '+where+', and how many letters cite it. A letter can cite more than one law, so the bars add up to more than the letter count; up to 12 laws are shown.</p>'+(laws.length? laws.map(c=>bar(c,laws[0].k,"var(--num)")).join("") : '<p class="src">HCD&rsquo;s data names no law for these letters.</p>')+'</div>'+
-      '<div class="card"><h2>Letters by year</h2><p class="hint">'+where.charAt(0).toUpperCase()+where.slice(1)+'. The last year is partial: the data was downloaded on 29 October 2026.</p><div class="legend" style="margin:0 0 8px"><span><i style="background:var(--navy)"></i>HAU (housing element / housing law)</span><span><i style="background:#6d9bd1"></i>ADU (accessory dwelling unit law)</span></div>'+ybars+'</div>'+
-      '<div class="card"><h2>Most frequent issue tags</h2><p class="hint">The topics HCD tagged most often '+where+'. A tag says what a letter is about, not that the city was wrong.</p>'+(issues.length? issues.map(c=>bar(c,issues[0].k,"var(--ok)")).join("") : '<p class="src">No issue tags in these letters.</p>')+'</div>'+
-      '<div class="card"><h2>What kind of letter</h2><p class="hint">HCD&rsquo;s own letter-type labels '+where+'.</p>'+types.map(c=>bar(c,types[0].k,"#6d4aa8")).join("")+'</div>'+
+      '<div class="card"><h2>Which law the letters cite</h2><p class="hint">The statute named in HCD&rsquo;s data for each letter '+where+', and how many letters cite it. A letter can cite more than one law, so the bars add up to more than the letter count; up to 12 laws are shown.</p>'+(laws.length? laws.map(c=>bar(c,laws[0].k,"var(--sec)")).join("") : '<p class="src">HCD&rsquo;s data names no law for these letters.</p>')+'</div>'+
+      '<div class="card"><h2>Letters by year</h2><p class="hint">'+where.charAt(0).toUpperCase()+where.slice(1)+'. The last year is partial: the data was downloaded on 29 October 2026.</p><div class="legend" style="margin:0 0 8px"><span><i style="background:var(--sec)"></i>HAU (housing element / housing law)</span><span><i style="background:var(--bar-muted)"></i>ADU (accessory dwelling unit law)</span></div>'+ybars+'</div>'+
+      '<div class="card"><h2>Most frequent issue tags</h2><p class="hint">The topics HCD tagged most often '+where+'. A tag says what a letter is about, not that the city was wrong.</p>'+(issues.length? issues.map(c=>bar(c,issues[0].k,"var(--sec)")).join("") : '<p class="src">No issue tags in these letters.</p>')+'</div>'+
+      '<div class="card"><h2>What kind of letter</h2><p class="hint">HCD&rsquo;s own letter-type labels '+where+'.</p>'+types.map(c=>bar(c,types[0].k,"var(--sec)")).join("")+'</div>'+
       '<div class="card" style="grid-column:1/-1"><h2>Longest case chains '+where+'</h2><p class="hint">HCD reuses one case number across the letters in a case. A long chain means HCD wrote repeatedly; it does not by itself say the case escalated. Each chip is a letter&rsquo;s date; click one to read that letter.</p>'+chainHtml+'</div></div>';
   }
 
@@ -247,7 +247,7 @@
     if(sc!=="*") qs.unshift(["How does "+scopeLabel(sc)+" compare?",
       F.total? scopeLabel(sc)+" has "+plural(F.total,'letter')+" in this set, "+pct(F.total,G.total)+"% of the state&rsquo;s "+n(G.total)+". That ranks #"+F.rank+" of 58 counties by letter count"+(F.ties? " (tied with "+plural(F.ties,'other county')+")" : "")+"."
       : scopeLabel(sc)+" has no letters in this set."]);
-    return '<div class="card"><h2>Questions</h2><p class="hint">Plain answers about what these letters are. Numbers are computed from the data; unless a question says otherwise they are statewide.</p>'+qs.map(q=>'<div class="faq"><h4>'+q[0]+'</h4><p>'+q[1]+'</p>'+(q[2]||'')+'</div>').join("")+'</div>';
+    return '<div class="card"><h2>Questions</h2><p class="hint">Plain answers about what these letters are. Numbers are computed from the data; unless a question says otherwise they are statewide.</p>'+qs.map(q=>'<div class="faq"><h3>'+q[0]+'</h3><p>'+q[1]+'</p>'+(q[2]||'')+'</div>').join("")+'</div>';
   }
 
   function dyk(){
@@ -326,7 +326,7 @@
     if(s) setCounty(s.value);
   });
   document.addEventListener("keydown", function(ev){
-    if((ev.key==="Enter"||ev.key===" ") && ev.target.matches && ev.target.matches(".cityrow,.lcard")){ ev.preventDefault(); ev.target.click(); }
+    if((ev.key==="Enter"||ev.key===" ") && ev.target.matches && ev.target.matches(".cityrow,.lcard,.nd")){ ev.preventDefault(); ev.target.click(); }
   });
   /* ---- routing (SPEC 5.3). County segment: the county name, or "all" for All California. ---- */
   function route(){

@@ -24,30 +24,47 @@
     --neutral:#5a6b8c; --neutral-t:#eceff5; --neutral-ink:#3d4a66;
 
     /* HCD letter severity, least to most serious */
-    --sev-0:#2f7d6d; --sev-1:#5a6b8c; --sev-2:#3d6b8a; --sev-3:#c58b1a; --sev-4:#c2571f; --sev-5:#b8382f;
+    --sev-0:#2f7d6d; --sev-1:#5a6b8c; --sev-2:#3d6b8a; --sev-3:#c58b1a; --sev-4:#be551e; --sev-5:#b8382f;
 
     /* draft notice */
     --draft-bg:#fff6dc; --draft-ink:#6b4e00; --draft-line:#ecd9a0;
+
+    /* Phase 7B: white text on dark or solid backgrounds; muted bars, and muted text on the navy bar */
+    --on-dark:#ffffff; --bar-muted:#b4bdcf;
+
+    /* page gutter (SPEC 7.4): 40px, with content capped at 1440px and centred on wider screens */
+    --gut:max(40px, calc((100vw - 1440px) / 2 + 40px));
   }
+  @media (max-width:980px){:root{--gut:22px}}
+  @media (max-width:700px){:root{--gut:16px}}
+  /* the page's section colour: selected rows, bars and highlights that are not status or severity (SPEC 7.2) */
+  body{--sec:var(--num); --sec-t:var(--num-t)}
+  body[data-sec="process"]{--sec:var(--proc); --sec-t:var(--proc-t)}
+  body[data-sec="law"]{--sec:var(--law); --sec-t:var(--law-t)}
+  body[data-sec="context"]{--sec:var(--ctx); --sec-t:var(--ctx-t)}
   *{box-sizing:border-box}
-  body{margin:0;font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+  body{margin:0;font:15px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+  /* visible focus on every clickable element (SPEC 7.5) */
+  a:focus-visible,button:focus-visible,[tabindex]:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--num);outline-offset:2px}
+  .topbar a:focus-visible,.topbar input:focus-visible,.topbar button:focus-visible{outline-color:var(--on-dark)}
+  .row:focus-visible .rowbg{stroke:var(--num);stroke-width:2}
   /* ---- top bar (SPEC 6.1). Desktop: one sticky 60px row. <=980px: see the phone block below. ---- */
-  .topbar{background:var(--navy);color:#fff;display:flex;align-items:center;gap:22px;padding:0 22px;height:60px;position:sticky;top:0;z-index:20}
+  .topbar{background:var(--navy);color:var(--on-dark);display:flex;align-items:center;gap:22px;padding:0 var(--gut);height:60px;position:sticky;top:0;z-index:20}
   .topbar .row1{display:contents}
-  .brand{order:0;flex:none;color:#fff;text-decoration:none;font-weight:700;font-size:16px;white-space:nowrap}
-  .brand span{font-weight:400;opacity:.65;margin-left:8px;font-size:13px}
+  .brand{order:0;flex:none;color:var(--on-dark);text-decoration:none;font-weight:700;font-size:16px;letter-spacing:-.01em;white-space:nowrap}
+  .brand span{font-weight:400;color:var(--bar-muted);margin-left:8px;font-size:13px}
   .secnav{order:1;display:flex;gap:4px;height:100%;min-width:0;overflow-x:auto;scrollbar-width:none}
   .secnav::-webkit-scrollbar{display:none}
-  .secnav a{display:flex;align-items:center;gap:8px;padding:0 14px;font-size:14px;color:rgba(255,255,255,.78);text-decoration:none;white-space:nowrap;border-top:3px solid transparent;border-bottom:3px solid transparent;flex:none}
+  .secnav a{display:flex;align-items:center;gap:8px;padding:0 14px;font-size:14px;color:var(--bar-muted);text-decoration:none;white-space:nowrap;border-top:3px solid transparent;border-bottom:3px solid transparent;flex:none}
   .secnav a i{width:8px;height:8px;border-radius:50%;display:block;flex:none}
-  .secnav a:hover{color:#fff}
-  .secnav a[aria-current="page"]{color:#fff;font-weight:600;background:rgba(255,255,255,.07)}
+  .secnav a:hover{color:var(--on-dark)}
+  .secnav a[aria-current="page"]{color:var(--on-dark);font-weight:600;background:color-mix(in srgb,var(--on-dark) 7%,transparent)}
   .topbar .search{order:2}
   @media (max-width:1240px){.brand span{display:block;margin-left:0;font-size:11.5px;line-height:1.2}.brand{line-height:1.15}}
   /* ---- section band (SPEC 6.2) ---- */
-  .band{background:var(--card);border-top:4px solid var(--line);border-bottom:1px solid var(--line);padding:16px 22px 0}
+  .band{background:var(--card);border-top:4px solid var(--line);border-bottom:1px solid var(--line);padding:16px var(--gut) 0}
   .band .ttl{display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap;padding-bottom:14px}
-  .band h1{margin:0;font-size:24px;font-weight:700;line-height:1.2}
+  .band h1{margin:0;font-size:24px;font-weight:700;line-height:1.2;letter-spacing:-.01em}
   .band .ttl p{margin:0;color:var(--muted);font-size:14px}
   .pagenav{display:flex;gap:26px;overflow-x:auto;scrollbar-width:none}
   .pagenav::-webkit-scrollbar{display:none}
@@ -77,16 +94,16 @@
   main.start{grid-template-columns:minmax(0,1fr)}
   main.start aside{display:none}
   .home{display:flex;flex-direction:column;gap:16px}
-  .hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px 40px;align-items:start;background:var(--card);border-bottom:1px solid var(--line);margin:-18px -22px 4px;padding:34px 22px 30px}
+  .hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px 40px;align-items:start;background:var(--card);border-bottom:1px solid var(--line);margin:-22px calc(-1 * var(--gut)) 4px;padding:32px var(--gut) 32px}
   .hero.solo{grid-template-columns:minmax(0,1fr)}
-  .eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
-  .hero h1{font-size:40px;line-height:1.12;letter-spacing:-.02em;margin:10px 0 14px;font-weight:700}
-  .lead{font-size:17px;color:var(--ink-2);max-width:640px;margin:0 0 20px}
+  .eyebrow{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .hero h1{font-size:40px;line-height:1.12;letter-spacing:-.022em;margin:8px 0 16px;font-weight:700}
+  .lead{font-size:17px;line-height:1.5;color:var(--ink-2);max-width:640px;margin:0 0 22px}
   .btns{display:flex;gap:10px;flex-wrap:wrap}
   .btn{display:inline-block;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;text-decoration:none}
-  .btn.primary{background:var(--num);border-color:var(--num);color:#fff}
-  .upcoming{background:var(--draft-bg);border:1px solid var(--draft-line);border-radius:12px;padding:18px 20px 8px}
-  .upcoming h2{margin:0 0 4px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--draft-ink)}
+  .btn.primary{background:var(--num);border-color:var(--num);color:var(--on-dark)}
+  .upcoming{background:var(--draft-bg);border:1px solid var(--draft-line);border-radius:12px;padding:20px 22px 8px}
+  .upcoming h2{margin:0 0 4px;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--draft-ink)}
   .up{display:flex;gap:14px;align-items:flex-start;padding:12px 0}
   .up+.up{border-top:1px solid var(--draft-line)}
   .dtile{flex:none;width:54px;border:1px solid var(--line);border-radius:8px;background:var(--card);text-align:center;padding:5px 0 6px;line-height:1.1}
@@ -95,19 +112,22 @@
   .uptitle{font-weight:650}
   .update{font-size:13.5px;color:var(--muted);margin-top:2px}
   .uplink{display:inline-block;margin-top:4px;font-size:14px;font-weight:600;color:var(--proc);text-decoration:none}
-  .home .glance{grid-template-columns:repeat(4,minmax(0,1fr));margin:0;gap:14px}
-  .home .glance div{background:var(--card);border-radius:12px;padding:14px 16px}
-  .home .glance b{font-size:26px}
+  .home .glance{grid-template-columns:repeat(4,minmax(0,1fr));margin:0;gap:16px}
+  .home .glance div{background:var(--card);border-radius:12px;padding:16px 18px}
+  .home .glance b{font-size:27px;line-height:1.1;letter-spacing:-.02em}
+  /* stat figures take the colour of what they are about: the number, the contested part, the process dates */
+  .home .glance div:nth-child(1) b{color:var(--num)} .home .glance div:nth-child(2) b{color:var(--bad)}
+  .home .glance div:nth-child(3) b,.home .glance div:nth-child(4) b{color:var(--proc)}
   .things{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:start}
-  .card.things h2,.card.mostused h2{margin:2px 0 0;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .card.things h2,.card.mostused h2{margin:2px 0 0;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
   .things ol{margin:0;padding-left:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 34px}
   .explore{display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap;margin-top:8px}
   .explore h2{margin:0;font-size:20px}
   .explore p{margin:0;color:var(--muted);font-size:14px}
   .secgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-  .card.seccard{border-top:4px solid var(--line);padding:18px 22px 10px}
+  .card.seccard{border-top:4px solid var(--line);padding:20px 22px 12px}
   .seccard .hd{display:flex;align-items:center;gap:12px}
-  .seccard .badge{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:700}
+  .seccard .badge{flex:none;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-weight:700}
   .seccard h3{margin:0;font-size:20px}
   .seccard .open{margin-left:auto;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap}
   .seccard .blurb{margin:10px 0 6px;color:var(--ink-2)}
@@ -119,8 +139,9 @@
   .mostused{display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap}
   .mostused .chips{margin:0}
   @media (max-width:700px){
-    .hero{grid-template-columns:minmax(0,1fr);padding:24px 14px 22px}
-    .hero h1{font-size:30px}
+    .hero{grid-template-columns:minmax(0,1fr);padding:24px var(--gut) 22px}
+    .hero h1{font-size:28px}
+    .band h1{font-size:20px}
     .home .glance{grid-template-columns:repeat(2,minmax(0,1fr))}
     .things{grid-template-columns:minmax(0,1fr)}
     .things ol{grid-template-columns:minmax(0,1fr)}
@@ -128,121 +149,128 @@
     .card.seccard{padding:16px 16px 8px}
     .seclk{grid-template-columns:minmax(0,1fr);gap:2px}
   }
-  .draft{background:var(--draft-bg);color:var(--draft-ink);border-bottom:1px solid var(--draft-line);padding:7px 22px;font-size:12.5px}
+  .draft{background:var(--draft-bg);color:var(--draft-ink);border-bottom:1px solid var(--draft-line);padding:8px var(--gut);font-size:12.5px}
   .mtgs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 0}
   .mtg{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13.5px;text-align:left;color:var(--ink)}
   .mtg small{display:block;color:var(--muted);font-size:12px}
-  .mtg[aria-selected="true"]{border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy)}
+  .mtg[aria-selected="true"]{border-color:var(--sec);background:var(--sec-t);box-shadow:inset 0 0 0 1px var(--sec)}
   .subtabs{display:flex;gap:4px;margin:12px 0 0;border-bottom:1px solid var(--line)}
   .subtab{border:1px solid transparent;border-bottom:none;background:none;padding:7px 14px;cursor:pointer;font-size:13.5px;color:var(--muted);border-radius:7px 7px 0 0;margin-bottom:-1px}
   .subtab[aria-selected="true"]{background:var(--card);color:var(--ink);border-color:var(--line);font-weight:600}
   .search{margin-left:auto;position:relative;flex:0 1 270px;min-width:150px}
-  .search input{width:100%;padding:8px 10px;border:1px solid rgba(255,255,255,.18);border-radius:8px;font-size:14px;background:rgba(255,255,255,.1);color:#fff}
-  .search input::placeholder{color:rgba(255,255,255,.65)}
-  .results{position:absolute;right:0;top:calc(100% + 6px);width:400px;max-height:380px;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:none}
+  .search input{width:100%;padding:8px 12px;border:1px solid color-mix(in srgb,var(--on-dark) 18%,transparent);border-radius:8px;font-size:14px;background:color-mix(in srgb,var(--on-dark) 10%,transparent);color:var(--on-dark)}
+  .search input::placeholder{color:var(--bar-muted)}
+  .results{position:absolute;right:0;top:calc(100% + 6px);width:400px;max-height:380px;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px color-mix(in srgb,var(--navy) 14%,transparent);display:none}
   /* results sit inside the dark top bar, which sets white text: every result, anchor or button, sets its own colour and font */
   .topbar .results{color:var(--ink)}
-  .topbar .results .ritem{display:flex;gap:8px;align-items:baseline;width:100%;box-sizing:border-box;margin:0;text-align:left;border:0;border-bottom:1px solid #f0f2f5;border-radius:0;
+  .topbar .results .ritem{display:flex;gap:8px;align-items:baseline;width:100%;box-sizing:border-box;margin:0;text-align:left;border:0;border-bottom:1px solid var(--line-soft);border-radius:0;
     background:var(--card);color:var(--ink);text-decoration:none;padding:9px 12px;cursor:pointer;font:inherit;font-size:13.5px;line-height:1.45}
-  .topbar .results .ritem:hover,.topbar .results .ritem.on{background:#f2f6fc;color:var(--ink);text-decoration:none}
+  .topbar .results .ritem:hover,.topbar .results .ritem.on{background:var(--bg);color:var(--ink);text-decoration:none}
   .rgrp+.rgrp{border-top:1px solid var(--line)}
-  .rglab{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px 3px}
+  .rglab{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:9px 12px 3px}
   .rmore{font-size:12.5px;color:var(--muted);padding:6px 12px 9px}
   .rnone{padding:10px 12px;color:var(--muted);font-size:13.5px}
-  .tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:var(--neutral);padding:1px 6px;border-radius:4px;flex:none}
-  .tag.element{background:var(--num)} .tag.law{background:#6d4aa8} .tag.date{background:#a8561f}
-  .tag.agenda{background:#2a7a8c} .tag.income{background:#7a5a1f} .tag.step{background:#3d6b3a} .tag.slide{background:#8c2a6b}
-  main{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,1fr);gap:18px;padding:18px 22px;align-items:start}
+  .tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--on-dark);background:var(--neutral);padding:1px 6px;border-radius:4px;flex:none}
+  main{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(320px,1fr);gap:22px;padding:22px var(--gut) 40px;align-items:start}
   @media (max-width:980px){main{grid-template-columns:minmax(0,1fr)}}   /* minmax(0,…): a wide table must not stretch the column (SPEC 7.6) */
-  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
-  .card h2{margin:0 0 4px;font-size:17px}
-  .hint{color:var(--muted);font-size:13px;margin:0 0 10px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+  .card h2{margin:0 0 4px;font-size:20px;line-height:1.3;letter-spacing:-.01em}
+  aside .card h2{font-size:23px;line-height:1.2;letter-spacing:-.015em}
+  @media (max-width:700px){aside .card h2{font-size:20px}}
+  .hint{color:var(--muted);font-size:13.5px;line-height:1.45;margin:0 0 12px}
   .glance{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
-  .glance div{border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:#fbfcfe}
-  .glance b{display:block;font-size:19px}
-  .glance span{font-size:12.5px;color:var(--muted)}
+  .glance div{border:1px solid var(--line);border-radius:9px;padding:16px 18px;background:var(--card)}
+  .glance b{display:block;font-size:27px}
+  .glance span{font-size:13.5px;line-height:1.45;color:var(--muted)}
   svg text{font-family:inherit}
   .row{cursor:pointer;outline:none}
   .row:hover .barrect,.row:focus .barrect{filter:brightness(1.08)}
-  .row.sel .rowbg{fill:var(--num-t)}
+  .row.sel .rowbg{fill:var(--sec-t);stroke:var(--sec);stroke-width:1.5}
   .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:8px 0 2px}
   .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
   aside .card{position:sticky;top:72px;max-height:calc(100vh - 88px);overflow:auto}
-  .pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;color:#fff;margin-right:6px}
+  .pill{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:99px;color:var(--on-dark);margin-right:6px}
+  /* item-type pills take the colour of the item's section; level pills use the status tint with the -ink text (SPEC 7.2) */
+  .pill.s-number{background:var(--num)} .pill.s-process{background:var(--proc)} .pill.s-law{background:var(--law)} .pill.s-context{background:var(--ctx)}
+  .pill.lv-ok{background:var(--ok-t);color:var(--ok-ink)} .pill.lv-warn{background:var(--warn-t);color:var(--warn-ink)}
+  .pill.lv-bad{background:var(--bad-t);color:var(--bad-ink)} .pill.lv-neutral{background:var(--neutral-t);color:var(--neutral-ink)}
   .sec{margin:12px 0 0}
-  .sec h3{margin:0 0 3px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .sec h3{margin:0 0 4px;font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
   .sec p,.sec li{margin:0 0 4px}
   .sec ul{margin:0;padding-left:18px}
-  .quote{border-left:3px solid #c9d3e6;background:#f6f8fc;padding:6px 10px;margin:5px 0;font-size:13.5px;color:#2a3550}
+  .quote{border-left:3px solid var(--law);background:var(--law-t);padding:8px 12px;margin:6px 0;font-size:13.5px;color:var(--ink);border-radius:0 6px 6px 0}
   .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
-  .chip{border:1px solid #c7d3ea;background:#f2f6fc;color:#1d4a8a;border-radius:99px;padding:3px 10px;font-size:12.5px;cursor:pointer}
-  .chip:hover{background:#e3edfb}
-  a.ext{display:inline-block;border:1px solid #b9c9e6;background:var(--card);color:#1d4a8a;border-radius:6px;padding:3px 9px;font-size:12.5px;text-decoration:none;margin:2px 6px 2px 0;white-space:nowrap}
-  a.ext:hover{background:#eef4fd}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--ink-2);border-radius:99px;padding:4px 11px;font-size:12.5px;cursor:pointer}
+  .chip:hover{background:var(--line-soft)}
+  span.chip{cursor:default}   /* keyword tags in HCD letters are labels, not links */
+  .chip[data-s="number"]:hover{background:var(--num-t)} .chip[data-s="process"]:hover{background:var(--proc-t)}
+  .chip[data-s="law"]:hover{background:var(--law-t)} .chip[data-s="context"]:hover{background:var(--ctx-t)}
+  a.ext{display:inline-block;border:1px solid color-mix(in srgb,var(--num) 30%,var(--card));background:var(--card);color:var(--num);border-radius:6px;padding:3px 9px;font-size:12.5px;text-decoration:none;margin:2px 6px 2px 0;white-space:nowrap}
+  a.ext:hover{background:var(--num-t)}
   .src{font-size:12.5px;color:var(--muted)}
   table{border-collapse:collapse;width:100%;font-size:13.5px}
   th,td{padding:6px 8px;border-bottom:1px solid var(--line-soft);text-align:left;vertical-align:top}
-  th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  th{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
   td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-  tr.click{cursor:pointer} tr.click:hover{background:#f5f8fd} tr.sel{background:var(--num-t)}
+  tr.click{cursor:pointer} tr.click:hover{background:var(--bg)} tr.sel{background:var(--sec-t);box-shadow:inset 4px 0 0 var(--sec)}
   .three{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:8px 0 12px}
-  .opt{border:2px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;background:var(--card)}
-  .opt.sel{border-color:var(--num);background:#f2f7ff}
+  .opt{border:2px solid var(--line);border-radius:9px;padding:12px;cursor:pointer;background:var(--card)}
+  .opt.sel{border-color:var(--sec);background:var(--sec-t)}
   .opt b{font-size:22px;display:block}
   .opt small{color:var(--muted)}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   @media (max-width:700px){.two{grid-template-columns:1fr}}
   .for{border-top:3px solid var(--ok);padding-top:6px} .against{border-top:3px solid var(--bad);padding-top:6px}
-  .tl{position:relative;margin-left:8px;border-left:3px solid #cfd6e3;padding-left:16px}
+  .tl{position:relative;margin-left:8px;border-left:3px solid var(--line);padding-left:16px}
   .ti{position:relative;margin:0 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);cursor:pointer}
-  .ti:before{content:"";position:absolute;left:-26px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--card);border:3px solid var(--navy)}
-  .ti.sel{border-color:var(--num);background:#f2f7ff}
+  .ti:before{content:"";position:absolute;left:-26px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--card);border:3px solid var(--sec)}
+  .ti.sel{border-color:var(--sec);background:var(--sec-t);box-shadow:inset 4px 0 0 var(--sec)}
   .ti .d{font-weight:650}
-  .st{font-size:11px;padding:1px 7px;border-radius:99px;margin-left:6px;color:#fff}
-  .st.confirmed{background:var(--ok)} .st.tentative{background:var(--warn)} .st.unverified{background:var(--bad)} .st.derived{background:var(--neutral)}
+  .st{font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:99px;margin-left:6px}
+  .st.confirmed{background:var(--ok-t);color:var(--ok-ink)} .st.tentative{background:var(--warn-t);color:var(--warn-ink)}
+  .st.unverified{background:var(--bad-t);color:var(--bad-ink)} .st.derived{background:var(--neutral-t);color:var(--neutral-ink)}
   .lawitem,.ai{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:8px 11px;margin:0 0 8px;cursor:pointer}
-  .lawitem.sel,.ai.sel{border-color:var(--num);background:#f2f7ff}
-  .lawitem b{color:#4b2f85}
+  .lawitem.sel,.ai.sel{border-color:var(--sec);background:var(--sec-t);box-shadow:inset 4px 0 0 var(--sec)}
+  .lawitem b{color:var(--law)}
   .ai .pg{font-size:12px;color:var(--muted);margin-left:6px}
   .ai .t{font-weight:650}
-  .ai .s{font-size:13.5px;color:#3b4558;margin-top:2px}
-  .grp{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:14px 0 6px}
+  .ai .s{font-size:13.5px;color:var(--ink-2);margin-top:2px}
+  .grp{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:14px 0 6px}
   .mix td:nth-child(2){white-space:nowrap}   /* Period stays on one line (Phase 7A) */
   /* wide tables scroll inside their own card instead of pushing the page sideways (SPEC 7.6, 9.4) */
   .tscroll{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
   .tscroll>table{margin:0}
-  .meter{height:9px;border-radius:5px;background:#aab4c8}
-  footer{padding:14px 22px 30px;color:var(--muted);font-size:12.5px}
+  .meter{height:9px;border-radius:5px;background:var(--bar-muted)}
+  footer{padding:16px var(--gut) 32px;color:var(--muted);font-size:12.5px}
   /* ---- phone-only slide-up detail panel (<= 980px). Desktop layout is unchanged. ---- */
   .sheetbar,.scrim,.mobilehint{display:none}
   @media (max-width:980px){
     /* top bar becomes two rows; only the section-link row is sticky (SPEC 7.6) */
     .topbar{display:contents}
-    .topbar .row1{display:flex;align-items:center;gap:12px;background:var(--navy);padding:8px 14px}
-    .secnav{position:sticky;top:0;z-index:20;height:44px;background:var(--navy);padding:0 6px;border-top:1px solid rgba(255,255,255,.1)}
+    .topbar .row1{display:flex;align-items:center;gap:12px;background:var(--navy);padding:8px var(--gut)}
+    .secnav{position:sticky;top:0;z-index:20;height:44px;background:var(--navy);padding:0 6px;border-top:1px solid color-mix(in srgb,var(--on-dark) 10%,transparent)}
     .secnav a{padding:0 12px}
     .topbar .search{flex:1 1 auto;min-width:0;position:static}
     .topbar .row1{position:relative}
     .results{left:8px;right:8px;width:auto;top:calc(100% + 2px);max-height:70vh;z-index:40}
-    .band{padding:14px 14px 0}
     .pagenav{gap:22px}
-    .mobilehint{display:block;margin:0 0 10px;padding:8px 12px;border:1px dashed #b9c9e6;border-radius:8px;background:#f2f7ff;color:#1d4a8a;font-size:13.5px}
-    aside{position:fixed;left:0;right:0;bottom:0;z-index:30;transform:translateY(105%);transition:transform .25s ease;visibility:hidden;max-height:78vh;display:flex;flex-direction:column;background:var(--card);border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.25)}
+    .mobilehint{display:block;margin:0 0 10px;padding:8px 12px;border:1px dashed var(--bar-muted);border-radius:8px;background:var(--sec-t);color:var(--ink-2);font-size:13.5px}
+    aside{position:fixed;left:0;right:0;bottom:0;z-index:30;transform:translateY(105%);transition:transform .25s ease;visibility:hidden;max-height:78vh;display:flex;flex-direction:column;background:var(--card);border-radius:16px 16px 0 0;box-shadow:0 -8px 32px color-mix(in srgb,var(--navy) 25%,transparent)}
     body.sheet-open aside{transform:translateY(0);visibility:visible}
     body.sheet-open{overflow:hidden}
     .sheetbar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--line);flex:none}
-    .sheetbar .grab{width:42px;height:5px;border-radius:3px;background:#c4cad6;position:absolute;left:50%;top:6px;transform:translateX(-50%)}
-    .sheetbar .ttl{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:8px}
+    .sheetbar .grab{width:42px;height:5px;border-radius:3px;background:var(--bar-muted);position:absolute;left:50%;top:6px;transform:translateX(-50%)}
+    .sheetbar .ttl{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding-top:8px}
     .sheetbar button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 14px;font-size:14px;cursor:pointer;margin-top:6px}
     aside .card{position:static;top:auto;max-height:none;overflow:auto;border:0;border-radius:0;flex:1 1 auto;-webkit-overflow-scrolling:touch}
-    .scrim{display:block;position:fixed;inset:0;z-index:25;background:rgba(20,28,45,.45);opacity:0;pointer-events:none;transition:opacity .25s}
+    .scrim{display:block;position:fixed;inset:0;z-index:25;background:color-mix(in srgb,var(--navy) 45%,transparent);opacity:0;pointer-events:none;transition:opacity .25s}
     body.sheet-open .scrim{opacity:1;pointer-events:auto}
     .ai,.lawitem,.ti{position:relative;padding-right:30px}
-    .ai:after,.lawitem:after,.ti:after{content:"\203A";position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:24px;line-height:1;color:#8a94a8}
-    tr.click td:last-child:after{content:"\203A";margin-left:8px;font-size:20px;color:#8a94a8}
+    .ai:after,.lawitem:after,.ti:after{content:"\203A";position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:24px;line-height:1;color:var(--muted)}
+    tr.click td:last-child:after{content:"\203A";margin-left:8px;font-size:20px;color:var(--muted)}
   }
   /* ---- HCD advice (beta) tab ---- */
-  .beta{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;background:var(--warn);color:#fff;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+  .beta{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;background:var(--warn-t);color:var(--warn-ink);font-weight:600;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px}
   .hcdnav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px}
   .hcdnav button{border:1px solid var(--line);background:var(--card);border-radius:7px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--ink)}
   .hcdnav button:disabled{opacity:.4;cursor:default}
@@ -250,48 +278,48 @@
   .hcdnav .crumb b{color:var(--ink)}
   .hcdtoggle{display:flex;gap:4px;margin:0 0 10px;flex-wrap:wrap}
   .hcdtoggle button{border:1px solid var(--line);background:var(--card);border-radius:7px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--muted)}
-  .hcdtoggle button[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .hcdtoggle button[aria-selected="true"]{background:var(--sec);color:var(--on-dark);border-color:var(--sec)}
   .cityrow{display:grid;grid-template-columns:minmax(120px,1.4fr) 46px 46px 46px minmax(90px,1fr) 96px;gap:8px;align-items:center;padding:6px 8px;border-bottom:1px solid var(--line-soft);cursor:pointer;font-size:13.5px}
-  .cityrow:hover{background:#f5f8fd}
-  .cityrow.sel{background:var(--num-t)}
+  .cityrow:hover{background:var(--bg)}
+  .cityrow.sel{background:var(--sec-t);box-shadow:inset 4px 0 0 var(--sec)}
   .cityrow .nm{font-weight:600}
   .cityrow .num{text-align:right;font-variant-numeric:tabular-nums}
   .cityrow .rng{font-size:12px;color:var(--muted)}
-  .cityrow .minibar{height:8px;border-radius:4px;background:#c9d3e6}
+  .cityrow .minibar{height:8px;border-radius:4px;background:var(--line)}
   @media (max-width:700px){.cityrow{grid-template-columns:1fr 40px 40px;grid-auto-rows:auto}
     .cityrow .rng,.cityrow .minibar{display:none}}
   .lcard{border:1px solid var(--line);border-radius:9px;background:var(--card);padding:10px 12px;margin:0 0 9px;cursor:pointer}
-  .lcard:hover{border-color:#b9c9e6;background:#fafcff}
-  .lcard.sel{border-color:var(--num);background:#f2f7ff}
+  .lcard:hover{border-color:var(--bar-muted);background:var(--bg)}
+  .lcard.sel{border-color:var(--sec);background:var(--sec-t);box-shadow:inset 4px 0 0 var(--sec)}
   .lcard .hd{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:3px}
   .lcard .dt{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
-  .lcard .sm{font-size:13.5px;color:#3b4558}
+  .lcard .sm{font-size:13.5px;color:var(--ink-2)}
   .lcard .tags{margin-top:5px;font-size:12px;color:var(--muted)}
-  .sev{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:#fff;padding:1px 7px;border-radius:4px;flex:none}
+  .sev{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--on-dark);padding:1px 7px;border-radius:4px;flex:none}
   .sev0{background:var(--sev-0)} .sev1{background:var(--sev-1)} .sev2{background:var(--sev-2)}
-  .sev3{background:var(--sev-3)} .sev4{background:var(--sev-4)} .sev5{background:var(--sev-5)}
+  .sev3{background:var(--sev-3);color:var(--ink)} .sev4{background:var(--sev-4)} .sev5{background:var(--sev-5)}
   .concept{margin:0 0 7px}
   .concept .lb{display:flex;justify-content:space-between;font-size:13px;gap:10px}
   .concept .lb span:last-child{color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
   .concept .lb{flex-wrap:wrap;column-gap:10px}   /* the counts move under the label only when both do not fit (320px) */
-  .concept .tr{height:15px;background:#eef1f6;border-radius:4px;margin-top:2px;overflow:hidden}
+  .concept .tr{height:16px;background:var(--line-soft);border-radius:4px;margin-top:2px;overflow:hidden}
   .concept .fl{height:100%;border-radius:4px}
   .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
   .faq{border:1px solid var(--line);border-radius:9px;background:var(--card);padding:10px 13px;margin:0 0 8px}
-  .faq h4{margin:0 0 4px;font-size:14px}
-  .faq p{margin:0;font-size:13.5px;color:#3b4558}
-  .dyk{border:1px solid var(--line);border-left:4px solid var(--num);border-radius:9px;background:var(--card);padding:11px 14px}
-  .dyk .big{font-size:24px;font-weight:700;line-height:1.1;color:var(--navy)}
-  .dyk .lb{font-size:13.5px;color:#3b4558;margin-top:4px}
+  .faq h3{margin:0 0 4px;font-size:14px}
+  .faq p{margin:0;font-size:13.5px;color:var(--ink-2)}
+  .dyk{border:1px solid var(--line);border-left:4px solid var(--sec);border-radius:9px;background:var(--card);padding:11px 14px}
+  .dyk .big{font-size:24px;font-weight:700;line-height:1.1;color:var(--ink)}
+  .dyk .lb{font-size:13.5px;color:var(--ink-2);margin-top:4px}
   .chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px}
   .chain .nd{border:1px solid var(--line);border-radius:6px;padding:3px 8px;background:var(--card);cursor:pointer}
-  .chain .nd:hover{background:#f2f7ff}
-  .chain .ar{color:#9aa4b8}
+  .chain .nd:hover{background:var(--sec-t)}
+  .chain .ar{color:var(--muted)}
   
 
   .lcard .sm.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .lcard{position:relative;padding-right:30px}
-  .lcard:after{content:"\203A";position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:24px;color:#8a94a8}
+  .lcard:after{content:"\203A";position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:24px;color:var(--muted)}
   @media (max-width:700px){
     .cityrow{grid-template-columns:1fr auto auto auto;grid-template-areas:"nm n h a" "rng rng rng rng" "bar bar bar bar";gap:2px 10px;padding:10px 8px}
     .cityrow>:nth-child(1){grid-area:nm} .cityrow>:nth-child(2){grid-area:n} .cityrow>:nth-child(3){grid-area:h} .cityrow>:nth-child(4){grid-area:a}
@@ -306,17 +334,19 @@
   .cosel{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
   .cosel select{padding:6px 8px;border:1px solid var(--line);border-radius:7px;font-size:13px;background:var(--card);color:var(--ink);max-width:250px}
   /* ---- Regional determinations tab (moved from rhnd-module.js) ---- */
-  .rhbar{height:9px;border-radius:2px;background:#e6ebf3;position:relative;min-width:40px}
-  .rhbar i{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--num)}
-  .rhbar i.neg{background:#8fa7c4}
+  .rhbar{height:9px;border-radius:2px;background:var(--line-soft);position:relative;min-width:40px}
+  .rhbar i{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--sec)}
+  .rhbar i.neg{background:var(--bar-muted)}
   .rhbar i.big{background:var(--bad)}
   .rhrow{cursor:default}
-  .rhrow.tot td{border-top:2px solid var(--line);font-weight:700;background:#f7f9fc}
-  .rhfiltsel{border-color:var(--navy)!important;box-shadow:inset 0 0 0 1px var(--navy)}
+  .rhrow.tot td{border-top:2px solid var(--line);font-weight:700;background:var(--bg)}
+  .rhfiltsel{border-color:var(--sec)!important;box-shadow:inset 0 0 0 1px var(--sec)}
   .rhtbl td.n{text-align:right;font-variant-numeric:tabular-nums}
   .rhsub{font-size:12.5px;color:var(--muted);margin-top:2px}   /* region type and income categories, under the name (SPEC 9.4) */
+  .rhtbl:not(.steps):not(.inc) tr>:first-child{min-width:184px}   /* Region names wrap to at most three lines at 1366px (Phase 7B) */
+  .rhtbl:not(.steps):not(.inc) th,.rhtbl:not(.steps):not(.inc) td{padding-left:6px;padding-right:6px}
   .rhtbl tr.lk{cursor:pointer}
-  .rhtbl tr.lk:hover{background:#f4f7fc}
+  .rhtbl tr.lk:hover{background:var(--bg)}
 </style>
 </head>
 <body>
@@ -358,10 +388,10 @@ const SCAG_VIDEO = "http://scag.iqm2.com/Citizens/";
 const HCD_IL = "https://www.hcd.ca.gov/sites/default/files/docs/grants-and-funding/income-limits-2026.pdf";
 
 const LEVELS = {
-  low:       {label:"Low", color:"var(--ok)"},
-  lowmod:    {label:"Low to moderate", color:"var(--warn)"},
-  contested: {label:"Contested: the objection", color:"var(--bad)"},
-  helps:     {label:"Helps SCAG (HCD choice)", color:"var(--neutral)"}
+  low:       {label:"Low", color:"var(--ok)", cls:"ok"},
+  lowmod:    {label:"Low to moderate", color:"var(--warn)", cls:"warn"},
+  contested: {label:"Contested: the objection", color:"var(--bad)", cls:"bad"},
+  helps:     {label:"Helps SCAG (HCD choice)", color:"var(--neutral)", cls:"neutral"}
 };
 
 const ELEMENTS = [
@@ -1006,7 +1036,7 @@ const SLIDES = [
 
   const dotOf = sec => '<i class="cdot" style="background:'+(SECCOL[sec]||"var(--muted)")+'"></i>';
   const secOfTarget = tg => tg.charAt(0)==="#"? (tg.split("/")[1]||null) : sectionOf(tg);
-  function chip(id, label){ return '<button class="chip" data-go="'+id+'">'+dotOf(sectionOf(id))+(label||nameOf(id))+'</button>'; }
+  function chip(id, label){ return '<button class="chip" data-s="'+(sectionOf(id)||"")+'" data-go="'+id+'">'+dotOf(sectionOf(id))+(label||nameOf(id))+'</button>'; }
   function chips(ids){ return '<div class="chips">'+ids.map(i=>chip(i)).join("")+'</div>'; }
   /* "Connected to" (SPEC 6.4): the same ids, grouped by section in the order number, law, process, context */
   const GROUP_ORDER = ["number","law","process","context"];
@@ -1019,7 +1049,7 @@ const SLIDES = [
   }
   /* a chip or cross-link box to a target: a core id (data-go) or a module route ("#/...", an ordinary anchor; SPEC 9.1) */
   function linkChip(tg, label){
-    if(tg.charAt(0)==="#") return '<a class="chip" href="'+tg+'">'+dotOf(secOfTarget(tg))+label+'</a>';
+    if(tg.charAt(0)==="#") return '<a class="chip" data-s="'+(secOfTarget(tg)||"")+'" href="'+tg+'">'+dotOf(secOfTarget(tg))+label+'</a>';
     return chip(tg, label);
   }
   function xlink(tg, label){
@@ -1047,6 +1077,7 @@ const SLIDES = [
       SECTIONS.map(sec=>'<a href="'+pageHref(sec, sec.pages[0])+'" data-go="'+sec.pages[0].tab+'"'+cur(here===sec.id)+
         (here===sec.id? ' style="border-bottom-color:'+SECCOL[sec.id]+'"' : '')+'><i style="background:'+SECCOL[sec.id]+'"></i>'+esc(sec.label)+'</a>').join("");
     const band = $("#band"), sec = SECTIONS.find(s=>s.id===here);
+    if(sec) document.body.setAttribute("data-sec", sec.id); else document.body.removeAttribute("data-sec");   /* --sec and --sec-t follow the page's section */
     if(!sec){ band.hidden = true; band.innerHTML = ""; return; }
     band.hidden = false;
     band.style.borderTopColor = SECCOL[sec.id];
@@ -1130,7 +1161,7 @@ const SLIDES = [
     const cyc = [["4th",699368,"2006-2014"],["5th",412137,"2013-2021"],["6th",1341827,"2021-2029"],["7th",1359750,"2029-2037"]];
     const cmax = 1400000;
     const cycHtml = '<div class="tscroll"><table class="mix"><tr><th>Cycle</th><th>Period</th><th class="num">SCAG regional determination</th><th></th></tr>'+
-      cyc.map(c=>'<tr><td>'+c[0]+'</td><td>'+c[2]+'</td><td class="num">'+fmt(c[1])+'</td><td style="width:34%"><div class="meter" style="background:'+(c[0]==="7th"?"var(--navy)":"#aab4c8")+';width:'+Math.round(c[1]/cmax*100)+'%"></div></td></tr>').join("")+'</table></div>'+
+      cyc.map(c=>'<tr><td>'+c[0]+'</td><td>'+c[2]+'</td><td class="num">'+fmt(c[1])+'</td><td style="width:34%"><div class="meter" style="background:'+(c[0]==="7th"?"var(--num)":"var(--bar-muted)")+';width:'+Math.round(c[1]/cmax*100)+'%"></div></td></tr>').join("")+'</table></div>'+
       '<p class="hint" style="margin-top:6px">The 7th Cycle total is about 1.3% above the 6th. What changed is the mix: cost burden was 9% of the 6th Cycle total and is 37% of the 7th, while household growth fell from 35% to 18%. (SCAG staff slides, pp.36, 38-43.) '+pgLink(36,"Slide p.36")+'</p>';
 
     const rowH = 44, left = 210, right = 120, W = 900, plotW = W-left-right;
@@ -1151,10 +1182,10 @@ const SLIDES = [
         '<rect class="rowbg" x="0" y="'+y+'" width="'+W+'" height="'+(rowH-4)+'" rx="6" fill="transparent"></rect>'+
         '<text x="8" y="'+(y+24)+'" font-size="14" style="fill:var(--ink)">'+e.name+'</text>'+
         '<rect class="barrect" x="'+x1+'" y="'+(y+8)+'" width="'+(x2-x1)+'" height="'+(rowH-20)+'" rx="3" style="fill:'+col+'"></rect>'+
-        '<text x="'+(x2+8)+'" y="'+(y+24)+'" font-size="13" fill="#3b4558">'+(e.units<0?"-":"+")+fmt(Math.abs(e.units))+'</text></g>';
+        '<text x="'+(x2+8)+'" y="'+(y+24)+'" font-size="13" style="fill:var(--ink-2)">'+(e.units<0?"-":"+")+fmt(Math.abs(e.units))+'</text></g>';
     });
     const ty = rows.length*rowH + 4;
-    svg += '<g role="img" aria-label="Total 1,359,750"><rect x="0" y="'+ty+'" width="'+W+'" height="'+(rowH-4)+'" rx="6" fill="#eef1f6"></rect>'+
+    svg += '<g role="img" aria-label="Total 1,359,750"><rect x="0" y="'+ty+'" width="'+W+'" height="'+(rowH-4)+'" rx="6" style="fill:var(--line-soft)"></rect>'+
       '<text x="8" y="'+(ty+24)+'" font-size="14" font-weight="700" style="fill:var(--ink)">Total determination</text>'+
       '<rect x="'+sx(0)+'" y="'+(ty+8)+'" width="'+(sx(TOTAL)-sx(0))+'" height="'+(rowH-20)+'" rx="3" style="fill:var(--navy)"></rect>'+
       '<text x="'+(sx(TOTAL)+8)+'" y="'+(ty+24)+'" font-size="13" font-weight="700" style="fill:var(--ink)">'+fmt(TOTAL)+'</text></g>';
@@ -1163,7 +1194,7 @@ const SLIDES = [
 
     return '<div class="card"><h2>How the number is built</h2><p class="hint">Each bar is one step in HCD&rsquo;s calculation (Table 2). Bars start where the last one ended; the red bar is the contested one. Click a bar for the law, the judgment call, and questions to ask.</p>'+svg+legend+
         xlink("#/context/determinations", "Compare with the other regions HCD has determined")+'</div>'+
-      '<div class="card" style="margin-top:14px"><h2>Where this sits among past cycles</h2>'+cycHtml+'</div>';
+      '<div class="card" style="margin-top:18px"><h2>Where this sits among past cycles</h2>'+cycHtml+'</div>';
   }
 
   /* ---------- RHNA Subcommittee tab (meetings, each with Agenda / Slides) ---------- */
@@ -1262,7 +1293,7 @@ const SLIDES = [
       WORKBOOK.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td class="src">'+r[2]+'</td><td class="src">'+r[3]+'</td></tr>').join("")+'</table>';
     return '<div class="card"><h2>HCD Table 2: every step of the calculation</h2>'+
       '<p class="hint">Steps follow HCD&rsquo;s numbering in its final determination letter (steps 4 and 6 are internal to the workbook). Click a row for HCD&rsquo;s explanation, the data source, the statute, and the link to the matching bar on the chart. '+pgLink(50,"Open Table 2, p.50")+pgLink(56,"Workbook, p.56")+'</p>'+tscroll(t)+'</div>'+
-      '<div class="card" style="margin-top:14px"><h2>Behind Table 2: the workbook&rsquo;s 16 tables</h2><p class="hint">Table of contents of the HCD workbook for SCAG (Attachment 3). '+pgLink(55,"Open p.55")+'</p>'+tscroll(w)+'</div>';
+      '<div class="card" style="margin-top:18px"><h2>Behind Table 2: the workbook&rsquo;s 16 tables</h2><p class="hint">Table of contents of the HCD workbook for SCAG (Attachment 3). '+pgLink(55,"Open p.55")+'</p>'+tscroll(w)+'</div>';
   }
 
   /* ---------- slides tab ---------- */
@@ -1286,7 +1317,7 @@ const SLIDES = [
     const maxT = 1359750;
     const bars = Object.keys(COST).map(k=>{
       const c = COST[k];
-      return '<div style="margin:6px 0"><div style="font-size:13px;color:var(--muted)">'+c.label+'</div><div style="display:flex;align-items:center;gap:8px"><div style="height:16px;border-radius:4px;background:'+(k==="hcd"?"var(--navy)":k==="alt1"?"var(--num)":"#7aa2d8")+';width:'+Math.round(c.total/maxT*100)+'%"></div><span style="font-size:13px">'+fmt(c.total)+'</span></div></div>';
+      return '<div style="margin:6px 0"><div style="font-size:13px;color:var(--muted)">'+c.label+'</div><div style="display:flex;align-items:center;gap:8px"><div style="height:16px;border-radius:4px;background:'+(state.opt===k?"var(--num)":"var(--bar-muted)")+';width:'+Math.round(c.total/maxT*100)+'%"></div><span style="font-size:13px">'+fmt(c.total)+'</span></div></div>';
     }).join("");
     return '<div class="card"><h2>The cost-burden objection</h2><p class="hint">Staff recommend objecting to this one adjustment and offer two alternative totals. Click an option. '+pgLink(32,"Staff report p.32")+'</p>'+
       '<div class="three">'+opts+'</div>'+
@@ -1383,7 +1414,7 @@ const SLIDES = [
     }
     if(o.type==="element"){
       const L = LEVELS[o.level];
-      return '<span class="pill" style="background:'+L.color+'">'+L.label+'</span><span class="src">'+(o.units<0?"-":"+")+fmt(Math.abs(o.units))+' units &middot; '+(o.shareNote? o.shareNote : (Math.abs(o.units)/TOTAL*100).toFixed(1)+'% of total')+'</span>'+
+      return '<span class="pill lv-'+L.cls+'">'+L.label+'</span><span class="src">'+(o.units<0?"-":"+")+fmt(Math.abs(o.units))+' units &middot; '+(o.shareNote? o.shareNote : (Math.abs(o.units)/TOTAL*100).toFixed(1)+'% of total')+'</span>'+
       '<h2 style="margin-top:8px">'+o.name+'</h2>'+
       '<div class="sec"><h3>What it is</h3><p>'+o.what+'</p></div>'+
       '<div class="sec"><h3>What the statute says</h3>'+
@@ -1398,7 +1429,7 @@ const SLIDES = [
     if(o.type==="law"){
       const els = ELEMENTS.filter(e=>e.law.indexOf(o.id)>=0).map(e=>e.id);
       const ds = DATES.filter(d=>d.rel.indexOf(o.id)>=0).map(d=>d.id);
-      return '<span class="pill" style="background:#6d4aa8">Law</span><span class="src">'+o.cite+'</span><h2 style="margin-top:8px">'+o.title+'</h2>'+
+      return '<span class="pill s-law">Law</span><span class="src">'+o.cite+'</span><h2 style="margin-top:8px">'+o.title+'</h2>'+
       '<div class="sec"><h3>In plain terms</h3><p>'+o.plain+'</p></div>'+
       (o.note?'<div class="sec"><h3>Why it matters here</h3><p>'+o.note+'</p></div>':'')+
       (els.length?'<div class="sec"><h3>Parts of the number it supports</h3>'+chips(els)+'</div>':'')+
@@ -1407,27 +1438,27 @@ const SLIDES = [
       '<div class="sec src">Source: packet, statute text and HCD letter</div><div class="sec">'+pgLink(o.page,"Open packet p."+o.page)+'</div>';
     }
     if(o.type==="date"){
-      return '<span class="pill" style="background:#a8561f">Date</span><span class="st '+o.status+'" style="margin:0">'+o.status+'</span><h2 style="margin-top:8px">'+o.date+'</h2><p style="margin:0 0 6px"><b>'+o.title+'</b></p>'+
+      return '<span class="pill s-process">Date</span><span class="st '+o.status+'" style="margin:0">'+o.status+'</span><h2 style="margin-top:8px">'+o.date+'</h2><p style="margin:0 0 6px"><b>'+o.title+'</b></p>'+
       '<div class="sec"><p>'+o.detail+'</p></div>'+
       '<div class="sec connected"><h3>Connected to</h3>'+connected(o.rel)+'</div>'+
       (o.id==="d_he"? '<div class="sec">'+xlink("#/context/letters/Orange", "HCD advice letters in Orange County")+'</div>' : '')+
       '<div class="sec src">Source: '+o.src+'</div><div class="sec">'+pgLink(o.page,"Open packet p."+o.page)+'</div>';
     }
     if(o.type==="agenda"){
-      return '<span class="pill" style="background:#2a7a8c">Agenda</span><span class="src">'+o.grp+' &middot; packet '+o.pages+'</span><h2 style="margin-top:8px">'+o.title+'</h2>'+
+      return '<span class="pill s-process">Agenda</span><span class="src">'+o.grp+' &middot; packet '+o.pages+'</span><h2 style="margin-top:8px">'+o.title+'</h2>'+
       '<div class="sec"><h3>Summary</h3><p>'+o.sum+'</p></div>'+
       (o.detail.length?'<div class="sec"><h3>Points worth knowing</h3><ul>'+o.detail.map(d=>'<li>'+d+'</li>').join("")+'</ul></div>':'')+
       '<div class="sec connected"><h3>Connected to</h3>'+connected(o.rel)+'</div>'+
       '<div class="sec"><h3>Open the source</h3>'+ext(secUrl(o.pages),"Open packet "+o.pages)+ext(PDF,"Full packet")+o.links.map(l=>ext(l.u,l.t)).join("")+'</div>';
     }
     if(o.type==="theme"){
-      return '<span class="pill" style="background:#5b4a8a">Theme</span><span class="src">runs across the past meetings</span><h2 style="margin-top:8px">'+esc(o.title)+'</h2>'+
+      return '<span class="pill s-process">Theme</span><span class="src">runs across the past meetings</span><h2 style="margin-top:8px">'+esc(o.title)+'</h2>'+
       '<div class="sec"><p>'+esc(o.blurb)+'</p></div>'+
       '<div class="sec"><h3>Where it appears</h3>'+chips(o.refs)+'</div>';
     }
     if(o.type==="pastitem"){
       const m = pastMtg(o.mtg), mup = !!m.upcoming;
-      return '<span class="pill" style="background:#5b4a8a">'+(mup? 'Upcoming meeting' : 'Past meeting')+'</span><span class="src">'+esc(m.date)+' &middot; '+esc(o.grp)+' &middot; packet '+pastPages(o.pages)+'</span><h2 style="margin-top:8px">'+esc(o.title)+'</h2>'+
+      return '<span class="pill s-process">'+(mup? 'Upcoming meeting' : 'Past meeting')+'</span><span class="src">'+esc(m.date)+' &middot; '+esc(o.grp)+' &middot; packet '+pastPages(o.pages)+'</span><h2 style="margin-top:8px">'+esc(o.title)+'</h2>'+
       '<div class="sec"><h3>Summary</h3><p>'+esc(o.sum)+'</p></div>'+
       (o.outcome?'<div class="sec"><h3>Outcome</h3><p>'+esc(o.outcome)+'</p></div>':'')+
       (o.detail.length?'<div class="sec"><h3>Points worth knowing</h3><ul>'+o.detail.map(d=>'<li>'+esc(d)+'</li>').join("")+'</ul></div>':'')+
@@ -1447,7 +1478,7 @@ const SLIDES = [
       const pct4 = o.key? (LIM[o.key][3]/AMI4*100).toFixed(1)+'% of the $138,600 county median' : "";
       const noteOC = (o.id==="i_vl"||o.id==="i_low")?
         '<div class="sec"><h3>An Orange County wrinkle</h3><p>The published 4-person limit ('+usd(LIM[o.key][3])+') is '+pct4+', not the round 50% or 80%. HCD&rsquo;s briefing says HUD may adjust these limits for local conditions, so the dollar limits can differ from the simple percentages. The packet does not explain the Orange County adjustment.</p></div>' : '';
-      return '<span class="pill" style="background:#7a5a1f">Income category</span><span class="src">'+fmt(o.units)+' units &middot; '+o.pct.toFixed(1)+'% of the determination</span><h2 style="margin-top:8px">'+o.name+'</h2>'+
+      return '<span class="pill s-number">Income category</span><span class="src">'+fmt(o.units)+' units &middot; '+o.pct.toFixed(1)+'% of the determination</span><h2 style="margin-top:8px">'+o.name+'</h2>'+
       '<div class="sec"><h3>How the category is defined</h3><p>'+o.def+'</p></div>'+
       '<div class="sec"><h3>What it means in Orange County (2026)</h3>'+tbl+
         (o.key? '<p class="src" style="margin-top:6px">For one person working full time (2,080 hours) the 1-person limit is about '+usd(LIM[o.key][0]/2080)+' an hour. The &ldquo;30% a month&rdquo; column is the common affordability yardstick (30% of income); program rents can differ.</p>' : '')+'</div>'+
@@ -1459,7 +1490,7 @@ const SLIDES = [
       '<div class="sec src">Sources: HCD letter Attachment 1, packet p.49; HCD Revised 2026 State Income Limits (June 23, 2026).</div><div class="sec">'+pgLink(49,"Open income table p.49")+ext(HCD_IL,"HCD income limits (PDF)")+'</div>';
     }
     if(o.type==="step"){
-      return '<span class="pill" style="background:#3d6b3a">Table 2</span><span class="src">'+(o.n? 'Step '+o.n+' &middot; ':'')+(o.val<0?'(':'')+fmt(Math.abs(o.val))+(o.val<0?')':'')+' '+o.unit+'</span><h2 style="margin-top:8px">'+o.name+'</h2>'+
+      return '<span class="pill s-number">Table 2</span><span class="src">'+(o.n? 'Step '+o.n+' &middot; ':'')+(o.val<0?'(':'')+fmt(Math.abs(o.val))+(o.val<0?')':'')+' '+o.unit+'</span><h2 style="margin-top:8px">'+o.name+'</h2>'+
       '<div class="sec"><h3>What HCD says</h3><p>'+o.say+'</p></div>'+
       '<div class="sec"><h3>Statute</h3><p>'+o.statute+'</p></div>'+
       '<div class="sec"><h3>Data source</h3><p>'+o.source+'</p></div>'+
@@ -1467,7 +1498,7 @@ const SLIDES = [
       '<div class="sec connected"><h3>Connected to</h3>'+connected(o.id.indexOf("t9")===0? ["tab_table2","d_label","s_b3"] : ["tab_table2","s_b3"])+'</div>'+
       '<div class="sec src">Source: HCD final determination letter, Attachment 2, and workbook Table 2.</div><div class="sec">'+pgLink(o.page,"Open packet p."+o.page)+'</div>';
     }
-    return '<span class="pill" style="background:#8c2a6b">Committee report, slide '+o.n+'</span><span class="src">packet p.'+o.page+'</span><h2 style="margin-top:8px">'+o.head+'</h2>'+
+    return '<span class="pill s-process">Committee report, slide '+o.n+'</span><span class="src">packet p.'+o.page+'</span><h2 style="margin-top:8px">'+o.head+'</h2>'+
       '<div class="sec"><h3>What the slide says</h3><p>'+o.says+'</p></div>'+
       '<div class="sec"><h3>Ties to the numbers</h3><p><b>'+o.num+'</b></p></div>'+
       '<div class="sec"><h3>Smart questions for this slide</h3><ul>'+o.qs.map(q=>'<li>'+q+'</li>').join("")+'</ul></div>'+
@@ -1587,7 +1618,7 @@ const SLIDES = [
     }
     if(ev.key!=="Enter" && ev.key!==" ") return;
     const t = ev.target;
-    if(t.matches && (t.matches(".row,.ti,.lawitem,.opt,.ai,tr.click,.mtg,.subtab"))){ ev.preventDefault(); t.click(); }
+    if(t.matches && (t.matches(".row,.ti,.lawitem,.opt,.ai,tr.click,.mtg,.subtab"))){ ev.preventDefault(); t.dispatchEvent(new MouseEvent("click",{bubbles:true,cancelable:true})); }   /* SVG chart rows have no .click() method */
   });
   $("#q").addEventListener("input", function(){ search(this.value); });
   $("#q").addEventListener("focus", function(){ if(this.value.trim().length>=2) search(this.value); });
