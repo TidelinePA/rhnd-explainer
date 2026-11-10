@@ -174,6 +174,6 @@
     const l = state.sel && R? R.letters.find(x=>x.file===state.sel) : null;
     return l? [l.region] : [];
   }
-  window.RHNDTab = {view:viewHtml, panel:panelHtml, route:route, setRoute:setRoute, crumb:crumb, _state:state,
+  window.RHNDTab = {view:viewHtml, panel:panelHtml, route:route, setRoute:setRoute, crumb:crumb, kinds:kindLabel, _state:state,
     reset:function(){ state.sel = null; }};
 })();

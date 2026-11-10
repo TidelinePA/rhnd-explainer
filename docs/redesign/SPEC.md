@@ -557,7 +557,7 @@ Do them in order. Commit after each. Run the checks in section 11 after each.
 | **4. Start page** | Section 8. | Matches `1-start-page.png` in structure. All figures computed from data. "Coming up" changes correctly when you fake the date. |
 | **5. Panel and links** | Sections 6.3, 6.4, 9.1, 9.2. | Breadcrumb and "Copy link" on every panel. Chips grouped and coloured. Every link in 9.2 present and working. |
 | **6. Search** | Section 9.3. | Searching "Anaheim", "Sacramento", "cost burden" and "65584" each returns grouped results that open correctly. |
-| **7. Skin and fixes** | Sections 7.2 to 7.6 and 9.4: colour meanings, type scale, components, phone layout, table fix, focus styles. Add `--on-dark:#ffffff` to `:root` and use it for white text on dark or solid-colour backgrounds. | Matches the mock-ups. No hex colour outside `:root`. No sideways scroll at 390px. |
+| **7. Skin and fixes** | Sections 7.2 to 7.6 and 9.4: colour meanings, type scale, components, phone layout, table fix, focus styles. Add `--on-dark:#ffffff` to `:root` and use it for white text on dark or solid-colour backgrounds. In the "Where this sits among past cycles" table on "How it is built", rebalance the columns so Period stays on one line at desktop width (today the Cycle column takes 46% of the width and Period wraps, as in "2006-" / "2014"). | Matches the mock-ups. No hex colour outside `:root`. No sideways scroll at 390px. |
 
 ## 11. Checks
 
