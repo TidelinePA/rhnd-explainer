@@ -696,6 +696,22 @@ const SLIDES = [
    .sort((a,b)=> b.iso.localeCompare(a.iso));      /* newest first, wherever a meeting came from */
   let state = {tab:"tab_subc", sub:"tab_agenda", mtg:"m20261026", sel:null, opt:"hcd"};
 
+  /* ---------- site name and sections (SPEC 4.1 and 13). Routing derives every URL from SECTIONS. ---------- */
+  const SITE = {name:"RHNA 7th Cycle", sub:"SCAG region explainer"};
+  const SECTIONS = [
+    {id:"number",  label:"The number",        blurb:"What the 1,359,750 is made of, and which parts are open to challenge.",
+     pages:[{tab:"tab_overview",slug:"built",label:"How it is built"},{tab:"tab_table2",slug:"table2",label:"HCD Table 2"},
+            {tab:"tab_income",slug:"income",label:"Income categories"},{tab:"tab_cost",slug:"cost-burden",label:"Cost burden"}]},
+    {id:"process", label:"The process",       blurb:"Who decides what, when, and what has been said so far.",
+     pages:[{tab:"tab_subc",slug:"meetings",label:"Subcommittee meetings"},{tab:"tab_dates",slug:"dates",label:"Dates"}]},
+    {id:"law",     label:"The law",           blurb:"What the statute requires, and where HCD is using its own judgment.",
+     pages:[{tab:"tab_law",slug:"",label:"The law"}]},
+    {id:"context", label:"Statewide context", blurb:"How the SCAG number and Orange County compare with the rest of California.",
+     pages:[{tab:"tab_rhnd",slug:"determinations",label:"Regional determinations"},{tab:"tab_hcd",slug:"letters",label:"HCD advice letters",beta:true}]}
+  ];
+  const DEFAULT_MTG = "m20261026";
+  const SUBSLUG = {tab_agenda:"agenda", tab_slides:"slides", tab_themes:"themes"};
+
   function plain(s){ return String(s).replace(/&rarr;/g,"to").replace(/&amp;/g,"and").replace(/&ldquo;|&rdquo;/g,'"').replace(/&[a-z]+;/g,""); }
   function nameOf(id){
     const o = byId[id];
@@ -727,6 +743,9 @@ const SLIDES = [
     else if(SUBVIEWS[id] || TABS.some(t=>t.id===id)){ setTab(id); }
     else if(MEETINGS.some(m=>m.id===id)){ state.tab = "tab_subc"; state.mtg = id;
       if(byId[state.sel] && byId[state.sel].type==="pastitem") state.sel = null; }   /* do not leave another meeting's item in the panel */
+    /* the panel belongs to the page (SPEC 6.3): keep the selection only if the new page shows it */
+    if(state.tab==="tab_subc"){ const m = curMtg(); if(m.views.indexOf(state.sub)<0) state.sub = m.views[0]; }
+    if(state.sel){ const segs = routeSegs(); if(segs[segs.length-1]!==state.sel) state.sel = null; }
     render();
     if(o && isPhone()){ openSheet(); }
     else { const sel = document.querySelector(".sel"); if(sel && sel.scrollIntoView) sel.scrollIntoView({block:"nearest"}); }
@@ -735,6 +754,114 @@ const SLIDES = [
   function openSheet(){ document.body.classList.add("sheet-open"); const pn=$("#panel"); if(pn) pn.scrollTop=0; }
   function closeSheet(){ document.body.classList.remove("sheet-open"); }
   window.__go = go;
+
+  /* ---------- routing (SPEC 5): the current view lives in the URL hash ---------- */
+  function pageOf(tab){
+    for(const sec of SECTIONS){ const page = sec.pages.find(p=>p.tab===tab); if(page) return {sec, page}; }
+    return null;
+  }
+  const curMtg = () => MEETINGS.find(x=>x.id===state.mtg) || MEETINGS[0];
+  /* is item o shown inside meeting mid's sub-view? (decides whether the item id belongs in a meetings URL) */
+  function selInMeeting(o, mid, sub){
+    if(!o) return false;
+    if(o.type==="agenda") return mid===DEFAULT_MTG && sub==="tab_agenda";
+    if(o.type==="slide") return mid===DEFAULT_MTG && sub==="tab_slides";
+    if(o.type==="pastitem") return o.mtg===mid && sub==="tab_agenda";
+    if(o.type==="theme") return sub==="tab_themes";
+    return false;
+  }
+  /* the path segments for the current state; an item id is included only when this page shows it */
+  function routeSegs(){
+    const pg = pageOf(state.tab); if(!pg) return [];
+    const segs = [pg.sec.id].concat(pg.page.slug? [pg.page.slug] : []);
+    const o = byId[state.sel];
+    const own = type => { if(o && o.type===type) segs.push(state.sel); };
+    switch(state.tab){
+      case "tab_overview": own("element"); break;
+      case "tab_table2": own("step"); break;
+      case "tab_income": own("income"); break;
+      case "tab_dates": own("date"); break;
+      case "tab_law": own("law"); break;
+      case "tab_cost": if(state.opt && state.opt!=="hcd" && COST[state.opt]) segs.push(state.opt); break;
+      case "tab_subc": { const m = curMtg(); segs.push(m.id, SUBSLUG[state.sub] || "agenda");
+        if(selInMeeting(o, m.id, state.sub)) segs.push(state.sel); break; }
+      case "tab_rhnd": if(window.RHNDTab && RHNDTab.route) segs.push.apply(segs, RHNDTab.route()); break;
+      case "tab_hcd": if(window.HCDTab && HCDTab.route) segs.push.apply(segs, HCDTab.route()); break;
+    }
+    return segs;
+  }
+  /* parse a hash into a route; null means "not recognised". Never throws. */
+  function parseRoute(hash){
+    let seg;
+    try{ seg = String(hash||"").replace(/^#\/?/,"").split("/").filter(s=>s!=="").map(decodeURIComponent); }
+    catch(e){ return null; }
+    if(!seg.length) return {home:true};
+    const sec = SECTIONS.find(s=>s.id===seg[0]); if(!sec) return null;
+    let page, rest;
+    if(sec.pages.length===1 && sec.pages[0].slug===""){ page = sec.pages[0]; rest = seg.slice(1); }
+    else if(seg.length===1){ page = sec.pages[0]; rest = []; }                      /* section root opens its first page */
+    else { page = sec.pages.find(p=>p.slug===seg[1]); if(!page) return null; rest = seg.slice(2); }
+    const r = {tab:page.tab, sel:null, rest:rest};
+    const one = type => {
+      if(!rest.length) return r;
+      if(rest.length===1 && byId[rest[0]] && byId[rest[0]].type===type){ r.sel = rest[0]; return r; }
+      return null;
+    };
+    switch(page.tab){
+      case "tab_overview": return one("element");
+      case "tab_table2": return one("step");
+      case "tab_income": return one("income");
+      case "tab_dates": return one("date");
+      case "tab_law": return one("law");
+      case "tab_cost":
+        if(!rest.length){ r.opt = "hcd"; return r; }
+        if(rest.length===1 && COST[rest[0]]){ r.opt = rest[0]; return r; }
+        return null;
+      case "tab_subc": {
+        if(rest.length>3) return null;
+        const m = MEETINGS.find(x=>x.id===(rest.length? rest[0] : DEFAULT_MTG)); if(!m) return null;
+        const sub = rest.length>1? Object.keys(SUBSLUG).find(k=>SUBSLUG[k]===rest[1]) : m.views[0];
+        if(!sub || m.views.indexOf(sub)<0) return null;
+        r.mtg = m.id; r.sub = sub;
+        if(rest.length===3){ if(!selInMeeting(byId[rest[2]], m.id, sub)) return null; r.sel = rest[2]; }
+        return r; }
+      case "tab_rhnd": case "tab_hcd": return r;            /* the module checks r.rest in applyHash */
+    }
+    return null;
+  }
+  let applying = false;          /* true while applyHash renders: a corrected URL replaces the entry instead of adding one */
+  function syncHash(){
+    const h = "#/"+routeSegs().map(encodeURIComponent).join("/");
+    if(h===location.hash) return;
+    try{ if(applying) history.replaceState(null, "", h); else history.pushState(null, "", h); }
+    catch(e){ if(applying) location.replace(h); else location.hash = h; }
+  }
+  function applyHash(){
+    let r = parseRoute(location.hash);
+    if(r && (r.tab==="tab_rhnd" || r.tab==="tab_hcd")){
+      const mod = r.tab==="tab_rhnd"? window.RHNDTab : window.HCDTab;
+      if(!mod || !mod.setRoute || !mod.setRoute(r.rest)) r = null;
+    }
+    /* empty, "#/" or unrecognised: the default view. Phase 3 adds the start page (tab_start) and points this at it. */
+    if(!r || r.home) r = {tab:"tab_subc", mtg:DEFAULT_MTG, sub:"tab_agenda", sel:null};
+    state.tab = r.tab; state.sel = r.sel || null;
+    if(r.mtg) state.mtg = r.mtg;
+    if(r.sub) state.sub = r.sub;
+    if(r.opt) state.opt = r.opt;
+    applying = true;
+    try{ render(); } finally{ applying = false; }
+    if(isPhone()){ if(state.sel) openSheet(); else closeSheet(); }
+    else if(state.sel){ const sel = document.querySelector(".sel"); if(sel && sel.scrollIntoView) sel.scrollIntoView({block:"nearest"}); }
+  }
+  function plainText(s){ const d = document.createElement("textarea"); d.innerHTML = String(s).replace(/<[^>]*>/g,""); return d.value; }
+  function setTitle(){
+    const pg = pageOf(state.tab), segs = routeSegs();
+    let name = pg? pg.page.label : SITE.name;
+    if(byId[state.sel] && segs[segs.length-1]===state.sel) name = nameOf(state.sel);
+    else if(state.tab==="tab_rhnd" && window.RHNDTab && RHNDTab.crumb){ const c = RHNDTab.crumb(); if(c.length) name = c[c.length-1]; }
+    else if(state.tab==="tab_hcd" && window.HCDTab && HCDTab.crumb){ const c = HCDTab.crumb(); if(c.length>1) name = c[c.length-1]; }
+    document.title = plainText(name)+" \u00b7 "+SITE.name+" (DRAFT)";
+  }
 
   function chips(ids){
     return '<div class="chips">'+ids.map(i=>'<button class="chip" data-go="'+i+'">'+nameOf(i)+'</button>').join("")+'</div>';
@@ -961,7 +1088,7 @@ const SLIDES = [
     if(state.tab==="tab_hcd" && window.HCDTab) return window.HCDTab.panel();
     const o = byId[state.sel];
     const cm = MEETINGS.find(x=>x.id===state.mtg);
-    if(!o && cm && cm.past){          /* a meeting with nothing selected: describe the meeting itself */
+    if(!o && cm && cm.past && state.tab==="tab_subc"){          /* a meeting with nothing selected: describe the meeting itself (meetings page only) */
       const pm = pastMtg(cm.id), up = !!pm.upcoming;
       return '<h2>'+esc(pm.date)+'</h2><div class="sec"><p>'+esc(pm.label)+'</p></div>'+
         '<div class="sec"><h3>Chair</h3><p>'+esc(pm.chair)+'</p></div>'+
@@ -1105,9 +1232,11 @@ const SLIDES = [
   /* ---------- render + events ---------- */
   function render(){
     renderTabs();
-    const v = {tab_subc:subcTab, tab_agenda:subcTab, tab_slides:subcTab, tab_overview:overview, tab_income:incomeTab, tab_table2:table2Tab, tab_slides:slidesTab, tab_cost:costTab, tab_dates:datesTab, tab_law:lawTab, tab_rhnd:rhndTab, tab_hcd:hcdTab};
+    const v = {tab_subc:subcTab, tab_agenda:subcTab, tab_overview:overview, tab_income:incomeTab, tab_table2:table2Tab, tab_slides:slidesTab, tab_cost:costTab, tab_dates:datesTab, tab_law:lawTab, tab_rhnd:rhndTab, tab_hcd:hcdTab};
     $("#view").innerHTML = '<div class="mobilehint">Tap any row or bar for details.</div>' + (v[state.tab]||overview)();
     $("#panel").innerHTML = panel();
+    syncHash();
+    setTitle();
   }
   document.addEventListener("click", function(ev){
     if(ev.target.closest("a.ext")) return;
@@ -1127,7 +1256,10 @@ const SLIDES = [
     if(t.matches && (t.matches(".row,.ti,.lawitem,.opt,.ai,tr.click,.mtg,.subtab"))){ ev.preventDefault(); t.click(); }
   });
   $("#q").addEventListener("input", function(){ search(this.value); });
-  render();
+  window.addEventListener("popstate", applyHash);
+  window.addEventListener("hashchange", applyHash);
+  /* hcd-module.js and rhnd-module.js load after this script, so the first route is applied once the page has parsed */
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", applyHash); else applyHash();
 })();
 </script>
 <script src="hcd-module.js"></script>

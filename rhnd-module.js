@@ -147,6 +147,20 @@
   document.addEventListener("keydown", function(ev){
     if((ev.key==="Enter"||ev.key===" ") && ev.target.matches && ev.target.matches("tr.lk")){ ev.preventDefault(); ev.target.click(); }
   });
-  window.RHNDTab = {view:viewHtml, panel:panelHtml, _state:state,
+  /* ---- routing (SPEC 5.3). Region slug: the letter's file name without "hcd-7th-rhnd-" and ".pdf". ---- */
+  const slugOf = f => String(f).replace(/^hcd-7th-rhnd-/,"").replace(/\.pdf$/,"");
+  function route(){ return state.sel? [slugOf(state.sel)] : []; }
+  function setRoute(seg){
+    seg = seg || [];
+    if(!seg.length){ state.sel = null; return true; }
+    if(seg.length>1 || !R) return false;
+    const l = R.letters.find(x=>slugOf(x.file)===seg[0]); if(!l) return false;
+    state.sel = l.file; return true;
+  }
+  function crumb(){
+    const l = state.sel && R? R.letters.find(x=>x.file===state.sel) : null;
+    return l? [l.region] : [];
+  }
+  window.RHNDTab = {view:viewHtml, panel:panelHtml, route:route, setRoute:setRoute, crumb:crumb, _state:state,
     reset:function(){ state.sel = null; }};
 })();

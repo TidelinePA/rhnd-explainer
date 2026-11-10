@@ -14,11 +14,11 @@
   const plural = (k,w) => k+' '+(k===1? w : /[^aeiou]y$/.test(w)? w.slice(0,-1)+'ies' : w+'s');
 
 
-  let stack = [{v:"cities"}], pos = 0;
-  const here = () => stack[pos] || {v:"cities"};
-  function push(e){ stack = stack.slice(0,pos+1); stack.push(e); pos = stack.length-1; render(); }
-  function step(d){ const k = pos+d; if(k>=0 && k<stack.length){ pos = k; render(); } }
-  function home(){ stack = [{v:"cities"}]; pos = 0; render(); }
+  /* the view on screen. The browser's Back and Forward buttons now step through views (the URL holds it). */
+  let cur = {v:"cities"};
+  const here = () => cur;
+  function push(e){ cur = e; render(); }
+  function home(){ cur = {v:"cities"}; render(); }
   const lettersOf = name => HCD.letters.map((L,i)=>({L,i})).filter(x=>x.L.city===name)
       .sort((a,b)=>(a.L.d||"9999").localeCompare(b.L.d||"9999"));
   const cityRec = name => HCD.cities.find(c=>c.n===name);
@@ -67,9 +67,7 @@
       : h.v==="city" ? sc+' / <b>'+h.city+'</b>'
       : h.v==="letter" ? sc+' / <b>'+h.city+'</b> / letter'
       : h.v==="concepts" ? sc+' / Concepts and connections' : h.v==="faq" ? "Questions" : sc+' / Did you know';
-    return '<div class="hcdnav"><button data-hcd="back" '+(pos<=0?'disabled':'')+'>&#8592; Back</button>'+
-      '<button data-hcd="fwd" '+(pos>=stack.length-1?'disabled':'')+'>Forward &#8594;</button>'+
-      '<span class="crumb">'+crumb+'</span></div>';
+    return '<div class="hcdnav"><span class="crumb">'+crumb+'</span></div>';
   }
   function countySelect(){
     const rows = HCD.meta.counties.filter(c=>c.n!=="Orange").sort((a,b)=>a.n.localeCompare(b.n));
@@ -302,8 +300,7 @@
     const hc = ev.target.closest("[data-hcd]"); if(!hc) return;
     const raw = hc.getAttribute("data-hcd"), bar = raw.indexOf("|");
     const cmd = bar<0? raw : raw.slice(0,bar), arg = bar<0? "" : decodeURIComponent(raw.slice(bar+1));
-    if(cmd==="back") step(-1); else if(cmd==="fwd") step(1);
-    else if(cmd==="home" || cmd==="cities") home();
+    if(cmd==="home" || cmd==="cities") home();
     else if(cmd==="concepts"||cmd==="faq"||cmd==="dyk") push({v:cmd});
     else if(cmd==="city") push({v:"city", city:arg});
     else if(cmd==="letter"){ const k = parseInt(arg,10); if(HCD.letters[k]) push({v:"letter", city:HCD.letters[k].city, ix:k}); }
@@ -317,6 +314,43 @@
   document.addEventListener("keydown", function(ev){
     if((ev.key==="Enter"||ev.key===" ") && ev.target.matches && ev.target.matches(".cityrow,.lcard")){ ev.preventDefault(); ev.target.click(); }
   });
-  window.HCDTab = {view:viewHtml, panel:panelHtml, _state:state};
+  /* ---- routing (SPEC 5.3). County segment: the county name, or "all" for All California. ---- */
+  function route(){
+    const c = state.county==="*"? "all" : state.county, h = here();
+    if(h.v==="city") return [c, "city", h.city];
+    if(h.v==="letter") return [c, "letter", String(h.ix)];
+    if(h.v==="concepts" || h.v==="faq" || h.v==="dyk") return [c, h.v];
+    return [c];
+  }
+  /* set state from path segments without rendering; false (and no change) if they do not describe a view */
+  function setRoute(seg){
+    seg = seg || [];
+    if(!HCD) return !seg.length;
+    if(seg.length>3) return false;
+    let county = "Orange", v = {v:"cities"};
+    if(seg.length){
+      county = seg[0]==="all"? "*" : seg[0];
+      if(county!=="*" && !HCD.meta.counties.some(x=>x.n===county)) return false;
+    }
+    if(seg.length>=2){
+      const w = seg[1], k = /^\d+$/.test(seg[2]||"")? parseInt(seg[2],10) : -1;
+      if((w==="concepts" || w==="faq" || w==="dyk") && seg.length===2) v = {v:w};
+      else if(w==="city" && seg.length===3 && cityRec(seg[2])) v = {v:"city", city:seg[2]};
+      else if(w==="letter" && seg.length===3 && HCD.letters[k]) v = {v:"letter", city:HCD.letters[k].city, ix:k};
+      else return false;
+    }
+    state.county = county; cur = v;
+    return true;
+  }
+  function crumb(){
+    const h = here(), sc = state.county==="*"? "All California" : state.county+" County";
+    if(h.v==="city") return [sc, h.city];
+    if(h.v==="letter"){ const L = HCD && HCD.letters[h.ix]; return [sc, h.city, L? L.t+" ("+(L.d||"undated")+")" : "Letter"]; }
+    if(h.v==="concepts") return [sc, "Concepts and connections"];
+    if(h.v==="faq") return [sc, "Questions"];
+    if(h.v==="dyk") return [sc, "Did you know"];
+    return [sc];
+  }
+  window.HCDTab = {view:viewHtml, panel:panelHtml, route:route, setRoute:setRoute, crumb:crumb, _state:state};
   if(!EMBED) render();
 })();

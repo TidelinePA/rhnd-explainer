@@ -136,6 +136,9 @@ Use the URL hash. It works on GitHub Pages and from `file://` with no server con
 - `render()` ends by calling a new `syncHash()`. It builds the hash from the current state. If it differs from `location.hash`, it calls `history.pushState(null, "", hash)`. `pushState` does not fire `hashchange`, so there is no loop.
 - A new `applyHash()` parses `location.hash`, sets the state, and calls `render()`.
 - Call `applyHash()` once at start-up instead of the bare `render()`, and on both `popstate` and `hashchange`.
+- **Start-up timing.** `hcd-module.js` and `rhnd-module.js` load after the app script, so the first `applyHash()` runs once the page has finished parsing (`DOMContentLoaded`, or at once if parsing is already done). Otherwise a module route opened in a fresh tab could not be applied.
+- **pushState only for real navigation.** When `applyHash()` fills in or corrects a URL (an empty hash, `#/`, a section root such as `#/number`, a meeting with no sub-view, or an unrecognised hash), `syncHash()` writes the corrected hash with `history.replaceState`, so no extra history entry is created. `history.pushState` is used only when the reader navigates. Pushing during a correction would trap the Back button: Back would land on the incomplete URL, which would be corrected and pushed again.
+- **Until Phase 3 adds `tab_start`,** an empty hash, `#/` and an unrecognised hash open today's default view (the Subcommittee meetings page, meeting `m20261026`, Agenda).
 - An empty, missing or unrecognised hash shows the start page. Never throw on a bad hash.
 - `render()` also sets `document.title` to `<item or page name> · RHNA 7th Cycle (DRAFT)`.
 - On phones, `applyHash()` closes the slide-up sheet when the route has no selected item and opens it when it has one.
@@ -239,6 +242,13 @@ The panel keeps its current content for every item type. Add a header above that
 The start page has no panel. Give `<main>` a class there that makes it a single column and hides the `<aside>`.
 
 When no item is selected, the panel shows its existing default text for that page.
+
+**The panel belongs to the page** (decided in Phase 2; this replaces the carry-over behaviour on `main`, where an item selected on one page stayed in the panel after switching to another page, and a past meeting's description appeared on every page):
+
+- The panel shows the current page's own selected item, or that page's default text.
+- Switching page clears the selected item unless the item belongs to the new page (that is, unless the new page's URL can include it under section 5.2).
+- The meeting description appears in the panel only on the Subcommittee meetings page.
+- There is no separate remembered selection per page. Going to a page through a link shows its default panel; going back with the browser's Back button restores whatever the URL says.
 
 ### 6.4 "Related" becomes "Connected to"
 
@@ -551,7 +561,7 @@ Do them in order. Commit after each. Run the checks in section 11 after each.
 ### 11.1 After every phase
 
 1. Open the browser console. There must be no errors on load or while clicking through every page.
-2. Run `node docs/redesign/smoke-test.js` from the repository root (it needs Playwright). It loads a list of routes and reports failures. It is expected to fail before Phase 2 is complete.
+2. Run `node docs/redesign/smoke-test.js` from the repository root (it needs Playwright). It loads a list of routes and reports failures. It is expected to fail before Phase 2 is complete. **From Phase 2 until Phase 7,** it is expected to report exactly four failures, all "page scrolls sideways" at 390px: HCD Table 2 (`#/number/table2/t11`), Income categories (`#/number/income/i_al`), Slides (`#/process/meetings/m20261026/slides/sl19`) and the Regional determinations list (`#/context/determinations`). These pages already scroll sideways on `main`; Phase 7 fixes them (sections 7.6 and 9.4). Any other failure is a real failure.
 3. Click one item on each of the nine pages and compare the panel text with the live site on `main`. The wording must be identical.
 4. Check at 1366px, 980px and 390px wide.
 
