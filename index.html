@@ -54,6 +54,25 @@
   .pagenav a{padding:7px 0 10px;font-size:14.5px;color:var(--muted);text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent;flex:none}
   .pagenav a:hover{color:var(--ink)}
   .pagenav a[aria-current="page"]{color:var(--ink);font-weight:650}
+  /* ---- panel header, chips with section dots, "Connected to", cross-link boxes (SPEC 6.3, 6.4, 7.5) ---- */
+  .phead{display:flex;align-items:flex-start;gap:10px;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line-soft)}
+  .pcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:3px 7px;font-size:12.5px;color:var(--muted);min-width:0;padding-top:3px}
+  .pcrumb a{color:var(--muted);text-decoration:none}
+  .pcrumb a:hover{color:var(--ink);text-decoration:underline}
+  .pcrumb b{color:var(--ink);font-weight:600}
+  .pcrumb .cdot{width:8px;height:8px;margin-right:2px}
+  .copylink{margin-left:auto;flex:none;border:1px solid var(--line);border-radius:7px;padding:3px 10px;font-size:12px;background:var(--card);color:var(--ink);cursor:pointer;white-space:nowrap}
+  .cdot{display:inline-block;width:7px;height:7px;border-radius:50%;flex:none}
+  .chip .cdot{margin-right:6px;vertical-align:1px}
+  a.chip{display:inline-block;text-decoration:none}
+  .connected .cgrp{display:grid;grid-template-columns:104px minmax(0,1fr);gap:8px;align-items:start;margin-top:6px}
+  .connected .cgrp .chips{margin-top:0}
+  .cglab{font-size:12.5px;font-weight:600;padding-top:4px}
+  .xlink{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-left:4px solid var(--line);border-radius:9px;background:var(--card);padding:11px 14px;margin:10px 0 0;color:var(--ink);text-decoration:none}
+  .xlink b{flex:1;font-weight:650}
+  .xlink:hover b{text-decoration:underline}
+  .xarr{font-weight:700;flex:none}
+  @media (max-width:700px){.connected .cgrp{grid-template-columns:minmax(0,1fr);gap:3px}}
   /* ---- start page (SPEC 8). Structure follows mockups/1-start-page.png; final polish is Phase 7. ---- */
   main.start{grid-template-columns:minmax(0,1fr)}
   main.start aside{display:none}
@@ -819,24 +838,31 @@ const SLIDES = [
       }
     }
     if(SUBVIEWS[id]) return "Subcommittee: "+SUBVIEWS[id];
-    const t = TABS.find(t=>t.id===id); return t? "Tab: "+t.label : id;
+    if(id==="tab_start") return "Start";
+    const pg = pageOf(id); return pg? pg.page.label : id;
   }
-  function go(id){
+  /* set the state for opening id; dry = only compute (no module reset), used by hrefOf */
+  function applyGo(id, dry){
     const o = byId[id];
     const setTab = t => { if(SUBVIEWS[t]){ state.tab = "tab_subc"; state.sub = t; } else { state.tab = t; }
     /* clicking the tab always returns that view to its own front page */
-    if(t==="tab_rhnd" && window.RHNDTab && window.RHNDTab.reset) window.RHNDTab.reset(); };
+    if(!dry && t==="tab_rhnd" && window.RHNDTab && window.RHNDTab.reset) window.RHNDTab.reset(); };
     if(o){ state.sel = id; setTab(TABOF[o.type]);
       if(o.type==="pastitem") state.mtg = o.mtg;
       else if(o.type==="theme") state.mtg = PAST.meetings[0].id;
       else if(o.type==="agenda" || o.type==="slide") state.mtg = "m20261026"; }
-    else if(SUBVIEWS[id] || id==="tab_start" || TABS.some(t=>t.id===id)){ setTab(id); }
+    else if(SUBVIEWS[id] || id==="tab_start" || TABS.some(t=>t.id===id)){ setTab(id); state.sel = null; }   /* a link to a page shows its default panel (SPEC 6.3) */
     else if(MEETINGS.some(m=>m.id===id)){ state.tab = "tab_subc"; state.mtg = id;
       if(byId[state.sel] && byId[state.sel].type==="pastitem") state.sel = null; }   /* do not leave another meeting's item in the panel */
     /* the panel belongs to the page (SPEC 6.3): keep the selection only if the new page shows it */
     if(state.tab==="tab_subc"){ const m = curMtg(); if(m.views.indexOf(state.sub)<0) state.sub = m.views[0]; }
     if(state.sel){ const segs = routeSegs(); if(segs[segs.length-1]!==state.sel) state.sel = null; }
+  }
+  function go(id){
+    const o = byId[id], prevTab = state.tab;
+    applyGo(id);
     render();
+    if(state.tab!==prevTab) window.scrollTo(0,0);          /* a different page starts at the top (SPEC 5.1) */
     if(o && isPhone()){ openSheet(); }
     else { const sel = document.querySelector(".sel"); if(sel && sel.scrollIntoView) sel.scrollIntoView({block:"nearest"}); }
   }
@@ -844,6 +870,13 @@ const SLIDES = [
   function openSheet(){ document.body.classList.add("sheet-open"); const pn=$("#panel"); if(pn) pn.scrollTop=0; }
   function closeSheet(){ document.body.classList.remove("sheet-open"); }
   window.__go = go;
+  /* the URL that go(id) would produce, without navigating */
+  function hrefOf(id){
+    if(id==="tab_rhnd") return "#/context/determinations";      /* go("tab_rhnd") resets the module to its list */
+    const saved = JSON.stringify(state);
+    try{ applyGo(id, true); return "#/"+routeSegs().map(encodeURIComponent).join("/"); }
+    finally{ Object.assign(state, JSON.parse(saved)); }
+  }
 
   /* ---------- routing (SPEC 5): the current view lives in the URL hash ---------- */
   function pageOf(tab){
@@ -926,7 +959,10 @@ const SLIDES = [
     try{ if(applying) history.replaceState(null, "", h); else history.pushState(null, "", h); }
     catch(e){ if(applying) location.replace(h); else location.hash = h; }
   }
+  let userNav = false;          /* true while a clicked "#/..." link is being applied; Back and Forward leave it false */
+  function navTo(h){ if(h===location.hash) return; userNav = true; location.hash = h; }
   function applyHash(){
+    const prevTab = state.tab, byClick = userNav; userNav = false;
     let r = parseRoute(location.hash);
     if(r && (r.tab==="tab_rhnd" || r.tab==="tab_hcd")){
       const mod = r.tab==="tab_rhnd"? window.RHNDTab : window.HCDTab;
@@ -940,6 +976,7 @@ const SLIDES = [
     if(r.opt) state.opt = r.opt;
     applying = true;
     try{ render(); } finally{ applying = false; }
+    if(byClick && state.tab!==prevTab) window.scrollTo(0,0);
     if(isPhone()){ if(state.sel) openSheet(); else closeSheet(); }
     else if(state.sel){ const sel = document.querySelector(".sel"); if(sel && sel.scrollIntoView) sel.scrollIntoView({block:"nearest"}); }
   }
@@ -953,9 +990,36 @@ const SLIDES = [
     document.title = plainText(name)+" \u00b7 "+SITE.name+" (DRAFT)";
   }
 
-  function chips(ids){
-    return '<div class="chips">'+ids.map(i=>'<button class="chip" data-go="'+i+'">'+nameOf(i)+'</button>').join("")+'</div>';
+  const dotOf = sec => '<i class="cdot" style="background:'+(SECCOL[sec]||"var(--muted)")+'"></i>';
+  const secOfTarget = tg => tg.charAt(0)==="#"? (tg.split("/")[1]||null) : sectionOf(tg);
+  function chip(id, label){ return '<button class="chip" data-go="'+id+'">'+dotOf(sectionOf(id))+(label||nameOf(id))+'</button>'; }
+  function chips(ids){ return '<div class="chips">'+ids.map(i=>chip(i)).join("")+'</div>'; }
+  /* "Connected to" (SPEC 6.4): the same ids, grouped by section in the order number, law, process, context */
+  const GROUP_ORDER = ["number","law","process","context"];
+  function connected(ids){
+    const groups = GROUP_ORDER.map(s=>[s, ids.filter(i=>sectionOf(i)===s)]).filter(g=>g[1].length);
+    const rest = ids.filter(i=>GROUP_ORDER.indexOf(sectionOf(i))<0);
+    return groups.map(g=>{ const sec = SECTIONS.find(x=>x.id===g[0]);
+        return '<div class="cgrp"><span class="cglab" style="color:'+SECCOL[g[0]]+'">'+esc(sec.label)+'</span>'+chips(g[1])+'</div>'; }).join("")+
+      (rest.length? '<div class="cgrp"><span class="cglab"></span>'+chips(rest)+'</div>' : '');
   }
+  /* a chip or cross-link box to a target: a core id (data-go) or a module route ("#/...", an ordinary anchor; SPEC 9.1) */
+  function linkChip(tg, label){
+    if(tg.charAt(0)==="#") return '<a class="chip" href="'+tg+'">'+dotOf(secOfTarget(tg))+label+'</a>';
+    return chip(tg, label);
+  }
+  function xlink(tg, label){
+    const col = SECCOL[secOfTarget(tg)] || "var(--line)";
+    const attrs = tg.charAt(0)==="#"? 'href="'+tg+'"' : 'href="'+hrefOf(tg)+'" data-go="'+tg+'"';
+    return '<a class="xlink" '+attrs+' style="border-left-color:'+col+'"><b>'+label+'</b><span class="xarr" style="color:'+col+'" aria-hidden="true">&rarr;</span></a>';
+  }
+  const shortDate = iso => MON[parseInt(iso.slice(5,7),10)-1]+" "+parseInt(iso.slice(8,10),10);
+  /* for hcd-module.js and rhnd-module.js: shared link markup and figures that live in the core data */
+  window.__site = {
+    xlink: xlink, chip: linkChip,
+    dateText: id => { const d = byId[id]; return d && d.iso? shortDate(d.iso)+", "+d.iso.slice(0,4) : ""; },
+    mtgShort: id => { const m = MEETINGS.find(x=>x.id===id); return m? shortDate(m.iso) : ""; }
+  };
   function ext(url,label){ return '<a class="ext" href="'+url+'" target="_blank" rel="noopener">'+label+' &#8599;</a>'; }
   function pgLink(p,label){ return ext(pk(p), label||("Open packet p."+p)); }
 
@@ -1083,7 +1147,8 @@ const SLIDES = [
     svg += '</svg>';
     const legend = '<div class="legend">'+Object.keys(LEVELS).map(k=>'<span><i style="background:'+LEVELS[k].color+'"></i>'+LEVELS[k].label+'</span>').join("")+'<span>(color = how challengeable, draft assessment)</span></div>';
 
-    return '<div class="card"><h2>How the number is built</h2><p class="hint">Each bar is one step in HCD&rsquo;s calculation (Table 2). Bars start where the last one ended; the red bar is the contested one. Click a bar for the law, the judgment call, and questions to ask.</p>'+svg+legend+'</div>'+
+    return '<div class="card"><h2>How the number is built</h2><p class="hint">Each bar is one step in HCD&rsquo;s calculation (Table 2). Bars start where the last one ended; the red bar is the contested one. Click a bar for the law, the judgment call, and questions to ask.</p>'+svg+legend+
+        xlink("#/context/determinations", "Compare with the other regions HCD has determined")+'</div>'+
       '<div class="card" style="margin-top:14px"><h2>Where this sits among past cycles</h2>'+cycHtml+'</div>';
   }
 
@@ -1233,7 +1298,7 @@ const SLIDES = [
         '<li>The objection standard is &ldquo;not a reasonable application,&rdquo; a higher bar than &ldquo;not the best.&rdquo;</li>'+
         '<li>HCD calls cost burden &ldquo;a key indicator of pent-up demand.&rdquo;</li></ul></div></div>'+
       '<div class="sec"><h3>Draft read (for discussion, not a position)</h3><p>Alternative 2 is stronger on principle (no model exists), but a larger ask. Alternative 1 is a narrower, more defensible fallback, though HCD can answer it with the statute&rsquo;s four-income-group language. The sharpest question for the Board: if HCD rejects the lower-income version, does SCAG want the objection to stand on Alternative 2 alone?</p></div>'+
-      '<div class="sec"><h3>Related</h3>'+chips(["e4","e5","t11","t12","sl19","sl22","s_b1H","s_b3","s_c2","s_c3","d_obj","d_final"])+'</div></div>';
+      '<div class="sec connected"><h3>Connected to</h3>'+connected(["e4","e5","t11","t12","sl19","sl22","s_b1H","s_b3","s_c2","s_c3","d_obj","d_final"])+'</div></div>';
   }
 
   /* ---------- dates tab ---------- */
@@ -1246,6 +1311,38 @@ const SLIDES = [
   function lawTab(){
     return '<div class="card"><h2>Where the law says what</h2><p class="hint">Gov. Code &sect;65584.01, as printed in the packet (pp.59-62), plus the income-category rule. Click a provision to see which parts of the number it supports. '+pgLink(59,"Open statute p.59")+'</p>'+
       LAWS.map(l=>'<div class="lawitem'+(state.sel===l.id?' sel':'')+'" data-go="'+l.id+'" tabindex="0" role="button"><b>'+l.cite+'</b><div>'+l.title+'</div></div>').join("")+'</div>';
+  }
+
+  /* ---------- panel header (SPEC 6.3): breadcrumb and "Copy link" ---------- */
+  function panelHead(){
+    const pg = pageOf(state.tab); if(!pg) return "";
+    const a = (tab, label) => '<a href="'+hrefOf(tab)+'" data-go="'+tab+'">'+esc(label)+'</a>';
+    const parts = [a(pg.sec.pages[0].tab, pg.sec.label)];
+    if(pg.sec.pages.length>1 || pg.page.label!==pg.sec.label) parts.push(a(pg.page.tab, pg.page.label));
+    let tail = [];
+    if(state.tab==="tab_rhnd" && window.RHNDTab && RHNDTab.crumb) tail = RHNDTab.crumb().map(esc);
+    else if(state.tab==="tab_hcd" && window.HCDTab && HCDTab.crumb) tail = HCDTab.crumb().map(esc);
+    else { const segs = routeSegs();
+      if(byId[state.sel] && segs[segs.length-1]===state.sel) tail = [nameOf(state.sel)];
+      else if(state.tab==="tab_subc"){ const cm = curMtg(); if(cm.past) tail = [esc(cm.date)]; } }
+    tail.forEach((x,i)=>parts.push(i===tail.length-1? '<b>'+x+'</b>' : '<span>'+x+'</span>'));
+    return '<div class="phead"><nav class="pcrumb" aria-label="Breadcrumb">'+dotOf(pg.sec.id)+parts.join('<span class="sep" aria-hidden="true">&rsaquo;</span>')+'</nav>'+
+      '<button type="button" class="copylink" data-copylink>Copy link</button></div>';
+  }
+  /* copies location.href; falls back to a selected input and execCommand where navigator.clipboard is missing (file://) */
+  function copyLink(btn){
+    const url = location.href;
+    const done = () => { btn.textContent = "Copied"; clearTimeout(btn._t); btn._t = setTimeout(function(){ btn.textContent = "Copy link"; }, 2000); };
+    const fallback = () => {
+      const i = document.createElement("input"); i.value = url; i.setAttribute("readonly", "");
+      i.style.position = "fixed"; i.style.top = "0"; i.style.left = "0"; i.style.opacity = "0";
+      document.body.appendChild(i); i.focus(); i.select(); i.setSelectionRange(0, url.length);
+      let ok = false; try{ ok = document.execCommand("copy"); }catch(e){}
+      document.body.removeChild(i); btn.focus();
+      if(ok) done();
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, fallback);
+    else fallback();
   }
 
   /* ---------- side panel ---------- */
@@ -1280,7 +1377,7 @@ const SLIDES = [
       '<div class="sec"><h3>How challengeable</h3><p>'+o.why+'</p></div>'+
       '<div class="sec"><h3>Questions to ask</h3><ul>'+o.qs.map(q=>'<li>'+q+'</li>').join("")+'</ul></div>'+
       '<div class="sec"><h3>How the share changed</h3><p>'+o.cycles+'</p></div>'+
-      '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
+      '<div class="sec connected"><h3>Connected to</h3>'+connected(o.rel)+'</div>'+
       '<div class="sec src">Source: '+o.src+'</div><div class="sec">'+pgLink(o.page,"Open slide or table in packet, p."+o.page)+'</div>';
     }
     if(o.type==="law"){
@@ -1291,20 +1388,21 @@ const SLIDES = [
       (o.note?'<div class="sec"><h3>Why it matters here</h3><p>'+o.note+'</p></div>':'')+
       (els.length?'<div class="sec"><h3>Parts of the number it supports</h3>'+chips(els)+'</div>':'')+
       (ds.length?'<div class="sec"><h3>Dates it drives</h3>'+chips(ds)+'</div>':'')+
-      '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
+      '<div class="sec connected"><h3>Connected to</h3>'+connected(o.rel)+'</div>'+
       '<div class="sec src">Source: packet, statute text and HCD letter</div><div class="sec">'+pgLink(o.page,"Open packet p."+o.page)+'</div>';
     }
     if(o.type==="date"){
       return '<span class="pill" style="background:#a8561f">Date</span><span class="st '+o.status+'" style="margin:0">'+o.status+'</span><h2 style="margin-top:8px">'+o.date+'</h2><p style="margin:0 0 6px"><b>'+o.title+'</b></p>'+
       '<div class="sec"><p>'+o.detail+'</p></div>'+
-      '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
+      '<div class="sec connected"><h3>Connected to</h3>'+connected(o.rel)+'</div>'+
+      (o.id==="d_he"? '<div class="sec">'+xlink("#/context/letters/Orange", "HCD advice letters in Orange County")+'</div>' : '')+
       '<div class="sec src">Source: '+o.src+'</div><div class="sec">'+pgLink(o.page,"Open packet p."+o.page)+'</div>';
     }
     if(o.type==="agenda"){
       return '<span class="pill" style="background:#2a7a8c">Agenda</span><span class="src">'+o.grp+' &middot; packet '+o.pages+'</span><h2 style="margin-top:8px">'+o.title+'</h2>'+
       '<div class="sec"><h3>Summary</h3><p>'+o.sum+'</p></div>'+
       (o.detail.length?'<div class="sec"><h3>Points worth knowing</h3><ul>'+o.detail.map(d=>'<li>'+d+'</li>').join("")+'</ul></div>':'')+
-      '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
+      '<div class="sec connected"><h3>Connected to</h3>'+connected(o.rel)+'</div>'+
       '<div class="sec"><h3>Open the source</h3>'+ext(secUrl(o.pages),"Open packet "+o.pages)+ext(PDF,"Full packet")+o.links.map(l=>ext(l.u,l.t)).join("")+'</div>';
     }
     if(o.type==="theme"){
@@ -1319,7 +1417,7 @@ const SLIDES = [
       (o.outcome?'<div class="sec"><h3>Outcome</h3><p>'+esc(o.outcome)+'</p></div>':'')+
       (o.detail.length?'<div class="sec"><h3>Points worth knowing</h3><ul>'+o.detail.map(d=>'<li>'+esc(d)+'</li>').join("")+'</ul></div>':'')+
       (o.qs.length?'<div class="sec"><h3>Questions to ask</h3><ul>'+o.qs.map(q=>'<li>'+esc(q)+'</li>').join("")+'</ul></div>':'')+
-      (o.rel.length?'<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>':'')+
+      (o.rel.length?'<div class="sec connected"><h3>Connected to</h3>'+connected(o.rel)+'</div>':'')+
       '<div class="sec src">These are working notes written from the packet text. Read the pages before relying on them.</div>'+
       '<div class="sec"><h3>Open the source</h3>'+(o.pages? ext(pastUrl(o.stem, o.pages[0]), "Open "+pastPages(o.pages)) : "")+ext(pastUrl(o.stem), "Full packet")+ext(PAST.listing, "SCAG past agendas page")+'</div>';
     }
@@ -1342,7 +1440,7 @@ const SLIDES = [
       (o.extra?'<div class="sec"><h3>Link to the adjustments</h3><p>'+o.extra+'</p></div>':'')+
       '<div class="sec"><h3>What it means for RHNA</h3><p>These units are the share of regional housing need meant for households in this income range. Staff note that for lower-income units, state law adds tools such as appropriate densities and streamlined approvals when cities identify sites (staff report p.32). Income categories are based on county median income by law.</p></div>'+
       '<div class="sec"><h3>Questions to ask</h3><ul><li>How will the methodology distribute this category among Orange County cities, given county-level income limits?</li><li>Does the cost-burden adjustment change the mix across categories? (The packet does not say.)</li></ul></div>'+
-      '<div class="sec"><h3>Related</h3>'+chips(["s_inc","e8","e4","sl6","tab_income"])+'</div>'+
+      '<div class="sec connected"><h3>Connected to</h3>'+connected(["s_inc","e8","e4","sl6","tab_income"])+'</div>'+
       '<div class="sec src">Sources: HCD letter Attachment 1, packet p.49; HCD Revised 2026 State Income Limits (June 23, 2026).</div><div class="sec">'+pgLink(49,"Open income table p.49")+ext(HCD_IL,"HCD income limits (PDF)")+'</div>';
     }
     if(o.type==="step"){
@@ -1351,14 +1449,14 @@ const SLIDES = [
       '<div class="sec"><h3>Statute</h3><p>'+o.statute+'</p></div>'+
       '<div class="sec"><h3>Data source</h3><p>'+o.source+'</p></div>'+
       (o.el? '<div class="sec"><h3>On the chart</h3>'+chips([o.el])+'</div>' : '')+
-      '<div class="sec"><h3>Related</h3>'+chips(o.id.indexOf("t9")===0? ["tab_table2","d_label","s_b3"] : ["tab_table2","s_b3"])+'</div>'+
+      '<div class="sec connected"><h3>Connected to</h3>'+connected(o.id.indexOf("t9")===0? ["tab_table2","d_label","s_b3"] : ["tab_table2","s_b3"])+'</div>'+
       '<div class="sec src">Source: HCD final determination letter, Attachment 2, and workbook Table 2.</div><div class="sec">'+pgLink(o.page,"Open packet p."+o.page)+'</div>';
     }
     return '<span class="pill" style="background:#8c2a6b">Committee report, slide '+o.n+'</span><span class="src">packet p.'+o.page+'</span><h2 style="margin-top:8px">'+o.head+'</h2>'+
       '<div class="sec"><h3>What the slide says</h3><p>'+o.says+'</p></div>'+
       '<div class="sec"><h3>Ties to the numbers</h3><p><b>'+o.num+'</b></p></div>'+
       '<div class="sec"><h3>Smart questions for this slide</h3><ul>'+o.qs.map(q=>'<li>'+q+'</li>').join("")+'</ul></div>'+
-      '<div class="sec"><h3>Related</h3>'+chips(o.rel)+'</div>'+
+      '<div class="sec connected"><h3>Connected to</h3>'+connected(o.rel)+'</div>'+
       '<div class="sec">'+pgLink(o.page,"Open slide in packet, p."+o.page)+'</div>';
   }
 
@@ -1400,12 +1498,17 @@ const SLIDES = [
     if(start){ $("#view").innerHTML = startTab(); $("#panel").innerHTML = ""; syncHash(); setTitle(); return; }
     const v = {tab_subc:subcTab, tab_agenda:subcTab, tab_overview:overview, tab_income:incomeTab, tab_table2:table2Tab, tab_slides:slidesTab, tab_cost:costTab, tab_dates:datesTab, tab_law:lawTab, tab_rhnd:rhndTab, tab_hcd:hcdTab};
     $("#view").innerHTML = '<div class="mobilehint">Tap any row or bar for details.</div>' + (v[state.tab]||overview)();
-    $("#panel").innerHTML = panel();
+    $("#panel").innerHTML = panelHead()+panel();
     syncHash();
     setTitle();
   }
   document.addEventListener("click", function(ev){
     if(ev.target.closest("a.ext")) return;
+    const cp = ev.target.closest("[data-copylink]");
+    if(cp){ copyLink(cp); return; }
+    const mod = ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.button;
+    const ha = ev.target.closest('a[href^="#/"]:not([data-go])');
+    if(ha){ if(mod) return; ev.preventDefault(); $("#results").style.display="none"; navTo(ha.getAttribute("href")); return; }
     const g = ev.target.closest("[data-go]");
     if(g){
       if(g.tagName==="A"){ if(ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.button) return; ev.preventDefault(); }   /* modified clicks open the href in a new tab */

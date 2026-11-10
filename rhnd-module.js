@@ -55,6 +55,16 @@
       'Letters downloaded '+esc(R? R.downloaded : "")+' from '+ext(R? R.source : "#", "HCD&rsquo;s 7th cycle page")+'. Copies are hosted here; every figure links to its page.</p></div>';
   }
 
+  /* SPEC 9.2: links back into the rest of the site, drawn by the core's window.__site helper */
+  const isScag = l => /SCAG/.test(l.region||"");
+  function scagLinks(l){
+    const S = window.__site; if(!S || !isScag(l)) return "";
+    return '<div class="sec"><h3>This is the number the rest of the site explains</h3>'+
+      S.xlink("tab_overview", "How the "+n(l.total)+" is built")+
+      S.xlink("tab_cost", "The cost-burden objection")+
+      S.xlink("m20261026", S.mtgShort("m20261026")+" subcommittee vote")+
+      S.xlink("#/context/letters/Orange", "HCD advice letters in Orange County")+'</div>';
+  }
   function detail(l){
     const nav = '<div class="hcdnav"><button data-rhnd="back">&#8592; All regions</button>'+
       '<span class="crumb">Regional determinations / <b>'+esc(l.region)+'</b></span></div>';
@@ -108,6 +118,8 @@
         '<table class="rhtbl inc"><tr><th>Income category</th><th class="n">Share</th><th class="n">Units</th><th></th></tr>'+incRows+
         '<tr class="rhrow tot"><td>Total</td><td class="n">100%</td><td class="n">'+n(l.total)+'</td><td></td></tr></table></div>'+
       (qs.length? '<div class="sec"><h3>Questions to ask</h3><ul>'+qs.map(q=>'<li>'+q+'</li>').join("")+'</ul></div>' : '')+
+      (cb && window.__site? '<div class="sec">'+window.__site.xlink("tab_cost", "How SCAG&rsquo;s cost-burden adjustment was calculated")+'</div>' : '')+
+      scagLinks(l)+
       '<div class="hcdnav" style="margin-top:14px"><button data-rhnd="back">&#8592; All regions</button>'+
       '<span class="crumb">Back to the region list</span></div></div>';
   }
@@ -129,7 +141,8 @@
       '<h2>'+esc(l.region)+'</h2><div class="sec"><p>'+kindLabel[l.kind]+'<br>'+esc(l.date)+'<br><b>'+n(l.total)+'</b> units</p></div>'+
       '<div class="sec"><h3>Projection period</h3><p>'+esc(l.period||"&ndash;")+'</p></div>'+
       '<div class="sec"><h3>Letter</h3>'+ext(letterUrl(l), "Open the PDF")+'<br>'+(l.stepsPage? ext(letterUrl(l,l.stepsPage), "Steps table p."+l.stepsPage)+"<br>":"")+
-      (l.incomePage? ext(letterUrl(l,l.incomePage), "Income table p."+l.incomePage) : "")+'</div>';
+      (l.incomePage? ext(letterUrl(l,l.incomePage), "Income table p."+l.incomePage) : "")+'</div>'+
+      scagLinks(l);
   }
   function render(){ if(window.__rhndRedraw) window.__rhndRedraw(); window.scrollTo(0,0); }
 

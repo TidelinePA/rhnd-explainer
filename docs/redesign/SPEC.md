@@ -138,6 +138,7 @@ Use the URL hash. It works on GitHub Pages and from `file://` with no server con
 - Call `applyHash()` once at start-up instead of the bare `render()`, and on both `popstate` and `hashchange`.
 - **Start-up timing.** `hcd-module.js` and `rhnd-module.js` load after the app script, so the first `applyHash()` runs once the page has finished parsing (`DOMContentLoaded`, or at once if parsing is already done). Otherwise a module route opened in a fresh tab could not be applied.
 - **pushState only for real navigation.** When `applyHash()` fills in or corrects a URL (an empty hash, `#/`, a section root such as `#/number`, a meeting with no sub-view, or an unrecognised hash), `syncHash()` writes the corrected hash with `history.replaceState`, so no extra history entry is created. `history.pushState` is used only when the reader navigates. Pushing during a correction would trap the Back button: Back would land on the incomplete URL, which would be corrected and pushed again.
+- **Scroll to top on page change** (decided in Phase 5). When a click moves the reader to a different page (a different tab id, or the start page), scroll the window to the top. Do not scroll when an item is selected on the same page, and do not scroll on browser Back or Forward.
 - **Default view.** An empty hash, `#/` and an unrecognised hash open the start page (`tab_start`, added in Phase 3). Between Phases 2 and 3 they opened the Subcommittee meetings page, meeting `m20261026`, Agenda.
 - An empty, missing or unrecognised hash shows the start page. Never throw on a bad hash.
 - `render()` also sets `document.title` to `<item or page name> · RHNA 7th Cycle (DRAFT)`.
@@ -260,6 +261,8 @@ Wherever `chips(ids)` renders a list under a "Related" heading:
 - Do not add or remove ids from any `rel` array.
 
 Chips that appear elsewhere (themes, "Start here") get the dot but no grouping.
+
+**Chip labels for pages** (decided in Phase 5). `nameOf()` returns the page's label from `SECTIONS` on its own for a page id, for example "Cost burden", instead of "Tab: <label>". The three Subcommittee sub-views keep their "Subcommittee: " prefix.
 
 ## 7. Design guide
 

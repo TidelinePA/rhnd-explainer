@@ -226,7 +226,8 @@
       ["Does a letter mean the city is out of compliance?","Not usually. Statewide, of "+n(G.total)+" letters, "+n(G.viol)+" are at the notice-of-violation or findings-of-noncompliance stage or beyond, and "+G.decert+" are decertifications (in "+G.decertPlaces+" places). The rest are advisory, requests for information, or closing letters."],
       ["What can HCD do after a letter?","HCD&rsquo;s own letters describe it. Housing-element letters say noncompliance can mean ineligibility or delay in receiving state funds that require a compliant housing element, and that HCD may refer matters to the Office of the Attorney General. Open any letter in the set to read the exact wording."],
       ["Why does the same city appear many times?","A case runs over time: HCD writes, the city responds or does not, and HCD writes again. The longest chain statewide is "+G.longest.len+" letters ("+G.longest.city+", "+G.longest.a+" to "+G.longest.b+")."],
-      ["How does this connect to RHNA?","HCD is the department that issued the 7th Cycle determination shown on the other tabs. These letters are about housing elements and local ordinances, which is the same state oversight that sits behind RHNA. That is context, not a finding: nothing in these letters ties a city&rsquo;s enforcement history to its RHNA allocation."],
+      ["How does this connect to RHNA?","HCD is the department that issued the 7th Cycle determination shown on the other tabs. These letters are about housing elements and local ordinances, which is the same state oversight that sits behind RHNA. That is context, not a finding: nothing in these letters ties a city&rsquo;s enforcement history to its RHNA allocation.",
+        window.__site? '<div class="chips">'+window.__site.chip("tab_overview", "How the number is built")+window.__site.chip("#/context/determinations", "Regional determinations")+'</div>' : ''],
       ["Do ADU letters outnumber the rest?","No. Statewide, HAU letters are "+n(G.hau)+" and ADU letters are "+n(G.adu)+" ("+pct(G.adu,G.total)+"%). ADU letters are the faster-growing share: see the year chart on the Concepts tab."],
       ["Do cities fix things?","Some do. Statewide, "+G.closed+" letters are closing letters (successful completion of corrective action, or recertification)."],
       ["Where does this come from, and how current is it?","From HCD&rsquo;s public dashboard, downloaded 29 October 2026, covering "+HCD.letters.filter(x=>x.d).map(x=>x.d).sort()[0].slice(0,4)+" to 2026. Each letter links to HCD&rsquo;s own PDF. "+m.copies+" dashboard entries that are filed as copies of another letter were left out, because some of them point at a different city&rsquo;s letter. Counties come from a public list of California cities and their counties, matched to HCD&rsquo;s jurisdiction names."]
@@ -234,7 +235,7 @@
     if(sc!=="*") qs.unshift(["How does "+scopeLabel(sc)+" compare?",
       F.total? scopeLabel(sc)+" has "+plural(F.total,'letter')+" in this set, "+pct(F.total,G.total)+"% of the state&rsquo;s "+n(G.total)+". That ranks #"+F.rank+" of 58 counties by letter count"+(F.ties? " (tied with "+plural(F.ties,'other county')+")" : "")+"."
       : scopeLabel(sc)+" has no letters in this set."]);
-    return '<div class="card"><h2>Questions</h2><p class="hint">Plain answers about what these letters are. Numbers are computed from the data; unless a question says otherwise they are statewide.</p>'+qs.map(q=>'<div class="faq"><h4>'+q[0]+'</h4><p>'+q[1]+'</p></div>').join("")+'</div>';
+    return '<div class="card"><h2>Questions</h2><p class="hint">Plain answers about what these letters are. Numbers are computed from the data; unless a question says otherwise they are statewide.</p>'+qs.map(q=>'<div class="faq"><h4>'+q[0]+'</h4><p>'+q[1]+'</p>'+(q[2]||'')+'</div>').join("")+'</div>';
   }
 
   function dyk(){
@@ -268,6 +269,7 @@
     return '<h2>HCD advice and enforcement letters</h2><div class="sec"><p>Letters from HCD&rsquo;s public enforcement-letters dashboard. Choose a county from the menu, then a city, or open <b>Concepts and connections</b> to see what recurs and how letters chain together.</p></div>'+
       '<div class="sec"><h3>In view</h3><p><b>'+scopeLabel(state.county)+'</b><br>'+plural(F.total,'letter')+' &middot; '+plural(F.places,'jurisdiction')+'</p></div>'+
       '<div class="sec"><h3>Statewide</h3><p>'+n(FS.total)+' letters &middot; '+HCD.meta.cities+' jurisdictions</p></div>'+
+      (window.__site? '<div class="sec">'+window.__site.xlink("d_he", "Orange County housing elements due: "+window.__site.dateText("d_he"))+'</div>' : '')+
       '<div class="sec src">Source: '+HCD.meta.source+'. Built '+HCD.meta.built+'. '+(EMBED? 'Beta view, not an OCCOG position and not legal advice.' : 'Internal working view, not an OCCOG position.')+'</div>';
   }
 
