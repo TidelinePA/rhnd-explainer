@@ -7,7 +7,18 @@
   const state = {kind:"all", sort:"units", sel:null};
   const n = x => (x==null? "&ndash;" : Number(x).toLocaleString());
   const pct1 = x => (x==null? "" : (Math.round(x*10)/10)+"%");
-  const esc = s => String(s==null? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  /* decode HTML entities at display time, then escape (rhnd-data.js is not changed). Single pass, never via innerHTML,
+     so "&amp;ndash;" becomes the text "&ndash;", not a dash. Covers the code's own "&ndash;" fallback for empty values. */
+  const NAMED = {amp:"&", lt:"<", gt:">", quot:'"', apos:"'", nbsp:"\u00a0", ndash:"\u2013", mdash:"\u2014",
+    lsquo:"\u2018", rsquo:"\u2019", ldquo:"\u201c", rdquo:"\u201d", middot:"\u00b7", hellip:"\u2026"};
+  function decode(s){
+    return String(s==null? "" : s).replace(/&(#[0-9]+|#[xX][0-9a-fA-F]+|[A-Za-z]+);/g, function(m, e){
+      if(e.charAt(0)!=="#") return Object.prototype.hasOwnProperty.call(NAMED, e)? NAMED[e] : m;
+      const cp = (e.charAt(1)==="x" || e.charAt(1)==="X")? parseInt(e.slice(2),16) : parseInt(e.slice(1),10);
+      return (cp>0 && cp<=0x10FFFF)? String.fromCodePoint(cp) : m;
+    });
+  }
+  const esc = s => decode(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const ext = (u,t) => '<a class="ext" href="'+u+'" target="_blank" rel="noopener">'+t+' &#8599;</a>';
   const letterUrl = (l,p) => "source/rhnd/"+l.file+(p? "#page="+p : "");
   const MON = {January:0,February:1,March:2,April:3,May:4,June:5,July:6,August:7,September:8,October:9,November:10,December:11};
