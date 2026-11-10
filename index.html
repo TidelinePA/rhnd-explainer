@@ -54,14 +54,61 @@
   .pagenav a{padding:7px 0 10px;font-size:14.5px;color:var(--muted);text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent;flex:none}
   .pagenav a:hover{color:var(--ink)}
   .pagenav a[aria-current="page"]{color:var(--ink);font-weight:650}
-  /* ---- start page stub (Phase 3; section 8 replaces it in Phase 4) ---- */
+  /* ---- start page (SPEC 8). Structure follows mockups/1-start-page.png; final polish is Phase 7. ---- */
   main.start{grid-template-columns:minmax(0,1fr)}
   main.start aside{display:none}
-  .startstub h1{margin:0 0 14px;font-size:28px;line-height:1.2}
-  .startstub ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-  .startstub a{display:inline-flex;align-items:center;gap:9px;font-size:16px;font-weight:600;color:var(--ink);text-decoration:none}
-  .startstub a:hover{text-decoration:underline}
-  .startstub a i{width:10px;height:10px;border-radius:50%;display:block}
+  .home{display:flex;flex-direction:column;gap:16px}
+  .hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px 40px;align-items:start;background:var(--card);border-bottom:1px solid var(--line);margin:-18px -22px 4px;padding:34px 22px 30px}
+  .hero.solo{grid-template-columns:minmax(0,1fr)}
+  .eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .hero h1{font-size:40px;line-height:1.12;letter-spacing:-.02em;margin:10px 0 14px;font-weight:700}
+  .lead{font-size:17px;color:var(--ink-2);max-width:640px;margin:0 0 20px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{display:inline-block;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;text-decoration:none}
+  .btn.primary{background:var(--num);border-color:var(--num);color:#fff}
+  .upcoming{background:var(--draft-bg);border:1px solid var(--draft-line);border-radius:12px;padding:18px 20px 8px}
+  .upcoming h2{margin:0 0 4px;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--draft-ink)}
+  .up{display:flex;gap:14px;align-items:flex-start;padding:12px 0}
+  .up+.up{border-top:1px solid var(--draft-line)}
+  .dtile{flex:none;width:54px;border:1px solid var(--line);border-radius:8px;background:var(--card);text-align:center;padding:5px 0 6px;line-height:1.1}
+  .dtile small{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bad)}
+  .dtile b{font-size:22px}
+  .uptitle{font-weight:650}
+  .update{font-size:13.5px;color:var(--muted);margin-top:2px}
+  .uplink{display:inline-block;margin-top:4px;font-size:14px;font-weight:600;color:var(--proc);text-decoration:none}
+  .home .glance{grid-template-columns:repeat(4,minmax(0,1fr));margin:0;gap:14px}
+  .home .glance div{background:var(--card);border-radius:12px;padding:14px 16px}
+  .home .glance b{font-size:26px}
+  .things{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;align-items:start}
+  .card.things h2,.card.mostused h2{margin:2px 0 0;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .things ol{margin:0;padding-left:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 34px}
+  .explore{display:flex;align-items:baseline;gap:6px 14px;flex-wrap:wrap;margin-top:8px}
+  .explore h2{margin:0;font-size:20px}
+  .explore p{margin:0;color:var(--muted);font-size:14px}
+  .secgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .card.seccard{border-top:4px solid var(--line);padding:18px 22px 10px}
+  .seccard .hd{display:flex;align-items:center;gap:12px}
+  .seccard .badge{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:700}
+  .seccard h3{margin:0;font-size:20px}
+  .seccard .open{margin-left:auto;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap}
+  .seccard .blurb{margin:10px 0 6px;color:var(--ink-2)}
+  .seclks{list-style:none;margin:0;padding:0}
+  .seclks li+li{border-top:1px solid var(--line-soft)}
+  .seclk{display:grid;grid-template-columns:190px minmax(0,1fr);gap:12px;padding:10px 0;color:var(--ink);text-decoration:none;font-size:14px}
+  .seclk span{color:var(--muted)}
+  .seclk:hover b{text-decoration:underline}
+  .mostused{display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap}
+  .mostused .chips{margin:0}
+  @media (max-width:700px){
+    .hero{grid-template-columns:minmax(0,1fr);padding:24px 14px 22px}
+    .hero h1{font-size:30px}
+    .home .glance{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .things{grid-template-columns:minmax(0,1fr)}
+    .things ol{grid-template-columns:minmax(0,1fr)}
+    .secgrid{grid-template-columns:minmax(0,1fr)}
+    .card.seccard{padding:16px 16px 8px}
+    .seclk{grid-template-columns:minmax(0,1fr);gap:2px}
+  }
   .draft{background:var(--draft-bg);color:var(--draft-ink);border-bottom:1px solid var(--draft-line);padding:7px 22px;font-size:12.5px}
   .mtgs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 0}
   .mtg{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13.5px;text-align:left;color:var(--ink)}
@@ -428,27 +475,27 @@ const LAWS = [
 ];
 
 const DATES = [
- {id:"d_oct15", date:"Oct 15, 2026", title:"HCD issues the final 7th Cycle determination", status:"confirmed",
+ {id:"d_oct15", iso:"2026-10-15", date:"Oct 15, 2026", title:"HCD issues the final 7th Cycle determination", status:"confirmed",
   detail:"HCD letter to SCAG Executive Director Kome Ajise: 1,359,750 units for June 30, 2029 to October 15, 2037. Followed consultation from August to October 2026 (staff met Sept 2, Sept 17, Sept 28, Oct 8, Oct 12).", rel:["s_c1","e4","a_att2"], src:"HCD letter pp.46-48; staff report p.28", page:46},
- {id:"d_oct26", date:"Oct 26, 2026, 2:00 PM", title:"RHNA Subcommittee special meeting (Meeting 3)", status:"confirmed",
+ {id:"d_oct26", iso:"2026-10-26", date:"Oct 26, 2026, 2:00 PM", title:"RHNA Subcommittee special meeting (Meeting 3)", status:"confirmed",
   detail:"The Subcommittee voted to recommend that CEHD and the Regional Council object to the determination on cost burden, choosing the lower-income alternative of 1,081,926 units (12 ayes, 1 no; Byers against). The minutes are in the Nov 12, 2026 packet. SCAG Main Office, Policy B room, with remote participation.", rel:["d_obj","tab_cost","a_agenda","a_item3"], src:"Packet pp.1, 6, 27; revised Topic Outlook p.25; minutes in the Nov 12 packet p.11", page:6},
- {id:"d_nov5", date:"Nov 5, 2026", title:"CEHD and Regional Council votes on the objection", status:"confirmed",
+ {id:"d_nov5", iso:"2026-11-05", date:"Nov 5, 2026", title:"CEHD and Regional Council votes on the objection", status:"confirmed",
   detail:"Regional Council date confirmed by Brian Probolsky (Oct 25). Not printed in the Oct 26 packet; first reported in Liz Smith's briefing.", rel:["d_obj"], src:"Confirmed by Brian Probolsky, Oct 25; Liz Smith briefing, Oct 24-25", page:25},
- {id:"d_obj", date:"Nov 14, 2026", title:"Deadline to file the objection with HCD", status:"confirmed",
+ {id:"d_obj", iso:"2026-11-14", date:"Nov 14, 2026", title:"Deadline to file the objection with HCD", status:"confirmed",
   detail:"30 days from the October 15 notice. The objection must cite ground (B) and include a proposed alternative with supporting analysis.", rel:["s_c1","s_c2","s_c3","sl22","tab_cost"], src:"Staff report p.32; statute p.61", page:32},
- {id:"d_nov12", date:"Nov 12, 2026", title:"RHNA Subcommittee Meeting 4: transit access and job access", status:"confirmed",
+ {id:"d_nov12", iso:"2026-11-12", date:"Nov 12, 2026", title:"RHNA Subcommittee Meeting 4: transit access and job access", status:"confirmed",
   detail:"Information only: how the 6th cycle methodology treated transit accessibility and job accessibility, ahead of the 7th cycle methodology. 1:00 to 3:00 p.m., in person at the SCAG Main Office (Policy B room) and by Zoom or phone. The packet also carries the October 26 minutes and the outlook revised Oct 29.", rel:["n_3","n_4","d_oct26"], src:"Packet posted on scag.ca.gov/current-agendas; revised Topic Outlook p.15", page:25},
- {id:"d_final", date:"By about Dec 29, 2026", title:"HCD final written decision on the objection", status:"derived",
+ {id:"d_final", iso:"2026-12-29", date:"By about Dec 29, 2026", title:"HCD final written decision on the objection", status:"derived",
   detail:"HCD has 45 days from receiving the objection. If filed Nov 14, that ends Dec 29. After that the number is final, and later law changes cannot reopen it.", rel:["s_c3","s_d"], src:"Statute p.61-62; date derived (Nov 14 + 45 days)", page:61},
- {id:"d_jan", date:"Jan 29, 2027, 5:00 PM", title:"Local Planning Factor and AFFH surveys due from cities", status:"confirmed",
+ {id:"d_jan", iso:"2027-01-29", date:"Jan 29, 2027, 5:00 PM", title:"Local Planning Factor and AFFH surveys due from cities", status:"confirmed",
   detail:"City manager or CEO acknowledgment required; one survey per jurisdiction. Responses can support later appeals.", rel:["d_meth","a_item1"], src:"Sept 10 minutes in the packet, pp.10-16", page:16},
- {id:"d_meth", date:"Mar 11, 2027 and following", title:"Proposed allocation methodology, public comment, draft, adoption", status:"tentative",
+ {id:"d_meth", iso:"2027-03-11", date:"Mar 11, 2027 and following", title:"Proposed allocation methodology, public comment, draft, adoption", status:"tentative",
   detail:"Mar 11, 2027 proposed methodology (Meeting 7); Mar to Apr comment and hearings; Jun draft methodology and appeals guidelines; Jul Regional Council submits draft to HCD; Oct 2027 adopt methodology and release draft allocations. This is where each city's share is decided.", rel:["e8","e9","d_alloc","a_item2"], src:"Revised Topic Outlook pp.25-26", page:26},
- {id:"d_alloc", date:"Oct 2027", title:"Draft RHNA allocations released (a Sept 2027 ad hoc meeting precedes it)", status:"tentative",
+ {id:"d_alloc", iso:"2027-10-01", date:"Oct 2027", title:"Draft RHNA allocations released (a Sept 2027 ad hoc meeting precedes it)", status:"tentative",
   detail:"Appeals then run December 2027 to February 2028.", rel:["d_meth","e1"], src:"Revised Topic Outlook p.26", page:26},
- {id:"d_apr28", date:"Apr 2028", title:"Regional Council adopts the final RHNA plan", status:"tentative",
+ {id:"d_apr28", iso:"2028-04-01", date:"Apr 2028", title:"Regional Council adopts the final RHNA plan", status:"tentative",
   detail:"Submitted to HCD.", rel:["d_alloc"], src:"Revised Topic Outlook p.26", page:26},
- {id:"d_he", date:"Oct 15, 2029 (Orange County)", title:"Housing elements due", status:"confirmed",
+ {id:"d_he", iso:"2029-10-15", date:"Oct 15, 2029 (Orange County)", title:"Housing elements due", status:"confirmed",
   detail:"Orange, Riverside, San Bernardino and Ventura counties: Oct 15, 2029. Los Angeles and Imperial: Apr 15, 2030. RHNA credit can be taken for units approved, permitted or built since June 30, 2029.", rel:["s_88"], src:"HCD letter p.47", page:47},
  {id:"d_label", date:"Open item", title:"Ask HCD to correct the vacancy labels", status:"unverified",
   detail:"HCD's letter (Step 9) labels 16,275 as existing households and 131,589 as projected; the workbook and SCAG slides say the opposite. Total is unaffected.", rel:["e2","t9a","t9b"], src:"HCD Table 2 p.50 vs. workbook p.56", page:50}
@@ -931,21 +978,77 @@ const SLIDES = [
         return '<a href="'+pageHref(sec, pg)+'" data-go="'+pg.tab+'"'+cur(on)+(on? ' style="border-bottom-color:'+SECCOL[sec.id]+'"' : '')+'>'+
           esc(pg.label)+(pg.beta? '<span class="beta">beta</span>' : '')+'</a>'; }).join("")+'</nav>' : '');
   }
-  /* start page: a stub in Phase 3 (heading and the four section links); section 8 replaces it in Phase 4 */
+  /* ---------- start page (SPEC 8). Every figure is computed from data. ---------- */
+  const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function todayIso(){ const d = new Date(), z = n => (n<10? "0" : "")+n; return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate()); }
+  /* the next two dated events from DATES: iso today or later, ascending */
+  function comingUp(){
+    const today = todayIso();
+    return DATES.filter(d=>d.iso && d.iso>=today).sort((a,b)=>a.iso.localeCompare(b.iso)).slice(0,2);
+  }
   function startTab(){
-    return '<div class="card startstub"><h1>How the state arrived at '+fmt(TOTAL)+' homes, and what can still change.</h1>'+
-      '<nav aria-label="Explore by section"><ul>'+SECTIONS.map(sec=>'<li><a href="'+pageHref(sec, sec.pages[0])+'" data-go="'+sec.pages[0].tab+'">'+
-        '<i style="background:'+SECCOL[sec.id]+'"></i>'+esc(sec.label)+' &rarr;</a></li>').join("")+'</ul></nav></div>';
+    const up = comingUp();
+    const upBox = up.length? '<div class="upcoming"><h2>Coming up</h2>'+up.map(d=>{
+        const m = MON[parseInt(d.iso.slice(5,7),10)-1], day = parseInt(d.iso.slice(8,10),10);
+        return '<div class="up"><div class="dtile" aria-hidden="true"><small>'+m+'</small><b>'+day+'</b></div><div>'+
+          '<div class="uptitle">'+d.title+'</div>'+
+          '<div class="update">'+d.date+' <span class="st '+d.status+'">'+d.status+'</span></div>'+
+          '<a class="uplink" href="#/process/dates/'+d.id+'">Open &rarr;</a></div></div>'; }).join("")+'</div>' : '';
+    const hero = '<section class="hero'+(up.length? '' : ' solo')+'"><div>'+
+      '<div class="eyebrow">7th Cycle Regional Housing Needs Determination &middot; SCAG region</div>'+
+      '<h1>How the state arrived at '+fmt(TOTAL)+' homes, and what can still change.</h1>'+
+      '<p class="lead">HCD issued the determination on October 15, 2026. This site takes the number apart step by step, and ties every step to the statute, the meeting record, and the source page.</p>'+
+      '<div class="btns"><a class="btn primary" href="#/number/built">See how the number is built &rarr;</a><a class="btn" href="#/number/cost-burden">The cost-burden objection</a></div>'+
+      '</div>'+upBox+'</section>';
+    /* computed values for the section cards (SPEC 8.5) */
+    const firstPast = MEETINGS.find(m=>m.past);
+    const RL = (window.RHND && RHND.letters) || [];
+    const rSum = RL.reduce((a,x)=>a+(x.total||0),0);
+    const scag = RL.find(x=>/southern-california-association-of-governments/.test(x.file||""));
+    const HM = window.HCD_DATA && HCD_DATA.meta;
+    const oc = HM? HM.counties.find(c=>c.n==="Orange") : null;
+    const ROWS = {
+      number: [["How it is built","Nine steps, from household growth to the total","#/number/built"],
+               ["HCD Table 2","Every step of the calculation, with its statute","#/number/table2"],
+               ["Income categories","Six categories, in Orange County dollars","#/number/income"],
+               ["Cost burden","The contested adjustment and two alternatives","#/number/cost-burden"]],
+      process: [["Subcommittee meetings", fmt(MEETINGS.length)+" meetings: agendas, slides, votes","#/process/meetings"],
+                ["Dates","From the determination letter to housing elements due","#/process/dates"],
+                ["Themes","Topics that recur across the past meetings","#/process/meetings/"+(firstPast? firstPast.id : DEFAULT_MTG)+"/themes"]],
+      law: [["Gov. Code &sect;65584.01","Provision by provision, in plain terms","#/law"],
+            ["The objection standard","What SCAG must show to object","#/law/s_c2"]],
+      context: [["Regional determinations", fmt(RL.length)+" letters, "+fmt(rSum)+" units; SCAG is "+(scag && rSum? Math.round(scag.total/rSum*100) : 0)+"%","#/context/determinations"],
+                ['HCD advice letters<span class="beta">beta</span>', HM? fmt(HM.letters)+" letters to "+fmt(HM.cities)+" jurisdictions; "+fmt(oc? oc.k : 0)+" in Orange County" : "","#/context/letters"],
+                ["Concepts and connections","What recurs, and how letters chain together","#/context/letters/Orange/concepts"]]
+    };
+    const TINT = {number:"var(--num-t)", process:"var(--proc-t)", law:"var(--law-t)", context:"var(--ctx-t)"};
+    const cards = SECTIONS.map((sec,i)=>'<div class="card seccard" style="border-top-color:'+SECCOL[sec.id]+'">'+
+      '<div class="hd"><span class="badge" style="background:'+TINT[sec.id]+';color:'+SECCOL[sec.id]+'">'+(i+1)+'</span>'+
+      '<h3>'+esc(sec.label)+'</h3><a class="open" href="'+pageHref(sec, sec.pages[0])+'" style="color:'+SECCOL[sec.id]+'">Open &rarr;</a></div>'+
+      '<p class="blurb">'+esc(sec.blurb)+'</p>'+
+      '<ul class="seclks">'+ROWS[sec.id].map(r=>'<li><a class="seclk" href="'+r[2]+'"><b>'+r[0]+'</b><span>'+r[1]+'</span></a></li>').join("")+'</ul></div>').join("");
+    return '<div class="home">'+hero+GLANCE+
+      '<div class="card things"><h2>Three things to know</h2><ol>'+TAKEAWAYS+'</ol></div>'+
+      '<div class="explore"><h2>Explore by section</h2><p>Each colour follows its section through the whole site.</p></div>'+
+      '<div class="secgrid">'+cards+'</div>'+
+      '<div class="card mostused"><h2>Most used</h2>'+chips(MOST_USED)+'</div></div>';
   }
 
-  /* ---------- overview ---------- */
-  function overview(){
-    const glance =
+  /* the four headline figures: shown on the start page (SPEC 8.3); removed from "How it is built" */
+  const GLANCE =
       '<div class="glance">'+
       '<div><b>1,359,750</b><span>units, 6 income categories, June 30, 2029 to Oct 15, 2037</span></div>'+
       '<div><b>37%</b><span>of it (504,627) is the cost-burden adjustment staff want to challenge</span></div>'+
       '<div><b>Nov 14</b><span>deadline for SCAG to file an objection with HCD</span></div>'+
       '<div><b>Oct 15, 2029</b><span>Orange County housing elements due</span></div></div>';
+  /* the three takeaways: default panel text, also on the start page (SPEC 8.4) */
+  const TAKEAWAYS =
+      '<li>The statute decides <i>which factors</i> HCD must look at. HCD decides <i>how many units</i> each one adds.</li>'+
+      '<li>About 63% of the number comes from adjustments SCAG staff accept as reasonable.</li>'+
+      '<li>The contested piece is cost burden: 504,627 units, 37% of the total. The objection is due November 14.</li>';
+  /* the former "Start here" ids, now "Most used" on the start page (SPEC 8.6) */
+  const MOST_USED = ["a_item3","e4","i_al","sl19","d_obj","tab_cost"];
+  function overview(){
     const cyc = [["4th",699368,"2006-2014"],["5th",412137,"2013-2021"],["6th",1341827,"2021-2029"],["7th",1359750,"2029-2037"]];
     const cmax = 1400000;
     const cycHtml = '<table class="mix"><tr><th>Cycle</th><th>Period</th><th class="num">SCAG regional determination</th><th></th></tr>'+
@@ -980,8 +1083,7 @@ const SLIDES = [
     svg += '</svg>';
     const legend = '<div class="legend">'+Object.keys(LEVELS).map(k=>'<span><i style="background:'+LEVELS[k].color+'"></i>'+LEVELS[k].label+'</span>').join("")+'<span>(color = how challengeable, draft assessment)</span></div>';
 
-    return glance+
-      '<div class="card"><h2>How the number is built</h2><p class="hint">Each bar is one step in HCD&rsquo;s calculation (Table 2). Bars start where the last one ended; the red bar is the contested one. Click a bar for the law, the judgment call, and questions to ask.</p>'+svg+legend+'</div>'+
+    return '<div class="card"><h2>How the number is built</h2><p class="hint">Each bar is one step in HCD&rsquo;s calculation (Table 2). Bars start where the last one ended; the red bar is the contested one. Click a bar for the law, the judgment call, and questions to ask.</p>'+svg+legend+'</div>'+
       '<div class="card" style="margin-top:14px"><h2>Where this sits among past cycles</h2>'+cycHtml+'</div>';
   }
 
@@ -1165,11 +1267,7 @@ const SLIDES = [
     if(!o){
       return '<h2>How to use this</h2>'+
       '<div class="sec"><p>Click a bar, a table row, a date or a law. This panel shows what it is, what the statute requires, what is HCD&rsquo;s judgment call, the questions worth asking, and a link to the page in the packet.</p></div>'+
-      '<div class="sec"><h3>Three takeaways</h3><ul>'+
-      '<li>The statute decides <i>which factors</i> HCD must look at. HCD decides <i>how many units</i> each one adds.</li>'+
-      '<li>About 63% of the number comes from adjustments SCAG staff accept as reasonable.</li>'+
-      '<li>The contested piece is cost burden: 504,627 units, 37% of the total. The objection is due November 14.</li></ul></div>'+
-      '<div class="sec"><h3>Start here</h3>'+chips(["a_item3","e4","i_al","sl19","d_obj","tab_cost"])+'</div>';
+      '<div class="sec"><h3>Three takeaways</h3><ul>'+TAKEAWAYS+'</ul></div>';
     }
     if(o.type==="element"){
       const L = LEVELS[o.level];
