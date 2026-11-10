@@ -431,6 +431,7 @@ At 980px or less:
 At 700px or less:
 
 - Start page: hero stacks (headline, then "Coming up"); stat tiles two per row; takeaways and section cards one per row.
+- The "How it is built" chart switches to a phone layout: each step shows its label and value on one line with its bar beneath, at normal text size. The wide chart is unchanged above 700px. Both are drawn; CSS shows one.
 - No page may scroll sideways. Wide tables scroll inside their own card (section 9.4).
 
 ## 8. Start page
