@@ -140,9 +140,11 @@
   .search input{width:100%;padding:8px 10px;border:1px solid rgba(255,255,255,.18);border-radius:8px;font-size:14px;background:rgba(255,255,255,.1);color:#fff}
   .search input::placeholder{color:rgba(255,255,255,.65)}
   .results{position:absolute;right:0;top:calc(100% + 6px);width:400px;max-height:380px;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:none}
-  .results .ritem{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;border:0;background:var(--card);padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0f2f5;font-size:13.5px}
-  .results .ritem:hover,.results .ritem.on{background:#f2f6fc}
-  a.ritem{color:inherit;text-decoration:none}
+  /* results sit inside the dark top bar, which sets white text: every result, anchor or button, sets its own colour and font */
+  .topbar .results{color:var(--ink)}
+  .topbar .results .ritem{display:flex;gap:8px;align-items:baseline;width:100%;box-sizing:border-box;margin:0;text-align:left;border:0;border-bottom:1px solid #f0f2f5;border-radius:0;
+    background:var(--card);color:var(--ink);text-decoration:none;padding:9px 12px;cursor:pointer;font:inherit;font-size:13.5px;line-height:1.45}
+  .topbar .results .ritem:hover,.topbar .results .ritem.on{background:#f2f6fc;color:var(--ink);text-decoration:none}
   .rgrp+.rgrp{border-top:1px solid var(--line)}
   .rglab{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px 3px}
   .rmore{font-size:12.5px;color:var(--muted);padding:6px 12px 9px}
