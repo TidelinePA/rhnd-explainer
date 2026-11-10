@@ -261,7 +261,7 @@ Replace the current `:root` block with this. After Phase 6, no hex colour may ap
 :root{
   /* neutrals */
   --ink:#18202f; --ink-2:#3a4458; --muted:#5c667a; --line:#dfe3ea; --line-soft:#edf0f4;
-  --bg:#f4f5f8; --card:#ffffff; --navy:#141d33; --on-dark:#ffffff;
+  --bg:#f4f5f8; --card:#ffffff; --navy:#141d33;
 
   /* sections: solid colour and tint */
   --num:#2b5fa8;  --num-t:#eaf1fb;   /* The number */
@@ -298,7 +298,7 @@ Note: `--ctx` is darker than in the mock-up images (`#b0680f` there) so that whi
    | `--accent` | `--num` |
 
    Exception: HCD letter severity uses the severity ramp, not the status scale. `SEVCOL` in `hcd-module.js` is `["var(--sev-0)","var(--sev-1)","var(--sev-2)","var(--sev-3)","var(--sev-4)","var(--sev-5)"]`, the `.sev0` to `.sev5` CSS rules use the same six tokens, and so does the severity legend in the HCD city list (it is the key for `SEVCOL`). The hex values are identical, so nothing changes visually.
-2. **White has two tokens, by role.** `--on-dark:#ffffff` (added above) is white used as text or an icon on a dark or solid-colour background (header, pills, tags, selected tabs, status pills, severity tags, the "beta" badge). `--card` is white used as a background (cards, buttons, inputs, tabs, result rows, the slide-up sheet). `rgba(...)` values are left as they are in Phase 1.
+2. **White: backgrounds now, text in Phase 7.** White used as a background (cards, buttons, inputs, tabs, result rows, the slide-up sheet) becomes `var(--card)` in Phase 1. White used as text or an icon on a dark or solid-colour background (header, pills, tags, selected tabs, status pills, severity tags, the "beta" badge) stays `#fff` until Phase 7, which adds `--on-dark:#ffffff` for it. `rgba(...)` values are left as they are in Phase 1.
 3. **Hard-coded copies of old token values are tokenised.** `#1c2433` becomes `var(--ink)`, `#1f2a44` becomes `var(--navy)`, `#5d6678` becomes `var(--muted)`; the draft notice uses `var(--draft-bg)`, `var(--draft-ink)` and `var(--draft-line)` (was `#fff4d6`, `#6b4e00`, `#ecd9a0`). These shift by a shade because the new token values differ slightly. That is intended.
 4. **SVG colours are set through a `style` attribute**, for example `style="fill:var(--ink)"`, never `fill="var(--ink)"`. This includes the chart bars that take their colour from `LEVELS`.
 5. Hex values with no exact token match (search-tag colours, chip and link blues, `#3b4558`, row-hover tints and so on) stay as they are until Phase 7.
@@ -538,13 +538,13 @@ Do them in order. Commit after each. Run the checks in section 11 after each.
 
 | Phase | Work | Done when |
 |---|---|---|
-| **1. Tokens** | Replace `:root` with the block from 7.1 (including `--on-dark`). Rename the five old token names as listed in 7.1, with HCD severity on `--sev-0` to `--sev-5`. Replace existing hex values in CSS and JS strings with tokens where a matching token exists, white by role (`--on-dark` for text, `--card` for backgrounds), plus the copies of old token values listed in 7.1. Set SVG colours through `style` attributes. Move the two modules' injected `<style>` rules into the main stylesheet. | The site looks almost the same as before and behaves identically. A search for `--low`, `--lowmod`, `--contested`, `--helps` and `--accent` returns nothing. |
+| **1. Tokens** | Replace `:root` with the block from 7.1. Rename the five old token names as listed in 7.1, with HCD severity on `--sev-0` to `--sev-5`. Replace existing hex values in CSS and JS strings with tokens where a matching token exists, white backgrounds to `--card` (white text stays `#fff` until Phase 7), plus the copies of old token values listed in 7.1. Set SVG colours through `style` attributes. Move the two modules' injected `<style>` rules into the main stylesheet. | The site looks almost the same as before and behaves identically. A search for `--low`, `--lowmod`, `--contested`, `--helps` and `--accent` returns nothing. |
 | **2. Routing** | Section 5: `syncHash`, `applyHash`, module `route`/`setRoute`/`crumb`, remove HCD Back/Forward, set `document.title`. | Every example URL in 5.2 opens the right view in a fresh tab. Browser Back and Forward step through views. Reload keeps the view. |
 | **3. Navigation** | Sections 4 and 6.1 to 6.2: `SECTIONS`, top bar, section band, sub-page links, phone navigation. The start page can be a stub with the four section links. | Nine pages reachable through four sections. Old tab bar gone. No wrapped navigation at 390px wide. |
 | **4. Start page** | Section 8. | Matches `1-start-page.png` in structure. All figures computed from data. "Coming up" changes correctly when you fake the date. |
 | **5. Panel and links** | Sections 6.3, 6.4, 9.1, 9.2. | Breadcrumb and "Copy link" on every panel. Chips grouped and coloured. Every link in 9.2 present and working. |
 | **6. Search** | Section 9.3. | Searching "Anaheim", "Sacramento", "cost burden" and "65584" each returns grouped results that open correctly. |
-| **7. Skin and fixes** | Sections 7.2 to 7.6 and 9.4: colour meanings, type scale, components, phone layout, table fix, focus styles. | Matches the mock-ups. No hex colour outside `:root`. No sideways scroll at 390px. |
+| **7. Skin and fixes** | Sections 7.2 to 7.6 and 9.4: colour meanings, type scale, components, phone layout, table fix, focus styles. Add `--on-dark:#ffffff` to `:root` and use it for white text on dark or solid-colour backgrounds. | Matches the mock-ups. No hex colour outside `:root`. No sideways scroll at 390px. |
 
 ## 11. Checks
 

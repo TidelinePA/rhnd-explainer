@@ -9,7 +9,7 @@
   :root{
     /* neutrals */
     --ink:#18202f; --ink-2:#3a4458; --muted:#5c667a; --line:#dfe3ea; --line-soft:#edf0f4;
-    --bg:#f4f5f8; --card:#ffffff; --navy:#141d33; --on-dark:#ffffff;
+    --bg:#f4f5f8; --card:#ffffff; --navy:#141d33;
 
     /* sections: solid colour and tint */
     --num:#2b5fa8;  --num-t:#eaf1fb;   /* The number */
@@ -31,14 +31,14 @@
   }
   *{box-sizing:border-box}
   body{margin:0;font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
-  header{background:var(--navy);color:var(--on-dark);padding:14px 22px}
+  header{background:var(--navy);color:#fff;padding:14px 22px}
   header h1{margin:0;font-size:20px;font-weight:650}
   header .sub{font-size:12.5px;opacity:.85;margin-top:3px}
   .draft{background:var(--draft-bg);color:var(--draft-ink);border-bottom:1px solid var(--draft-line);padding:7px 22px;font-size:12.5px}
   .bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 22px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
   .tabs{display:flex;gap:4px;flex-wrap:wrap}
   .tab{border:1px solid var(--line);background:var(--card);padding:7px 12px;border-radius:7px;cursor:pointer;font-size:13.5px;color:var(--ink)}
-  .tab[aria-selected="true"]{background:var(--navy);color:var(--on-dark);border-color:var(--navy)}
+  .tab[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
   .mtgs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 0}
   .mtg{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13.5px;text-align:left;color:var(--ink)}
   .mtg small{display:block;color:var(--muted);font-size:12px}
@@ -51,7 +51,7 @@
   .results{position:absolute;right:0;top:38px;width:400px;max-height:380px;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:none}
   .results button{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;border:0;background:var(--card);padding:9px 12px;cursor:pointer;border-bottom:1px solid #f0f2f5;font-size:13.5px}
   .results button:hover{background:#f2f6fc}
-  .tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--on-dark);background:var(--neutral);padding:1px 6px;border-radius:4px;flex:none}
+  .tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:var(--neutral);padding:1px 6px;border-radius:4px;flex:none}
   .tag.element{background:var(--num)} .tag.law{background:#6d4aa8} .tag.date{background:#a8561f}
   .tag.agenda{background:#2a7a8c} .tag.income{background:#7a5a1f} .tag.step{background:#3d6b3a} .tag.slide{background:#8c2a6b}
   main{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,1fr);gap:18px;padding:18px 22px;align-items:start}
@@ -70,7 +70,7 @@
   .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:8px 0 2px}
   .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
   aside .card{position:sticky;top:64px;max-height:calc(100vh - 80px);overflow:auto}
-  .pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;color:var(--on-dark);margin-right:6px}
+  .pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;color:#fff;margin-right:6px}
   .sec{margin:12px 0 0}
   .sec h3{margin:0 0 3px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
   .sec p,.sec li{margin:0 0 4px}
@@ -100,7 +100,7 @@
   .ti:before{content:"";position:absolute;left:-26px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--card);border:3px solid var(--navy)}
   .ti.sel{border-color:var(--num);background:#f2f7ff}
   .ti .d{font-weight:650}
-  .st{font-size:11px;padding:1px 7px;border-radius:99px;margin-left:6px;color:var(--on-dark)}
+  .st{font-size:11px;padding:1px 7px;border-radius:99px;margin-left:6px;color:#fff}
   .st.confirmed{background:var(--ok)} .st.tentative{background:var(--warn)} .st.unverified{background:var(--bad)} .st.derived{background:var(--neutral)}
   .lawitem,.ai{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:8px 11px;margin:0 0 8px;cursor:pointer}
   .lawitem.sel,.ai.sel{border-color:var(--num);background:#f2f7ff}
@@ -131,7 +131,7 @@
     tr.click td:last-child:after{content:"\203A";margin-left:8px;font-size:20px;color:#8a94a8}
   }
   /* ---- HCD advice (beta) tab ---- */
-  .beta{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;background:var(--warn);color:var(--on-dark);border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+  .beta{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;background:var(--warn);color:#fff;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px}
   .hcdnav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 10px}
   .hcdnav button{border:1px solid var(--line);background:var(--card);border-radius:7px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--ink)}
   .hcdnav button:disabled{opacity:.4;cursor:default}
@@ -139,7 +139,7 @@
   .hcdnav .crumb b{color:var(--ink)}
   .hcdtoggle{display:flex;gap:4px;margin:0 0 10px;flex-wrap:wrap}
   .hcdtoggle button{border:1px solid var(--line);background:var(--card);border-radius:7px;padding:5px 11px;font-size:13px;cursor:pointer;color:var(--muted)}
-  .hcdtoggle button[aria-selected="true"]{background:var(--navy);color:var(--on-dark);border-color:var(--navy)}
+  .hcdtoggle button[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
   .cityrow{display:grid;grid-template-columns:minmax(120px,1.4fr) 46px 46px 46px minmax(90px,1fr) 96px;gap:8px;align-items:center;padding:6px 8px;border-bottom:1px solid var(--line-soft);cursor:pointer;font-size:13.5px}
   .cityrow:hover{background:#f5f8fd}
   .cityrow.sel{background:var(--num-t)}
@@ -156,7 +156,7 @@
   .lcard .dt{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
   .lcard .sm{font-size:13.5px;color:#3b4558}
   .lcard .tags{margin-top:5px;font-size:12px;color:var(--muted)}
-  .sev{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--on-dark);padding:1px 7px;border-radius:4px;flex:none}
+  .sev{display:inline-block;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:#fff;padding:1px 7px;border-radius:4px;flex:none}
   .sev0{background:var(--sev-0)} .sev1{background:var(--sev-1)} .sev2{background:var(--sev-2)}
   .sev3{background:var(--sev-3)} .sev4{background:var(--sev-4)} .sev5{background:var(--sev-5)}
   .concept{margin:0 0 7px}
