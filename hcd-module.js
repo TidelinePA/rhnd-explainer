@@ -12,6 +12,18 @@
   const n = x => x.toLocaleString();
   const pct = (a,b) => b? Math.round(100*a/b) : 0;
   const plural = (k,w) => k+' '+(k===1? w : /[^aeiou]y$/.test(w)? w.slice(0,-1)+'ies' : w+'s');
+  /* data strings from hcd-data.js (Phase 7A): some summaries carry HTML entities (&#34; &amp; &#43; &#64;).
+     decode() turns numeric entities and &amp; &lt; &gt; &quot; &apos; into characters in ONE pass (so "&amp;#34;" becomes "&#34;", not a quote);
+     h() then escapes the decoded text for HTML text and attribute values. Never decode by assigning to innerHTML. */
+  const NAMED = {amp:"&", lt:"<", gt:">", quot:'"', apos:"'"};
+  function decode(s){
+    return String(s==null? "" : s).replace(/&(#[0-9]+|#[xX][0-9a-fA-F]+|amp|lt|gt|quot|apos);/g, function(m, e){
+      if(e.charAt(0)!=="#") return NAMED[e];
+      const cp = (e.charAt(1)==="x" || e.charAt(1)==="X")? parseInt(e.slice(2),16) : parseInt(e.slice(1),10);
+      return (cp>0 && cp<=0x10FFFF)? String.fromCodePoint(cp) : m;
+    });
+  }
+  const h = s => decode(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 
 
   /* the view on screen. The browser's Back and Forward buttons now step through views (the URL holds it). */
@@ -30,7 +42,7 @@
 
   /* ---- scope: which letters are in view ---- */
   const inScope = (L, sc) => sc==="*" ? true : L.co===sc;
-  const scopeLabel = sc => sc==="*" ? "California" : sc+" County";
+  const scopeLabel = sc => sc==="*" ? "California" : h(sc)+" County";
 
   /* ---- facts derived from the data, for a scope ---- */
   function facts(sc){
@@ -62,22 +74,22 @@
   let F = null, FS = null;     /* F = the county in view, FS = all of California */
 
   function nav(){
-    const h = here(), sc = state.county==="*"? "All California" : state.county+" County";
-    const crumb = h.v==="cities" ? sc
-      : h.v==="city" ? sc+' / <b>'+h.city+'</b>'
-      : h.v==="letter" ? sc+' / <b>'+h.city+'</b> / letter'
-      : h.v==="concepts" ? sc+' / Concepts and connections' : h.v==="faq" ? "Questions" : sc+' / Did you know';
+    const v = here(), sc = state.county==="*"? "All California" : h(state.county)+" County";
+    const crumb = v.v==="cities" ? sc
+      : v.v==="city" ? sc+' / <b>'+h(v.city)+'</b>'
+      : v.v==="letter" ? sc+' / <b>'+h(v.city)+'</b> / letter'
+      : v.v==="concepts" ? sc+' / Concepts and connections' : v.v==="faq" ? "Questions" : sc+' / Did you know';
     return '<div class="hcdnav"><span class="crumb">'+crumb+'</span></div>';
   }
   function countySelect(){
     const rows = HCD.meta.counties.filter(c=>c.n!=="Orange").sort((a,b)=>a.n.localeCompare(b.n));
-    const opt = c => '<option value="'+c.n+'"'+(state.county===c.n?' selected':'')+'>'+c.n+' County ('+plural(c.k,'letter')+')</option>';
+    const opt = c => '<option value="'+h(c.n)+'"'+(state.county===c.n?' selected':'')+'>'+h(c.n)+' County ('+plural(c.k,'letter')+')</option>';
     const oc = HCD.meta.counties.find(c=>c.n==="Orange");
     const head = state.county==="*"? '<option value="*" selected>All California</option>' : '';
     return '<label class="cosel">County <select data-hcd-county aria-label="Choose a county">'+head+opt(oc)+rows.map(opt).join("")+'</select></label>';
   }
   function sections(){
-    const h = here(), on = v => h.v===v? ' aria-selected="true"' : '';
+    const cv = here(), on = v => cv.v===v? ' aria-selected="true"' : '';
     return '<div class="hcdtoggle"><button data-hcd="cities"'+on("cities")+'>Cities</button>'+
       '<button data-hcd="concepts"'+on("concepts")+'>Concepts and connections</button>'+
       '<button data-hcd="faq"'+on("faq")+'>Questions</button>'+
@@ -90,24 +102,24 @@
     const list = HCD.cities.filter(c=>co==="*" ? true : (c.co===co && !c.gen)).sort((a,b)=>(a.gen-b.gen) ||
       (state.hcdSort==="name"? a.n.localeCompare(b.n) : (b.k-a.k || a.n.localeCompare(b.n))));
     const max = list.length? list[0].k : 1;
-    const rows = list.map(c=>'<div class="cityrow" data-hcd="city|'+encodeURIComponent(c.n)+'" tabindex="0" role="button">'+
-      '<span class="nm">'+c.n+(c.n===co+" County"? ' <span class="rng">(the county itself)</span>' : (co==="*" && c.co)? ' <span class="rng">'+c.co+'</span>' : '')+'</span>'+
+    const rows = list.map(c=>'<div class="cityrow" data-hcd="city|'+h(encodeURIComponent(c.n))+'" tabindex="0" role="button">'+
+      '<span class="nm">'+h(c.n)+(c.n===co+" County"? ' <span class="rng">(the county itself)</span>' : (co==="*" && c.co)? ' <span class="rng">'+h(c.co)+'</span>' : '')+'</span>'+
       '<span class="num"><b>'+c.k+'</b></span><span class="num">'+c.ha+'</span><span class="num">'+c.ad+'</span>'+
-      '<span class="rng">'+(c.f? c.f.slice(0,7)+' to '+(c.l||'').slice(0,7) : 'no date')+'</span>'+
+      '<span class="rng">'+(c.f? h(c.f.slice(0,7))+' to '+h((c.l||'').slice(0,7)) : 'no date')+'</span>'+
       '<span><span class="minibar" style="display:block;background:'+SEVCOL[c.sv]+';width:'+Math.max(6,Math.round(c.k/max*100))+'%"></span></span></div>').join("");
     let lead;
     if(co==="*"){
       lead = n(F.total)+' letters across '+m.cities+' jurisdictions statewide. Pick a county from the menu to narrow it down.';
     } else if(F.total===0){
-      lead = '<b>'+co+' County</b> has no letters in this set. That can mean HCD sent none, or that its entries are among the '+m.not_online+' whose PDF is not online (left out statewide).';
+      lead = '<b>'+h(co)+' County</b> has no letters in this set. That can mean HCD sent none, or that its entries are among the '+m.not_online+' whose PDF is not online (left out statewide).';
     } else if(F.cityTotal===0){
-      lead = '<b>'+co+' County</b>: '+plural(F.total,'letter')+' to the county itself. It has no incorporated cities.';
+      lead = '<b>'+h(co)+' County</b>: '+plural(F.total,'letter')+' to the county itself. It has no incorporated cities.';
     } else {
-      lead = '<b>'+co+' County</b>: '+plural(F.total,'letter')+' to '+(F.withLetters===F.cityTotal? 'all '+F.cityTotal+' of its cities' : F.withLetters+' of its '+F.cityTotal+' cities')+(F.countyLevel? ' and '+plural(F.countyLevel,'letter')+' to the county itself' : '')+'.';
+      lead = '<b>'+h(co)+' County</b>: '+plural(F.total,'letter')+' to '+(F.withLetters===F.cityTotal? 'all '+F.cityTotal+' of its cities' : F.withLetters+' of its '+F.cityTotal+' cities')+(F.countyLevel? ' and '+plural(F.countyLevel,'letter')+' to the county itself' : '')+'.';
     }
-    const miss = (co!=="*" && F.missing.length)? '<p class="src" style="margin:0 0 8px">'+(F.total? 'No letters in this set for: ' : 'Cities in the county: ')+F.missing.join(', ')+'.</p>' : '';
+    const miss = (co!=="*" && F.missing.length)? '<p class="src" style="margin:0 0 8px">'+(F.total? 'No letters in this set for: ' : 'Cities in the county: ')+F.missing.map(h).join(', ')+'.</p>' : '';
     return '<div class="card"><h2>HCD advice and enforcement letters by city</h2>'+
-      '<p class="hint">'+lead+' Letters come from HCD&rsquo;s public enforcement-letters dashboard (downloaded '+m.source.replace(/^.*downloaded /,"")+'). '+
+      '<p class="hint">'+lead+' Letters come from HCD&rsquo;s public enforcement-letters dashboard (downloaded '+h(m.source.replace(/^.*downloaded /,""))+'). '+
       'HCD lists '+m.not_online+' more entries whose PDF is not online, and '+m.copies+' entries filed as copies of another letter; those are left out. '+
       'Click a row to read its letters. The bar&rsquo;s length is the letter count and its colour is the most serious stage in that city&rsquo;s set.</p>'+miss+
 '<div class="legend" style="margin:0 0 8px"><span><i style="background:var(--sev-0)"></i>Closing letter</span><span><i style="background:var(--sev-1)"></i>Advisory</span>'+
@@ -122,14 +134,14 @@
   function cityView(){
     const name = here().city, rec = cityRec(name) || {k:0,ha:0,ad:0}, ix = lettersOf(name);
     const cards = ix.map(({L,i})=>{
-      const kw = L.kw? '<div class="chips" style="margin-top:6px">'+L.kw.split(";").slice(0,4).map(s=>s.trim()).filter(Boolean).map(k=>'<span class="chip" style="cursor:default">'+k+'</span>').join("")+'</div>' : "";
+      const kw = L.kw? '<div class="chips" style="margin-top:6px">'+L.kw.split(";").slice(0,4).map(s=>s.trim()).filter(Boolean).map(k=>'<span class="chip" style="cursor:default">'+h(k)+'</span>').join("")+'</div>' : "";
       return '<div class="lcard" data-hcd="letter|'+i+'" tabindex="0" role="button"><div class="hd"><span class="sev sev'+L.sv+'">'+HCD_SEV[L.sv]+'</span>'+
-        '<b>'+L.t+'</b><span class="dt">'+(L.d||"undated")+'</span><span class="dt">'+(L.p==="HAU"?"Housing Accountability Unit":"ADU law")+'</span></div>'+
-        '<div class="sm clamp">'+(L.s||"HCD&rsquo;s data has no summary for this letter. Open the original to read it.")+'</div>'+kw+'</div>';
+        '<b>'+h(L.t)+'</b><span class="dt">'+(L.d? h(L.d) : "undated")+'</span><span class="dt">'+(L.p==="HAU"?"Housing Accountability Unit":"ADU law")+'</span></div>'+
+        '<div class="sm clamp">'+(L.s? h(L.s) : "HCD&rsquo;s data has no summary for this letter. Open the original to read it.")+'</div>'+kw+'</div>';
     }).join("");
     const top = Math.max.apply(null, ix.map(x=>x.L.sv).concat([0]));
-    const co = ix.length && ix[0].L.co? ix[0].L.co+' County' : '';
-    return '<div class="card"><h2>'+name+'</h2><p class="hint">'+(co? co+'. ' : '')+rec.k+' letter'+(rec.k===1?'':'s')+(rec.f? ', '+rec.f.slice(0,7)+' to '+(rec.l||'').slice(0,7) : '')+
+    const co = ix.length && ix[0].L.co? h(ix[0].L.co)+' County' : '';
+    return '<div class="card"><h2>'+h(name)+'</h2><p class="hint">'+(co? co+'. ' : '')+rec.k+' letter'+(rec.k===1?'':'s')+(rec.f? ', '+h(rec.f.slice(0,7))+' to '+h((rec.l||'').slice(0,7)) : '')+
       '. Most serious stage in the set: <b>'+HCD_SEV[top]+'</b>. Click a letter to read it.</p>'+cards+'</div>';
   }
 
@@ -146,29 +158,29 @@
   }
 
   function letterView(){
-    const h = here(), L = HCD.letters[h.ix];
+    const cv = here(), L = HCD.letters[cv.ix];
     if(!L) return '<div class="card"><p>That letter is not in the data.</p></div>';
-    const ix = lettersOf(h.city), at = ix.findIndex(x=>x.i===h.ix);
+    const ix = lettersOf(cv.city), at = ix.findIndex(x=>x.i===cv.ix);
     const prev = at>0? ix[at-1] : null, next = at>=0 && at<ix.length-1? ix[at+1] : null;
     const kw = (L.kw||"").split(";").map(s=>s.trim()).filter(Boolean);
     const st = (HCD.pool.st[L.st]||"").split(";").map(s=>s.trim()).filter(Boolean);
-    const rel = related(h.ix), mean = meaning(L.t);
+    const rel = related(cv.ix), mean = meaning(L.t);
     const relHtml = rel.length? '<div class="sec"><h3>Connected letters</h3><div class="chain">'+rel.slice(0,8).map(([j])=>{
-      const R = HCD.letters[j]; return '<span class="nd" data-hcd="letter|'+j+'">'+(R.d||"undated")+' '+R.t.replace(/ Letter$/,"")+'</span>'; }).join('<span class="ar">&middot;</span>')+
+      const R = HCD.letters[j]; return '<span class="nd" data-hcd="letter|'+j+'">'+(R.d? h(R.d) : "undated")+' '+h(R.t.replace(/ Letter$/,""))+'</span>'; }).join('<span class="ar">&middot;</span>')+
       '</div><p class="src" style="margin-top:5px">Same HCD case number, or the same city with a shared issue tag.</p></div>' : '<div class="sec"><h3>Connected letters</h3><p class="src">None. No other letter in this set shares this HCD case number or a shared issue tag for this city.</p></div>';
     return '<div class="card"><div class="hd" style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap"><span class="sev sev'+L.sv+'">'+HCD_SEV[L.sv]+'</span>'+
-      '<b>'+L.t+'</b><span style="color:var(--muted);font-size:12.5px">'+(L.d||"undated")+' &middot; '+L.p+'</span></div>'+
-      '<h2 style="margin:6px 0 2px">'+L.city+'</h2><p class="hint" style="margin:0 0 4px">'+(L.co? L.co+' County &middot; ' : '')+'HCD case <b>'+L.id+'</b>'+(L.pg? ' &middot; '+L.pg+' page'+(L.pg===1?'':'s') : '')+'</p>'+
-      '<div class="sec"><h3>What HCD says</h3><p>'+(L.s||"HCD&rsquo;s data has no summary for this letter. Open the original below.")+'</p></div>'+
+      '<b>'+h(L.t)+'</b><span style="color:var(--muted);font-size:12.5px">'+(L.d? h(L.d) : "undated")+' &middot; '+h(L.p)+'</span></div>'+
+      '<h2 style="margin:6px 0 2px">'+h(L.city)+'</h2><p class="hint" style="margin:0 0 4px">'+(L.co? h(L.co)+' County &middot; ' : '')+'HCD case <b>'+h(L.id)+'</b>'+(L.pg? ' &middot; '+L.pg+' page'+(L.pg===1?'':'s') : '')+'</p>'+
+      '<div class="sec"><h3>What HCD says</h3><p>'+(L.s? h(L.s) : "HCD&rsquo;s data has no summary for this letter. Open the original below.")+'</p></div>'+
       (mean? '<div class="sec"><h3>What this stage means</h3><p>'+mean+'</p></div>' : '')+
-      (kw.length? '<div class="sec"><h3>Issues HCD tagged</h3><div class="chips">'+kw.slice(0,14).map(k=>'<span class="chip">'+k+'</span>').join("")+'</div></div>' : '')+
-      '<div class="sec"><h3>Law HCD cites</h3><p>'+(HCD.pool.au[L.au]||"Not stated in HCD&rsquo;s data.")+(HCD.pool.au[L.au]==="Other"? ' <span class="src">(HCD&rsquo;s own label; see the statutes below)</span>' : '')+'</p></div>'+
-      (st.length? '<div class="sec"><h3>Statutes listed</h3><p class="src">'+st.slice(0,26).map(s=>"&sect;"+s).join(", ")+(st.length>26? " and "+(st.length-26)+" more" : "")+'</p></div>' : '')+
+      (kw.length? '<div class="sec"><h3>Issues HCD tagged</h3><div class="chips">'+kw.slice(0,14).map(k=>'<span class="chip">'+h(k)+'</span>').join("")+'</div></div>' : '')+
+      '<div class="sec"><h3>Law HCD cites</h3><p>'+(HCD.pool.au[L.au]? h(HCD.pool.au[L.au]) : "Not stated in HCD&rsquo;s data.")+(HCD.pool.au[L.au]==="Other"? ' <span class="src">(HCD&rsquo;s own label; see the statutes below)</span>' : '')+'</p></div>'+
+      (st.length? '<div class="sec"><h3>Statutes listed</h3><p class="src">'+st.slice(0,26).map(s=>"&sect;"+h(s)).join(", ")+(st.length>26? " and "+(st.length-26)+" more" : "")+'</p></div>' : '')+
       relHtml+
       '<div class="sec"><h3>Read the original</h3>'+(L.u? ext(hcdUrl(L.u),"HCD&rsquo;s PDF") : '<span class="src">No public URL in HCD&rsquo;s data.</span>')+'</div>'+
-      '<div class="hcdnav" style="margin-top:14px"><button data-hcd="letter|'+(prev? prev.i : h.ix)+'" '+(prev?'':'disabled')+'>&#8592; Previous letter</button>'+
-      '<button data-hcd="letter|'+(next? next.i : h.ix)+'" '+(next?'':'disabled')+'>Next letter &#8594;</button>'+
-      '<button data-hcd="city|'+encodeURIComponent(L.city)+'">All of '+L.city+'</button></div></div>';
+      '<div class="hcdnav" style="margin-top:14px"><button data-hcd="letter|'+(prev? prev.i : cv.ix)+'" '+(prev?'':'disabled')+'>&#8592; Previous letter</button>'+
+      '<button data-hcd="letter|'+(next? next.i : cv.ix)+'" '+(next?'':'disabled')+'>Next letter &#8594;</button>'+
+      '<button data-hcd="city|'+h(encodeURIComponent(L.city))+'">All of '+h(L.city)+'</button></div></div>';
   }
 
   /* count terms across the letters in view; the same term spelled two ways ("housing element" / "Housing Element Law") is one row */
@@ -193,7 +205,7 @@
     const laws = tally(L=>(HCD.pool.au[L.au]||"").split(", "), big? 5 : 1, 12);
     const issues = tally(L=>(L.kw||"").split(";"), big? 8 : (F.total>=100? 3 : 1), big? 18 : 15);
     const types = tally(L=>[L.t], 1, 0);
-    const bar = (c,max,col)=>'<div class="concept"><div class="lb"><span>'+c.term+'</span><span>'+n(c.k)+(c.k===1?' letter':' letters')+' &middot; '+plural(c.nc,'jurisdiction')+'</span></div>'+
+    const bar = (c,max,col)=>'<div class="concept"><div class="lb"><span>'+h(c.term)+'</span><span>'+n(c.k)+(c.k===1?' letter':' letters')+' &middot; '+plural(c.nc,'jurisdiction')+'</span></div>'+
       '<div class="tr"><div class="fl" style="width:'+Math.max(2,Math.round(c.k/max*100))+'%;background:'+col+'"></div></div></div>';
     const yr = {}; F.L.forEach(L=>{ if(L.d){ const y = L.d.slice(0,4); (yr[y] = yr[y] || {HAU:0,ADU:0})[L.p]++; } });
     const have = Object.keys(yr).sort(), ys = [];
@@ -206,9 +218,9 @@
     const chains = Object.keys(F.byCase).filter(k=>F.byCase[k].length>=minChain)
       .map(k=>({k, ix:F.byCase[k].slice().sort((a,b)=>(HCD.letters[a].d||"").localeCompare(HCD.letters[b].d||""))}))
       .sort((a,b)=>b.ix.length-a.ix.length || a.k.localeCompare(b.k)).slice(0,8);
-    const chainHtml = chains.length? chains.map(c=>'<div style="margin:0 0 9px"><div style="font-size:13px;font-weight:600">'+HCD.letters[c.ix[0]].city+
-      ' <span class="src">&middot; case '+c.k+' &middot; '+c.ix.length+' letters</span></div><div class="chain">'+
-      c.ix.map((j,i)=>(i?'<span class="ar">&#8594;</span>':'')+'<span class="nd" data-hcd="letter|'+j+'" title="'+HCD.letters[j].t+'">'+(HCD.letters[j].d||"?")+'</span>').join("")+'</div></div>').join("")
+    const chainHtml = chains.length? chains.map(c=>'<div style="margin:0 0 9px"><div style="font-size:13px;font-weight:600">'+h(HCD.letters[c.ix[0]].city)+
+      ' <span class="src">&middot; case '+h(c.k)+' &middot; '+c.ix.length+' letters</span></div><div class="chain">'+
+      c.ix.map((j,i)=>(i?'<span class="ar">&#8594;</span>':'')+'<span class="nd" data-hcd="letter|'+j+'" title="'+h(HCD.letters[j].t)+'">'+(HCD.letters[j].d? h(HCD.letters[j].d) : "?")+'</span>').join("")+'</div></div>').join("")
       : '<p class="src">No case in '+scopeLabel(sc)+' has '+(big? 'more than two letters' : 'more than one letter')+' in this set.</p>';
     const where = big? 'across California' : 'in '+scopeLabel(sc);
     return '<div class="grid2">'+
@@ -225,7 +237,7 @@
       ["What are these letters?","HCD publishes advice and enforcement letters it sends to cities and counties on an enforcement-letters dashboard. The dashboard files them under two labels, HAU (Housing Accountability Unit) and ADU (accessory dwelling unit law). This tab makes that dashboard browsable by county and city."],
       ["Does a letter mean the city is out of compliance?","Not usually. Statewide, of "+n(G.total)+" letters, "+n(G.viol)+" are at the notice-of-violation or findings-of-noncompliance stage or beyond, and "+G.decert+" are decertifications (in "+G.decertPlaces+" places). The rest are advisory, requests for information, or closing letters."],
       ["What can HCD do after a letter?","HCD&rsquo;s own letters describe it. Housing-element letters say noncompliance can mean ineligibility or delay in receiving state funds that require a compliant housing element, and that HCD may refer matters to the Office of the Attorney General. Open any letter in the set to read the exact wording."],
-      ["Why does the same city appear many times?","A case runs over time: HCD writes, the city responds or does not, and HCD writes again. The longest chain statewide is "+G.longest.len+" letters ("+G.longest.city+", "+G.longest.a+" to "+G.longest.b+")."],
+      ["Why does the same city appear many times?","A case runs over time: HCD writes, the city responds or does not, and HCD writes again. The longest chain statewide is "+G.longest.len+" letters ("+h(G.longest.city)+", "+h(G.longest.a)+" to "+h(G.longest.b)+")."],
       ["How does this connect to RHNA?","HCD is the department that issued the 7th Cycle determination shown on the other tabs. These letters are about housing elements and local ordinances, which is the same state oversight that sits behind RHNA. That is context, not a finding: nothing in these letters ties a city&rsquo;s enforcement history to its RHNA allocation.",
         window.__site? '<div class="chips">'+window.__site.chip("tab_overview", "How the number is built")+window.__site.chip("#/context/determinations", "Regional determinations")+'</div>' : ''],
       ["Do ADU letters outnumber the rest?","No. Statewide, HAU letters are "+n(G.hau)+" and ADU letters are "+n(G.adu)+" ("+pct(G.adu,G.total)+"%). ADU letters are the faster-growing share: see the year chart on the Concepts tab."],
@@ -249,7 +261,7 @@
     items.push([n(F.viol),"letters are at the violation-notice or findings-of-noncompliance stage or beyond."]);
     items.push([F.decertPlaces,(F.decertPlaces===1? "place in " : "places in ")+lab+(F.decertPlaces===1? " has" : " have")+" a decertification letter ("+plural(F.decert,'letter')+")."]);
     items.push([F.closed,"letters are closings: successful completion or recertification."]);
-    if(F.longest.len>1) items.push([F.longest.len,"letters in the longest case chain ("+F.longest.city+", "+F.longest.a+" to "+F.longest.b+")."]);
+    if(F.longest.len>1) items.push([F.longest.len,"letters in the longest case chain ("+h(F.longest.city)+", "+h(F.longest.a)+" to "+h(F.longest.b)+")."]);
     items.push([F.recent,"letters are dated in 2026 so far (the data runs to late October)."]);
     if(sc!=="*") items.push(["#"+F.rank,"of 58 counties by number of letters"+(F.ties? " (tied with "+plural(F.ties,'other county')+")" : "")+"."]);
     return '<div class="card"><h2>Did you know</h2><p class="hint">Facts that fall out of seeing the whole set at once, for '+lab+'. All computed from the data.</p><div class="grid2">'+
@@ -257,20 +269,20 @@
   }
 
   function panel(){
-    const h = here();
-    if(h.v==="letter"){ const L = HCD.letters[h.ix];
-      if(L) return '<h2>'+L.city+'</h2><div class="sec"><span class="sev sev'+L.sv+'">'+HCD_SEV[L.sv]+'</span></div>'+
-        '<div class="sec"><h3>Letter</h3><p><b>'+L.t+'</b><br>'+(L.d||"undated")+' &middot; '+L.p+' &middot; '+L.id+'</p></div>'+
+    const cv = here();
+    if(cv.v==="letter"){ const L = HCD.letters[cv.ix];
+      if(L) return '<h2>'+h(L.city)+'</h2><div class="sec"><span class="sev sev'+L.sv+'">'+HCD_SEV[L.sv]+'</span></div>'+
+        '<div class="sec"><h3>Letter</h3><p><b>'+h(L.t)+'</b><br>'+(L.d? h(L.d) : "undated")+' &middot; '+h(L.p)+' &middot; '+h(L.id)+'</p></div>'+
         (L.u? '<div class="sec"><h3>Original</h3>'+ext(hcdUrl(L.u),"HCD&rsquo;s PDF")+'</div>' : ''); }
-    if(h.v==="city"){ const r = cityRec(h.city) || {k:0,ha:0,ad:0};
-      return '<h2>'+h.city+'</h2><div class="sec"><h3>Letters</h3><p><b>'+r.k+'</b> &middot; '+r.ha+' HAU &middot; '+r.ad+' ADU</p></div>'+
-        (r.f? '<div class="sec"><h3>Period</h3><p>'+r.f+' to '+(r.l||"")+'</p></div>' : '')+
+    if(cv.v==="city"){ const r = cityRec(cv.city) || {k:0,ha:0,ad:0};
+      return '<h2>'+h(cv.city)+'</h2><div class="sec"><h3>Letters</h3><p><b>'+r.k+'</b> &middot; '+r.ha+' HAU &middot; '+r.ad+' ADU</p></div>'+
+        (r.f? '<div class="sec"><h3>Period</h3><p>'+h(r.f)+' to '+h(r.l||"")+'</p></div>' : '')+
         '<div class="sec"><h3>Colour key</h3><p>Green = closing letter, slate = advisory, blue = information or ordinance findings, amber = findings of noncompliance, orange = violation notice, red = decertification.</p></div>'; }
     return '<h2>HCD advice and enforcement letters</h2><div class="sec"><p>Letters from HCD&rsquo;s public enforcement-letters dashboard. Choose a county from the menu, then a city, or open <b>Concepts and connections</b> to see what recurs and how letters chain together.</p></div>'+
       '<div class="sec"><h3>In view</h3><p><b>'+scopeLabel(state.county)+'</b><br>'+plural(F.total,'letter')+' &middot; '+plural(F.places,'jurisdiction')+'</p></div>'+
       '<div class="sec"><h3>Statewide</h3><p>'+n(FS.total)+' letters &middot; '+HCD.meta.cities+' jurisdictions</p></div>'+
       (window.__site? '<div class="sec">'+window.__site.xlink("d_he", "Orange County housing elements due: "+window.__site.dateText("d_he"))+'</div>' : '')+
-      '<div class="sec src">Source: '+HCD.meta.source+'. Built '+HCD.meta.built+'. '+(EMBED? 'Beta view, not an OCCOG position and not legal advice.' : 'Internal working view, not an OCCOG position.')+'</div>';
+      '<div class="sec src">Source: '+h(HCD.meta.source)+'. Built '+h(HCD.meta.built)+'. '+(EMBED? 'Beta view, not an OCCOG position and not legal advice.' : 'Internal working view, not an OCCOG position.')+'</div>';
   }
 
   const EMBED = !!window.HCD_EMBED;      /* true when hosted as a tab inside the explainer */
@@ -278,8 +290,8 @@
   function viewHtml(){
     if(!HCD) return '<div class="card"><h2>HCD advice letters</h2><p class="hint">hcd-data.js did not load, so there is nothing to show.</p></div>';
     prep();
-    const h = here();
-    const body = h.v==="city"? cityView() : h.v==="letter"? letterView() : h.v==="concepts"? concepts() : h.v==="faq"? faq() : h.v==="dyk"? dyk() : cities();
+    const cv = here();
+    const body = cv.v==="city"? cityView() : cv.v==="letter"? letterView() : cv.v==="concepts"? concepts() : cv.v==="faq"? faq() : cv.v==="dyk"? dyk() : cities();
     const note = EMBED? '<p class="src" style="margin:0 0 8px"><b>Beta.</b> This tab is built from HCD&rsquo;s public enforcement-letters dashboard, not from the SCAG packet cited at the top of the page.</p>' : '';
     return note+nav()+sections()+body;
   }
@@ -345,14 +357,15 @@
     return true;
   }
   function crumb(){
-    const h = here(), sc = state.county==="*"? "All California" : state.county+" County";
-    if(h.v==="city") return [sc, h.city];
-    if(h.v==="letter"){ const L = HCD && HCD.letters[h.ix]; return [sc, h.city, L? L.t+" ("+(L.d||"undated")+")" : "Letter"]; }
-    if(h.v==="concepts") return [sc, "Concepts and connections"];
-    if(h.v==="faq") return [sc, "Questions"];
-    if(h.v==="dyk") return [sc, "Did you know"];
+    /* plain (decoded) text: the core escapes these when it builds the breadcrumb */
+    const cv = here(), sc = state.county==="*"? "All California" : decode(state.county)+" County";
+    if(cv.v==="city") return [sc, decode(cv.city)];
+    if(cv.v==="letter"){ const L = HCD && HCD.letters[cv.ix]; return [sc, decode(cv.city), L? decode(L.t)+" ("+(L.d? decode(L.d) : "undated")+")" : "Letter"]; }
+    if(cv.v==="concepts") return [sc, "Concepts and connections"];
+    if(cv.v==="faq") return [sc, "Questions"];
+    if(cv.v==="dyk") return [sc, "Did you know"];
     return [sc];
   }
-  window.HCDTab = {view:viewHtml, panel:panelHtml, route:route, setRoute:setRoute, crumb:crumb, _state:state};
+  window.HCDTab = {view:viewHtml, panel:panelHtml, route:route, setRoute:setRoute, crumb:crumb, decode:decode, _state:state};
   if(!EMBED) render();
 })();

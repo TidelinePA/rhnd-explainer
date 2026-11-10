@@ -32,12 +32,11 @@
       : state.sort==="date"? (b.date||"").localeCompare(a.date||"") : (a.region||"").localeCompare(b.region||""));
     const maxU = Math.max.apply(null, rows.map(x=>x.total).concat([1]));
     const body = rows.map(l=>'<tr class="lk'+(state.sel===l.file?' sel':'')+'" data-rhnd="open|'+l.file+'" tabindex="0" role="button">'+
-      '<td>'+esc(l.region)+'</td><td>'+kindLabel[l.kind]+'</td><td>'+esc(l.date)+'</td>'+
+      '<td>'+esc(l.region)+'<div class="rhsub">'+kindLabel[l.kind]+' &middot; '+(l.sixCat? 6 : 4)+' income categories</div></td><td>'+esc(l.date)+'</td>'+
       '<td class="n"><b>'+n(l.total)+'</b></td>'+
-      '<td class="n">'+(l.sixCat? 6 : 4)+'</td>'+
+      '<td><div class="rhbar"><i style="width:'+Math.max(2, Math.round(l.total/maxU*100))+'%"></i></div></td>'+
       '<td>'+esc(l.period||"&ndash;")+'</td>'+
       '<td>'+esc(l.heDue||"&ndash;")+'</td>'+
-      '<td><div class="rhbar"><i style="width:'+Math.max(2, Math.round(l.total/maxU*100))+'%"></i></div></td>'+
       '<td>'+ext(letterUrl(l, l.incomePage), "Letter")+'</td></tr>').join("");
     return '<div class="card"><h2>7th cycle regional housing need determinations</h2>'+
       '<p class="hint">HCD issues one determination per region: the number of homes the region must plan for. This view holds <b>'+f.L.length+'</b> letters HCD has published so far, totalling <b>'+n(f.sum)+'</b> units &mdash; '+
@@ -49,8 +48,8 @@
         '<button data-rhnd="sort|'+(state.sort==="units"?"date":state.sort==="date"?"name":"units")+'">Sort: '+
           (state.sort==="units"?"largest first":state.sort==="date"?"newest first":"A to Z")+'</button>'+
       '</div>'+
-      '<table class="rhtbl"><tr><th>Region</th><th>Type</th><th>Letter date</th><th class="n">Units</th><th class="n">Income cats</th>'+
-      '<th>Projection period</th><th>Housing element due</th><th>Relative size</th><th></th></tr>'+body+'</table>'+
+      '<div class="tscroll"><table class="rhtbl"><tr><th>Region</th><th>Letter date</th><th class="n">Units</th><th>Relative size</th>'+
+      '<th>Projection period</th><th>Housing element due</th><th></th></tr>'+body+'</table></div>'+
       '<p class="src" style="margin-top:8px">'+esc(R? R.outstandingNote : "")+' '+ext(R? R.process : "#", "HCD&rsquo;s process page")+'. '+
       'Letters downloaded '+esc(R? R.downloaded : "")+' from '+ext(R? R.source : "#", "HCD&rsquo;s 7th cycle page")+'. Copies are hosted here; every figure links to its page.</p></div>';
   }
@@ -112,11 +111,11 @@
       (notes.length? '<div class="sec"><h3>Notes</h3><ul>'+notes.map(x=>'<li>'+x+'</li>').join("")+'</ul></div>' : '')+
       (steps.length? '<div class="sec"><h3>How the number is built (HCD&rsquo;s steps)</h3>'+
         '<p class="src">From the letter&rsquo;s methodology attachment, p.'+l.stepsPage+'. Bars show each line&rsquo;s size; the largest is in red.</p>'+
-        '<table class="rhtbl steps"><tr><th>Step</th><th class="n">Units</th><th></th></tr>'+stepRows+
-        '<tr class="rhrow tot"><td>Total &mdash; 7th cycle determination</td><td class="n">'+n(l.total)+'</td><td></td></tr></table></div>' : '')+
+        '<div class="tscroll"><table class="rhtbl steps"><tr><th>Step</th><th class="n">Units</th><th></th></tr>'+stepRows+
+        '<tr class="rhrow tot"><td>Total &mdash; 7th cycle determination</td><td class="n">'+n(l.total)+'</td><td></td></tr></table></div></div>' : '')+
       '<div class="sec"><h3>Determination by income category</h3>'+
-        '<table class="rhtbl inc"><tr><th>Income category</th><th class="n">Share</th><th class="n">Units</th><th></th></tr>'+incRows+
-        '<tr class="rhrow tot"><td>Total</td><td class="n">100%</td><td class="n">'+n(l.total)+'</td><td></td></tr></table></div>'+
+        '<div class="tscroll"><table class="rhtbl inc"><tr><th>Income category</th><th class="n">Share</th><th class="n">Units</th><th></th></tr>'+incRows+
+        '<tr class="rhrow tot"><td>Total</td><td class="n">100%</td><td class="n">'+n(l.total)+'</td><td></td></tr></table></div></div>'+
       (qs.length? '<div class="sec"><h3>Questions to ask</h3><ul>'+qs.map(q=>'<li>'+q+'</li>').join("")+'</ul></div>' : '')+
       (cb && window.__site? '<div class="sec">'+window.__site.xlink("tab_cost", "How SCAG&rsquo;s cost-burden adjustment was calculated")+'</div>' : '')+
       scagLinks(l)+

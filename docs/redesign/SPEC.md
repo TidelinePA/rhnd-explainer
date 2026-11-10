@@ -564,7 +564,7 @@ Do them in order. Commit after each. Run the checks in section 11 after each.
 ### 11.1 After every phase
 
 1. Open the browser console. There must be no errors on load or while clicking through every page.
-2. Run `node docs/redesign/smoke-test.js` from the repository root (it needs Playwright). It loads a list of routes and reports failures. It is expected to fail before Phase 2 is complete. **From Phase 2 until Phase 7,** it is expected to report exactly four failures, all "page scrolls sideways" at 390px: HCD Table 2 (`#/number/table2/t11`), Income categories (`#/number/income/i_al`), Slides (`#/process/meetings/m20261026/slides/sl19`) and the Regional determinations list (`#/context/determinations`). These pages already scroll sideways on `main`; Phase 7 fixes them (sections 7.6 and 9.4). Any other failure is a real failure.
+2. Run `node docs/redesign/smoke-test.js` from the repository root (it needs Playwright). It loads a list of routes and reports failures. From Phase 7A on, it must print "All routes passed"; any failure is a real failure.
 3. Click one item on each of the nine pages and compare the panel text with the live site on `main`. The wording must be identical.
 4. Check at 1366px, 980px and 390px wide.
 
