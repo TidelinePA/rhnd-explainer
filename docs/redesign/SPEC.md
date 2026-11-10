@@ -478,6 +478,13 @@ Rules:
 - If no entry is in the future, do not render the box, and let the hero take the full width.
 - The mock-up shows hand-written sub-lines under each event ("Thursday, 1:00 PM · …"). Do not reproduce those. Use only the fields above.
 
+**Dates page order (owner decision, after Phase 7B):**
+
+- The Dates page (`#/process/dates`) lists entries **newest first**: it sorts at display time by `iso`, descending. The `DATES` array itself is not reordered.
+- Entries with no `iso` (today only "Open item", `d_label`) go at the bottom, in their existing order.
+- This applies to any entry added later. Every new dated entry needs an `iso` value in `YYYY-MM-DD` form; a comment above `DATES` says so.
+- The "Coming up" box above is unchanged: it still shows the next two future dates, soonest first.
+
 ### 8.3 Headline figures
 
 Four stat tiles. Reuse the four existing "glance" strings from `overview()` unchanged. Then **remove the glance row from the "How it is built" page**, since it now lives here.

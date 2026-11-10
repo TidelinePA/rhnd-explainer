@@ -537,6 +537,8 @@ const LAWS = [
   note:"SCAG's housing manager told the subcommittee (Sept 10 minutes, p.20) that state law requires county median income to be used regardless of variation within a county.", rel:["i_al","i_el","i_vl","i_low","i_mod","i_abv"], page:49}
 ];
 
+/* Every new dated entry needs an iso value in YYYY-MM-DD form. The Dates page sorts by it (newest first) and the
+   start page's "Coming up" box uses it (next two future dates, soonest first). Only undated open items may omit it. */
 const DATES = [
  {id:"d_oct15", iso:"2026-10-15", date:"Oct 15, 2026", title:"HCD issues the final 7th Cycle determination", status:"confirmed",
   detail:"HCD letter to SCAG Executive Director Kome Ajise: 1,359,750 units for June 30, 2029 to October 15, 2037. Followed consultation from August to October 2026 (staff met Sept 2, Sept 17, Sept 28, Oct 8, Oct 12).", rel:["s_c1","e4","a_att2"], src:"HCD letter pp.46-48; staff report p.28", page:46},
@@ -1350,7 +1352,13 @@ const SLIDES = [
   /* ---------- dates tab ---------- */
   function datesTab(){
     return '<div class="card"><h2>What happens when</h2><p class="hint">Click a date for detail and links to the elements and laws it touches. Green = confirmed in the packet; amber = tentative; slate = derived; red = not yet verified.</p><div class="tl">'+
-      DATES.map(d=>'<div class="ti'+(state.sel===d.id?' sel':'')+'" data-go="'+d.id+'" tabindex="0" role="button"><span class="d">'+d.date+'</span><span class="st '+d.status+'">'+d.status+'</span><div>'+d.title+'</div></div>').join("")+'</div></div>';
+      datesNewestFirst().map(d=>'<div class="ti'+(state.sel===d.id?' sel':'')+'" data-go="'+d.id+'" tabindex="0" role="button"><span class="d">'+d.date+'</span><span class="st '+d.status+'">'+d.status+'</span><div>'+d.title+'</div></div>').join("")+'</div></div>';
+  }
+  /* Dates page order (SPEC 8.2): newest first by iso, sorted at display time. DATES itself is not reordered.
+     Entries without iso keep their existing order at the bottom. */
+  function datesNewestFirst(){
+    const dated = DATES.filter(d=>d.iso).slice().sort((a,b)=>b.iso.localeCompare(a.iso));
+    return dated.concat(DATES.filter(d=>!d.iso));
   }
 
   /* ---------- law tab ---------- */
