@@ -16,15 +16,6 @@
     return d.toISOString().slice(0,10); }
   function total(){ return (R? R.letters : []).reduce((a,x)=>a+(x.total||0),0); }
 
-  (function(){ const st = document.createElement("style");
-    st.textContent = '.rhbar{height:9px;border-radius:2px;background:#e6ebf3;position:relative;min-width:40px}'+
-      '.rhbar i{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:var(--accent)}'+
-      '.rhbar i.neg{background:#8fa7c4}.rhbar i.big{background:var(--contested)}'+
-      '.rhrow{cursor:default}.rhrow.tot td{border-top:2px solid var(--line);font-weight:700;background:#f7f9fc}'+
-      '.rhfiltsel{border-color:var(--navy)!important;box-shadow:inset 0 0 0 1px var(--navy)}'+
-      '.rhtbl td.n{text-align:right;font-variant-numeric:tabular-nums}'+
-      '.rhtbl tr.lk{cursor:pointer}.rhtbl tr.lk:hover{background:#f4f7fc}';
-    document.head.appendChild(st); })();
 
   function facts(){
     const L = R? R.letters : [];

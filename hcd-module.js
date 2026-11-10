@@ -6,17 +6,13 @@
   /* county: "Orange" (default), any other county name, or "*" for all of California */
   const state = {county:"Orange", hcdSort:"count"};
   const HCD_SEV = ["closed","advisory","information","findings","violation","decertified"];
-  const SEVCOL = ["var(--low)","#5a6b8c","#3d6b8a","var(--lowmod)","#c2571f","var(--contested)"];
+  const SEVCOL = ["var(--sev-0)","var(--sev-1)","var(--sev-2)","var(--sev-3)","var(--sev-4)","var(--sev-5)"];
   function ext(url,label){ return '<a class="ext" href="'+url+'" target="_blank" rel="noopener">'+label+' &#8599;</a>'; }
   function hcdUrl(u){ return !u? "" : /^https?:/.test(u)? u : HCD.meta.urlbase+u; }
   const n = x => x.toLocaleString();
   const pct = (a,b) => b? Math.round(100*a/b) : 0;
   const plural = (k,w) => k+' '+(k===1? w : /[^aeiou]y$/.test(w)? w.slice(0,-1)+'ies' : w+'s');
 
-  (function(){ const st = document.createElement('style');
-    st.textContent = '.cosel{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}'+
-      '.cosel select{padding:6px 8px;border:1px solid var(--line);border-radius:7px;font-size:13px;background:#fff;color:var(--ink);max-width:250px}';
-    document.head.appendChild(st); })();
 
   let stack = [{v:"cities"}], pos = 0;
   const here = () => stack[pos] || {v:"cities"};
@@ -116,9 +112,9 @@
       '<p class="hint">'+lead+' Letters come from HCD&rsquo;s public enforcement-letters dashboard (downloaded '+m.source.replace(/^.*downloaded /,"")+'). '+
       'HCD lists '+m.not_online+' more entries whose PDF is not online, and '+m.copies+' entries filed as copies of another letter; those are left out. '+
       'Click a row to read its letters. The bar&rsquo;s length is the letter count and its colour is the most serious stage in that city&rsquo;s set.</p>'+miss+
-'<div class="legend" style="margin:0 0 8px"><span><i style="background:var(--low)"></i>Closing letter</span><span><i style="background:#5a6b8c"></i>Advisory</span>'+
-      '<span><i style="background:#3d6b8a"></i>Information / ordinance findings</span><span><i style="background:var(--lowmod)"></i>Findings of noncompliance</span>'+
-      '<span><i style="background:#c2571f"></i>Violation notice</span><span><i style="background:var(--contested)"></i>Decertification</span></div>'+
+'<div class="legend" style="margin:0 0 8px"><span><i style="background:var(--sev-0)"></i>Closing letter</span><span><i style="background:var(--sev-1)"></i>Advisory</span>'+
+      '<span><i style="background:var(--sev-2)"></i>Information / ordinance findings</span><span><i style="background:var(--sev-3)"></i>Findings of noncompliance</span>'+
+      '<span><i style="background:var(--sev-4)"></i>Violation notice</span><span><i style="background:var(--sev-5)"></i>Decertification</span></div>'+
       '<p class="src" style="margin:0 0 8px"><b>HAU</b> = Housing Accountability Unit letters (housing elements, housing law). <b>ADU</b> = letters on accessory dwelling unit ordinances. Both are HCD&rsquo;s own labels.</p>'+
       '<div class="hcdtoggle"><button data-hcd="sort|'+(state.hcdSort==="name"?"count":"name")+'">Sort: '+(state.hcdSort==="name"?"A to Z":"most letters")+'</button></div>'+
       (rows? '<div class="cityrow head" style="cursor:default;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line)">'+
@@ -218,9 +214,9 @@
       : '<p class="src">No case in '+scopeLabel(sc)+' has '+(big? 'more than two letters' : 'more than one letter')+' in this set.</p>';
     const where = big? 'across California' : 'in '+scopeLabel(sc);
     return '<div class="grid2">'+
-      '<div class="card"><h2>Which law the letters cite</h2><p class="hint">The statute named in HCD&rsquo;s data for each letter '+where+', and how many letters cite it. A letter can cite more than one law, so the bars add up to more than the letter count; up to 12 laws are shown.</p>'+(laws.length? laws.map(c=>bar(c,laws[0].k,"var(--accent)")).join("") : '<p class="src">HCD&rsquo;s data names no law for these letters.</p>')+'</div>'+
+      '<div class="card"><h2>Which law the letters cite</h2><p class="hint">The statute named in HCD&rsquo;s data for each letter '+where+', and how many letters cite it. A letter can cite more than one law, so the bars add up to more than the letter count; up to 12 laws are shown.</p>'+(laws.length? laws.map(c=>bar(c,laws[0].k,"var(--num)")).join("") : '<p class="src">HCD&rsquo;s data names no law for these letters.</p>')+'</div>'+
       '<div class="card"><h2>Letters by year</h2><p class="hint">'+where.charAt(0).toUpperCase()+where.slice(1)+'. The last year is partial: the data was downloaded on 29 October 2026.</p><div class="legend" style="margin:0 0 8px"><span><i style="background:var(--navy)"></i>HAU (housing element / housing law)</span><span><i style="background:#6d9bd1"></i>ADU (accessory dwelling unit law)</span></div>'+ybars+'</div>'+
-      '<div class="card"><h2>Most frequent issue tags</h2><p class="hint">The topics HCD tagged most often '+where+'. A tag says what a letter is about, not that the city was wrong.</p>'+(issues.length? issues.map(c=>bar(c,issues[0].k,"var(--low)")).join("") : '<p class="src">No issue tags in these letters.</p>')+'</div>'+
+      '<div class="card"><h2>Most frequent issue tags</h2><p class="hint">The topics HCD tagged most often '+where+'. A tag says what a letter is about, not that the city was wrong.</p>'+(issues.length? issues.map(c=>bar(c,issues[0].k,"var(--ok)")).join("") : '<p class="src">No issue tags in these letters.</p>')+'</div>'+
       '<div class="card"><h2>What kind of letter</h2><p class="hint">HCD&rsquo;s own letter-type labels '+where+'.</p>'+types.map(c=>bar(c,types[0].k,"#6d4aa8")).join("")+'</div>'+
       '<div class="card" style="grid-column:1/-1"><h2>Longest case chains '+where+'</h2><p class="hint">HCD reuses one case number across the letters in a case. A long chain means HCD wrote repeatedly; it does not by itself say the case escalated. Each chip is a letter&rsquo;s date; click one to read that letter.</p>'+chainHtml+'</div></div>';
   }
