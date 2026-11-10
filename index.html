@@ -150,9 +150,17 @@
     .seclk{grid-template-columns:minmax(0,1fr);gap:2px}
   }
   .draft{background:var(--draft-bg);color:var(--draft-ink);border-bottom:1px solid var(--draft-line);padding:8px var(--gut);font-size:12.5px}
-  .mtgs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 0}
-  .mtg{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 11px;cursor:pointer;font-size:13.5px;text-align:left;color:var(--ink)}
-  .mtg small{display:block;color:var(--muted);font-size:12px}
+  .yrs{display:flex;gap:6px;margin:12px 0 0;overflow-x:auto;scrollbar-width:none;padding:2px}
+  .yrs::-webkit-scrollbar{display:none}
+  .yr{flex:none;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:5px 13px;cursor:pointer;font:inherit;font-size:13.5px;color:var(--ink)}
+  .yr small{margin-left:6px;font-size:12px;color:var(--muted)}
+  .yr[aria-selected="true"]{background:var(--sec);border-color:var(--sec);color:var(--on-dark);font-weight:600}
+  .yr[aria-selected="true"] small{color:var(--on-dark);opacity:.85}
+  .mtgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin:10px 0 0}
+  .mtg{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:9px 12px;cursor:pointer;font:inherit;font-size:13.5px;text-align:left;color:var(--ink)}
+  .mtg b{display:flex;align-items:center;gap:8px}
+  .mtg small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+  .upc{font-size:11px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--card);color:var(--sec);border:1px solid var(--sec)}
   .mtg[aria-selected="true"]{border-color:var(--sec);background:var(--sec-t);box-shadow:inset 0 0 0 1px var(--sec)}
   .subtabs{display:flex;gap:4px;margin:12px 0 0;border-bottom:1px solid var(--line)}
   .subtab{border:1px solid transparent;border-bottom:none;background:none;padding:7px 14px;cursor:pointer;font-size:13.5px;color:var(--muted);border-radius:7px 7px 0 0;margin-bottom:-1px}
@@ -1228,9 +1236,14 @@ const SLIDES = [
     const m = MEETINGS.find(x=>x.id===state.mtg) || MEETINGS[0];
     const pm = m.past ? pastMtg(m.id) : null;   /* MEETINGS rows carry only id/date/label/views; the content is in PAST */
     if(m.views.indexOf(state.sub)<0) state.sub = m.views[0];
+    /* Meeting picker: one chip per year, then that year's meetings in an even grid. A year chip opens that year's most
+       recent meeting, so the picker needs no state of its own and grows by one chip a year. MEETINGS is newest first. */
+    const yearOf = x => x.iso.slice(0,4), yr = yearOf(m), today = todayIso();
+    const years = MEETINGS.map(yearOf).filter((y,i,a)=>a.indexOf(y)===i);
     const head = '<div class="card"><h2>SCAG RHNA Subcommittee meetings</h2>'+
-      '<p class="hint">Pick a meeting, then its agenda or slides. Meetings are listed newest first.</p>'+
-      '<div class="mtgs" role="tablist" aria-label="Meetings">'+MEETINGS.map(x=>'<button class="mtg" role="tab" aria-selected="'+(x.id===m.id)+'" data-go="'+x.id+'"><b>'+x.date+'</b><small>'+x.label+'</small></button>').join("")+'</div>'+
+      '<p class="hint">Pick a year, then a meeting, then its agenda or slides. Newest first.</p>'+
+      '<div class="yrs" role="tablist" aria-label="Years">'+years.map(y=>'<button class="yr" role="tab" aria-selected="'+(y===yr)+'" data-go="'+MEETINGS.find(x=>yearOf(x)===y).id+'">'+y+'<small>'+MEETINGS.filter(x=>yearOf(x)===y).length+'</small></button>').join("")+'</div>'+
+      '<div class="mtgs" role="tablist" aria-label="Meetings in '+yr+'">'+MEETINGS.filter(x=>yearOf(x)===yr).map(x=>'<button class="mtg" role="tab" aria-selected="'+(x.id===m.id)+'" data-go="'+x.id+'"><b>'+x.date+(x.iso>=today? '<span class="upc">Upcoming</span>' : '')+'</b><small>'+x.label+'</small></button>').join("")+'</div>'+
       '<div class="subtabs" role="tablist" aria-label="Meeting materials">'+m.views.map(v=>'<button class="subtab" role="tab" aria-selected="'+(state.sub===v)+'" data-go="'+v+'">'+SUBVIEWS[v]+'</button>').join("")+'</div></div>';
     const body = state.sub==="tab_themes"? pastThemes() : pm? pastAgenda(pm) : state.sub==="tab_slides"? slidesTab() : agendaTab();
     return head + '<div style="margin-top:14px">'+body+'</div>';
@@ -1657,7 +1670,7 @@ const SLIDES = [
     }
     if(ev.key!=="Enter" && ev.key!==" ") return;
     const t = ev.target;
-    if(t.matches && (t.matches(".row,.nrow,.ti,.lawitem,.opt,.ai,tr.click,.mtg,.subtab"))){ ev.preventDefault(); t.dispatchEvent(new MouseEvent("click",{bubbles:true,cancelable:true})); }   /* SVG chart rows have no .click() method */
+    if(t.matches && (t.matches(".row,.nrow,.ti,.lawitem,.opt,.ai,tr.click,.yr,.mtg,.subtab"))){ ev.preventDefault(); t.dispatchEvent(new MouseEvent("click",{bubbles:true,cancelable:true})); }   /* SVG chart rows have no .click() method */
   });
   $("#q").addEventListener("input", function(){ search(this.value); });
   $("#q").addEventListener("focus", function(){ if(this.value.trim().length>=2) search(this.value); });

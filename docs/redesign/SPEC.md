@@ -231,7 +231,8 @@ See all three mock-ups. From top to bottom:
 - White background, a 4px top border in the section colour, a 1px bottom border.
 - Section title at 24px bold, with the section blurb beside it in muted 14px text.
 - Below, a row of sub-page links. The active one is bold with a 3px bottom border in the section colour. "The law" has only one page, so it shows no row.
-- The Subcommittee page keeps its own meeting picker and Agenda/Slides/Themes row inside the page body, as today. That is a third level and stays visually lighter than the band.
+- The Subcommittee page keeps its own meeting picker and Agenda/Slides/Themes row inside the page body, as today.
+- The meeting picker is two steps: one chip per year (newest first, with the number of meetings), then that year's meetings in an even grid. A year chip opens that year's most recent meeting, so the picker has no state of its own and the URL stays the single source of truth. Meetings dated today or later carry an "Upcoming" marker. That is a third level and stays visually lighter than the band.
 
 ### 6.3 Detail panel
 
